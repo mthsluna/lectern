@@ -19,11 +19,10 @@
 <br>
 
 <p align="center">
-  <img src="docs/today.png" width="31%" alt="Timer running">
-  &nbsp;
-  <img src="docs/break.png" width="31%" alt="On a break">
-  &nbsp;
-  <img src="docs/report.png" width="31%" alt="Weekly report">
+  <img src="docs/language.png" width="24%" alt="Choosing a language">
+  <img src="docs/today.png" width="24%" alt="Timer running">
+  <img src="docs/break.png" width="24%" alt="On a break, in Portuguese">
+  <img src="docs/report.png" width="24%" alt="Weekly report">
 </p>
 
 <br>
@@ -33,8 +32,9 @@
 Lectern does one thing. You press start when you sit down to study, and it keeps
 the time. At the end of the week it tells you, plainly, how the week went.
 
-There is nothing to configure. Lectern reads the date from your computer, so it
-always knows what day it is, which week you are in, and when Saturday has arrived.
+There is almost nothing to configure. On first launch Lectern asks which language
+you speak, and that is all. It reads the date from your computer, so it always
+knows what day it is, which week you are in, and when Saturday has arrived.
 
 ## How it works
 
@@ -64,6 +64,17 @@ If you close the window while the clock is running, it keeps counting, and you
 will find the correct time when you return. A break left open past midnight ends
 that day at the moment the break began.
 
+## Languages
+
+Lectern speaks the ten most widely spoken languages:
+
+English, 中文, हिन्दी, Español, Français, العربية, Português, Русский, 日本語 and Deutsch.
+
+The question on the first screen is already asked in your system language when
+Lectern knows it. Dates and weekday names follow the conventions of the language
+you choose, and Arabic is laid out right to left. You can switch at any time from
+the two-letter code in the top corner.
+
 ## Lightweight by design
 
 Lectern is built with [Tauri](https://tauri.app) and plain HTML, CSS and
@@ -92,14 +103,16 @@ npm run build    # produce the installer in src-tauri/target/release/bundle
 ```
 
 The interface lives in `src/` and can also be opened in any browser. In that case
-data is kept in `localStorage`. Add `?demo` to the URL to preview it with sample data.
+data is kept in `localStorage`. Add `?demo` to the URL to preview it with sample data, and `&lang=pt` (or any
+other code) to preview a language.
 
 ## Design
 
 The palette is warm ivory and near-black ink with a single clay accent. Headings
 and numbers are set in [Newsreader](https://fonts.google.com/specimen/Newsreader),
 body text in [Inter](https://rsms.me/inter/). Both fonts are bundled, so the app
-looks the same offline.
+looks the same offline. Scripts they do not cover, such as Chinese, Japanese,
+Devanagari and Arabic, use the system fonts that ship with Windows.
 
 ## License
 

@@ -7,57 +7,69 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header class="top">
-    <div class="brand">
-      <span class="mark" aria-hidden="true"></span>
-      <span>Lectern</span>
-    </div>
-    <nav class="tabs" role="tablist">
-      <button class="tab is-active" data-view="today" role="tab">Today</button>
-      <button class="tab" data-view="report" role="tab">Report</button>
-    </nav>
-  </header>
+  <!-- Language picker (first launch, or from the header) -->
+  <section class="picker" id="picker" hidden>
+    <span class="mark mark-lg" aria-hidden="true"></span>
+    <h1 class="picker-title" id="picker-title">Which language do you speak?</h1>
+    <p class="picker-sub" id="picker-sub">You can change it later.</p>
+    <div class="langs" id="langs"></div>
+  </section>
 
-  <main>
-    <!-- Today -->
-    <section class="view" id="view-today">
-      <p class="eyebrow" id="today-date"></p>
-      <h1 class="timer" id="timer">00:00:00</h1>
-      <p class="status" id="status"><span class="dot"></span><span id="status-text">Ready when you are</span></p>
+  <div class="app" id="app" hidden>
+    <header class="top">
+      <div class="brand">
+        <span class="mark" aria-hidden="true"></span>
+        <span>Lectern</span>
+      </div>
+      <nav class="tabs" role="tablist">
+        <button class="tab is-active" data-view="today" data-i18n="today" role="tab">Today</button>
+        <button class="tab" data-view="report" data-i18n="report" role="tab">Report</button>
+        <button class="tab lang-btn" id="lang-btn" data-i18n-title="language" title="Language">EN</button>
+      </nav>
+    </header>
 
-      <div class="controls" id="controls"></div>
+    <main>
+      <!-- Today -->
+      <section class="view" id="view-today">
+        <p class="eyebrow" id="today-date"></p>
+        <h1 class="timer" id="timer">00:00:00</h1>
+        <p class="status" id="status"><span class="dot"></span><span id="status-text"></span></p>
 
-      <div class="week-card">
-        <div class="week-head">
-          <span class="label">This week</span>
-          <span class="week-total" id="week-total">0h 00m</span>
+        <div class="controls" id="controls"></div>
+
+        <div class="week-card">
+          <div class="week-head">
+            <span class="label" data-i18n="thisWeek">This week</span>
+            <span class="week-total" id="week-total">0h 00m</span>
+          </div>
+          <div class="strip" id="strip"></div>
+          <p class="hint" id="week-hint"></p>
         </div>
-        <div class="strip" id="strip"></div>
-        <p class="hint" id="week-hint"></p>
-      </div>
-    </section>
+      </section>
 
-    <!-- Report -->
-    <section class="view" id="view-report" hidden>
-      <div class="report-nav">
-        <button class="arrow" id="prev-week" aria-label="Previous week">&larr;</button>
-        <p class="eyebrow" id="report-range"></p>
-        <button class="arrow" id="next-week" aria-label="Next week">&rarr;</button>
-      </div>
-      <p class="notice" id="report-notice" hidden></p>
-      <h2 class="report-title" id="report-title">Weekly report</h2>
-      <div class="hero-number">
-        <span id="report-total">0h 00m</span>
-        <span class="sub" id="report-delta"></span>
-      </div>
-      <p class="summary" id="report-summary"></p>
+      <!-- Report -->
+      <section class="view" id="view-report" hidden>
+        <div class="report-nav">
+          <button class="arrow" id="prev-week" aria-label="Previous week">&larr;</button>
+          <p class="eyebrow" id="report-range"></p>
+          <button class="arrow" id="next-week" aria-label="Next week">&rarr;</button>
+        </div>
+        <p class="notice" id="report-notice" hidden></p>
+        <h2 class="report-title" id="report-title"></h2>
+        <div class="hero-number">
+          <span id="report-total">0h 00m</span>
+          <span class="sub" id="report-delta"></span>
+        </div>
+        <p class="summary" id="report-summary"></p>
 
-      <div class="chart" id="chart"></div>
+        <div class="chart" id="chart"></div>
 
-      <dl class="stats" id="stats"></dl>
-    </section>
-  </main>
+        <dl class="stats" id="stats"></dl>
+      </section>
+    </main>
+  </div>
 
+  <script src="i18n.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

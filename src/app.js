@@ -4,6 +4,7 @@
  * Lectern — a quiet study timer with a weekly report.
  *
  * Model
+ *   lang             = language code chosen on first launch
  *   days[YYYY-MM-DD] = { study, breaks, pauses, sessions, closed }
  *   active           = { date, status: "running" | "paused", since,
  *                        study, breaks, pauses }  (null when idle)
@@ -12,12 +13,6 @@
  * Time is always derived from timestamps, so closing the window while
  * the timer runs loses nothing: it keeps counting from `since`.
  * ------------------------------------------------------------------ */
-
-const DAY_MS = 86400000;
-const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-const MONTHS_LONG = ["January", "February", "March", "April", "May", "June", "July",
-  "August", "September", "October", "November", "December"];
 
 const params = new URLSearchParams(location.search);
 const DEMO = params.has("demo");
@@ -32,6 +27,70 @@ if (DEMO && params.get("today")) {
   clockOffset = target - n;
 }
 const now = () => Date.now() + clockOffset;
+
+/* ---------- language ---------- */
+
+let lang = "en";
+const langInfo = (code) => LANGS.find((l) => l.code === code) || LANGS[0];
+const locale = () => langInfo(lang).locale;
+
+function t(key, ...args) {
+  const v = (STRINGS[lang] && STRINGS[lang][key]) ?? STRINGS.en[key];
+  return typeof v === "function" ? v(...args) : v;
+}
+
+/* Best guess from the system, used only to word the picker's question. */
+function systemLang() {
+  for (const l of navigator.languages || [navigator.language || "en"]) {
+    const code = l.toLowerCase().split("-")[0];
+    if (STRINGS[code]) return code;
+  }
+  return "en";
+}
+
+function applyLanguage() {
+  const info = langInfo(lang);
+  document.documentElement.lang = info.code;
+  document.documentElement.dir = info.rtl ? "rtl" : "ltr";
+  document.querySelectorAll("[data-i18n]").forEach((el) => { el.textContent = t(el.dataset.i18n); });
+  document.querySelectorAll("[data-i18n-title]").forEach((el) => { el.title = t(el.dataset.i18nTitle); });
+  $("lang-btn").textContent = info.code.toUpperCase();
+}
+
+function showPicker() {
+  const shown = state.lang || systemLang();
+  const prev = lang;
+  lang = shown;
+  applyLanguage();
+  $("picker-title").textContent = t("pickTitle");
+  $("picker-sub").textContent = t("pickSub");
+  lang = prev;
+
+  const list = $("langs");
+  list.innerHTML = "";
+  for (const l of LANGS) {
+    const b = document.createElement("button");
+    b.className = "lang" + (l.code === shown ? " is-current" : "");
+    b.lang = l.code;
+    b.dir = l.rtl ? "rtl" : "ltr";
+    b.textContent = l.name;
+    b.addEventListener("click", () => chooseLanguage(l.code));
+    list.appendChild(b);
+  }
+  $("app").hidden = true;
+  $("picker").hidden = false;
+}
+
+function chooseLanguage(code) {
+  const first = !state.lang;
+  state.lang = lang = code;
+  save();
+  applyLanguage();
+  $("picker").hidden = true;
+  $("app").hidden = false;
+  if (first) openStartView();
+  else show(view);
+}
 
 /* ---------- dates ---------- */
 
@@ -51,6 +110,11 @@ function addDays(k, n) {
 }
 const todayKey = () => keyOf(new Date(now()));
 const weekStart = (k) => addDays(k, -parseKey(k).getDay()); // Sunday
+const isSaturday = (k) => parseKey(k).getDay() === 6;
+
+const fmt = (k, opts) => new Intl.DateTimeFormat(locale(), opts).format(parseKey(k));
+const dayName = (k, style = "long") => fmt(k, { weekday: style });
+const cap = (s) => s.charAt(0).toLocaleUpperCase(locale()) + s.slice(1);
 
 /* ---------- formatting ---------- */
 
@@ -71,15 +135,14 @@ function shortHours(ms) {
   return h < 1 ? `${Math.round(ms / 60000)}m` : `${h.toFixed(1).replace(/\.0$/, "")}h`;
 }
 function rangeLabel(start) {
+  const f = new Intl.DateTimeFormat(locale(), { month: "short", day: "numeric", year: "numeric" });
   const a = parseKey(start), b = parseKey(addDays(start, 6));
-  const left = `${MONTHS[a.getMonth()]} ${a.getDate()}`;
-  const right = a.getMonth() === b.getMonth() ? `${b.getDate()}` : `${MONTHS[b.getMonth()]} ${b.getDate()}`;
-  return `${left} – ${right}, ${b.getFullYear()}`;
+  return f.formatRange ? f.formatRange(a, b) : `${f.format(a)} – ${f.format(b)}`;
 }
 
 /* ---------- storage ---------- */
 
-let state = { version: 1, days: {}, active: null, seen: {} };
+let state = { version: 1, lang: null, days: {}, active: null, seen: {} };
 
 async function load() {
   if (DEMO) return seedDemo();
@@ -159,9 +222,9 @@ function liveFor(k) {
   const out = { study: d.study, breaks: d.breaks, pauses: d.pauses, sessions: d.sessions, closed: d.closed };
   const a = state.active;
   if (a && a.date === k) {
-    const t = now() - a.since;
-    out.study += a.study + (a.status === "running" ? t : 0);
-    out.breaks += a.breaks + (a.status === "paused" ? t : 0);
+    const el = now() - a.since;
+    out.study += a.study + (a.status === "running" ? el : 0);
+    out.breaks += a.breaks + (a.status === "paused" ? el : 0);
     out.pauses += a.pauses;
     out.sessions += 1;
   }
@@ -201,19 +264,19 @@ function renderControls() {
     c.appendChild(b);
     return b;
   };
-  if (s === "idle") btn("Start studying", "btn-primary", start);
-  if (s === "running") btn("Pause", "btn-primary", pause);
-  if (s === "paused") btn("Resume", "btn-primary", resume);
+  if (s === "idle") btn(t("start"), "btn-primary", start);
+  if (s === "running") btn(t("pause"), "btn-primary", pause);
+  if (s === "paused") btn(t("resume"), "btn-primary", resume);
   if (s === "running" || s === "paused") {
-    const b = btn("Stop", "btn-ghost", () => {
+    const b = btn(t("stop"), "btn-ghost", () => {
       if (b.dataset.armed) { clearTimeout(confirmTimer); return stop(); }
       b.dataset.armed = "1";
-      b.textContent = "End the day?";
+      b.textContent = t("confirmStop");
       b.className = "btn btn-warn";
       confirmTimer = setTimeout(renderControls, 3000);
     });
   }
-  if (s === "closed") btn("Start another session", "btn-link", start);
+  if (s === "closed") btn(t("startAnother"), "btn-link", start);
 }
 
 function renderTimer() {
@@ -221,20 +284,19 @@ function renderTimer() {
   document.body.dataset.state = s;
   const a = state.active;
   const k = a ? a.date : todayKey();
-  const live = liveFor(k);
-  $("timer").textContent = clock(live.study);
+  $("timer").textContent = clock(liveFor(k).study);
 
-  let text = "Ready when you are";
-  if (s === "running") text = "Studying";
-  if (s === "paused") text = `On a break · ${clock(now() - a.since).replace(/^00:/, "")}`;
-  if (s === "closed") text = "Done for today";
-  if (a && a.date !== todayKey()) text += " · started yesterday";
+  let text = t("ready");
+  if (s === "running") text = t("studying");
+  if (s === "paused") text = `${t("onBreak")} · ${clock(now() - a.since).replace(/^00:/, "")}`;
+  if (s === "closed") text = t("done");
+  if (a && a.date !== todayKey()) text += ` · ${t("startedYesterday")}`;
   $("status-text").textContent = text;
 }
 
 function renderWeekStrip() {
-  const t = todayKey();
-  const days = weekData(weekStart(t));
+  const today = todayKey();
+  const days = weekData(weekStart(today));
   const max = Math.max(3600000, ...days.map((d) => d.study));
   const strip = $("strip");
   strip.innerHTML = "";
@@ -242,24 +304,20 @@ function renderWeekStrip() {
   for (const d of days) {
     total += d.study;
     const el = document.createElement("div");
-    el.className = "day" + (d.study > 0 ? " has" : "") + (d.key === t ? " is-today" : "");
-    el.title = `${DAYS[parseKey(d.key).getDay()]} · ${hm(d.study)}`;
+    el.className = "day" + (d.study > 0 ? " has" : "") + (d.key === today ? " is-today" : "");
+    el.title = `${cap(dayName(d.key))} · ${hm(d.study)}`;
     el.innerHTML = `<div class="bar-wrap"><div class="bar" style="height:${Math.max(4, (d.study / max) * 100)}%"></div></div>
-      <span class="d">${DAYS[parseKey(d.key).getDay()][0]}</span>`;
+      <span class="d">${dayName(d.key, "narrow")}</span>`;
     strip.appendChild(el);
   }
   $("week-total").textContent = hm(total);
 
-  const dow = parseKey(t).getDay();
-  const left = 6 - dow;
-  $("week-hint").textContent = left === 0
-    ? "Your weekly report is ready."
-    : `Your report arrives on Saturday, in ${left} day${left > 1 ? "s" : ""}.`;
+  const left = 6 - parseKey(today).getDay();
+  $("week-hint").textContent = left === 0 ? t("reportReady") : t("reportIn", left);
 }
 
 function renderToday() {
-  const d = parseKey(todayKey());
-  $("today-date").textContent = `${DAYS[d.getDay()]}, ${MONTHS_LONG[d.getMonth()]} ${d.getDate()}`;
+  $("today-date").textContent = fmt(todayKey(), { weekday: "long", month: "long", day: "numeric" });
   renderTimer();
   renderControls();
   renderWeekStrip();
@@ -269,49 +327,49 @@ function renderToday() {
 
 let reportWeek = null;
 
+function percentDiff(total, prev) {
+  return Math.round(((total - prev) / prev) * 100);
+}
+
 function summarize(days, total, prevTotal) {
   const studied = days.filter((d) => d.study >= 60000);
-  if (total < 60000) return "A quiet week. Nothing was recorded, and next week is a clean page.";
+  if (total < 60000) return t("quiet");
   const best = studied.reduce((a, b) => (b.study > a.study ? b : a));
   const n = studied.length;
-  const lead = n >= 6 ? "Remarkably consistent" : n >= 4 ? "A steady week" : n >= 2 ? "A lighter week" : "A single sitting";
-  const bestName = DAYS[parseKey(best.key).getDay()];
-  let s = n === 1
-    ? `${lead}. All of it happened on ${bestName}, ${hm(best.study)} in one day.`
-    : `${lead}. You studied ${n} of 7 days, and ${bestName} was the longest at ${hm(best.study)}.`;
+  const lead = t("leads")[n >= 6 ? 0 : n >= 4 ? 1 : n >= 2 ? 2 : 3];
+  const day = dayName(best.key);
+  let s = lead + t("sep") + (n === 1 ? t("single", day, hm(best.study)) : t("many", n, day, hm(best.study)));
   if (prevTotal >= 60000) {
-    const diff = Math.round(((total - prevTotal) / prevTotal) * 100);
-    if (Math.abs(diff) < 5) s += " Almost exactly the same as last week.";
-    else if (diff > 0) s += ` That is ${diff}% more than last week.`;
-    else s += ` That is ${-diff}% less than last week.`;
+    const diff = percentDiff(total, prevTotal);
+    const tail = Math.abs(diff) < 5 ? t("same") : diff > 0 ? t("more", diff) : t("less", -diff);
+    s += t("space") + tail;
   }
   return s;
 }
 
 function renderReport() {
-  const t = todayKey();
-  const current = weekStart(t);
+  const today = todayKey();
+  const current = weekStart(today);
   const start = reportWeek;
   const days = weekData(start);
-  const prev = weekData(addDays(start, -7));
   const total = days.reduce((s, d) => s + d.study, 0);
-  const prevTotal = prev.reduce((s, d) => s + d.study, 0);
+  const prevTotal = weekData(addDays(start, -7)).reduce((s, d) => s + d.study, 0);
 
   $("report-range").textContent = rangeLabel(start);
   $("next-week").disabled = start >= current;
 
-  const inProgress = start === current && parseKey(t).getDay() !== 6;
-  $("report-title").textContent = inProgress ? "Week in progress" : "Weekly report";
+  const inProgress = start === current && !isSaturday(today);
+  $("report-title").textContent = inProgress ? t("weekInProgress") : t("weeklyReport");
   $("report-total").textContent = hm(total);
 
   const delta = $("report-delta");
   delta.className = "sub";
   if (prevTotal >= 60000 && total >= 60000) {
-    const diff = Math.round(((total - prevTotal) / prevTotal) * 100);
-    delta.textContent = `${diff >= 0 ? "+" : ""}${diff}% vs last week`;
+    const diff = percentDiff(total, prevTotal);
+    delta.textContent = t("vsLast", `${diff >= 0 ? "+" : "−"}${Math.abs(diff)}%`);
     delta.classList.add(diff >= 0 ? "up" : "down");
   } else {
-    delta.textContent = "studied this week";
+    delta.textContent = t("studiedThisWeek");
   }
   $("report-summary").textContent = summarize(days, total, prevTotal);
 
@@ -332,7 +390,7 @@ function renderReport() {
     labels.className = "chart-days";
     chart.after(labels);
   }
-  labels.innerHTML = days.map((d) => `<span>${DAYS[parseKey(d.key).getDay()].slice(0, 3)}</span>`).join("");
+  labels.innerHTML = days.map((d) => `<span>${dayName(d.key, "short")}</span>`).join("");
 
   /* stats */
   const studied = days.filter((d) => d.study >= 60000);
@@ -342,12 +400,12 @@ function renderReport() {
   const focus = total + breaks > 0 ? Math.round((total / (total + breaks)) * 100) : 0;
   const best = studied.length ? studied.reduce((a, b) => (b.study > a.study ? b : a)) : null;
   const rows = [
-    ["Days studied", `${studied.length}<small>of 7</small>`],
-    ["Daily average", studied.length ? hm(total / studied.length) : "—"],
-    ["Best day", best ? `${DAYS[parseKey(best.key).getDay()]}<small>${hm(best.study)}</small>` : "—"],
-    ["Focus", total ? `${focus}%<small>of time on task</small>` : "—"],
-    ["Breaks", `${pauses}<small>${hm(breaks)}</small>`],
-    ["Sessions", `${sessions}`],
+    [t("daysStudied"), `${studied.length}<small>${t("of7")}</small>`],
+    [t("dailyAvg"), studied.length ? hm(total / studied.length) : "—"],
+    [t("bestDay"), best ? `${cap(dayName(best.key))}<small>${hm(best.study)}</small>` : "—"],
+    [t("focus"), total ? `${focus}%<small>${t("onTask")}</small>` : "—"],
+    [t("breaks"), `${pauses}<small>${hm(breaks)}</small>`],
+    [t("sessions"), `${sessions}`],
   ];
   $("stats").innerHTML = rows.map(([k, v]) => `<div class="stat"><dt>${k}</dt><dd>${v}</dd></div>`).join("");
 }
@@ -357,14 +415,14 @@ function renderReport() {
 let view = "today";
 function show(v, opts = {}) {
   view = v;
-  document.querySelectorAll(".tab").forEach((t) => t.classList.toggle("is-active", t.dataset.view === v));
+  document.querySelectorAll(".tab[data-view]").forEach((el) => el.classList.toggle("is-active", el.dataset.view === v));
   $("view-today").hidden = v !== "today";
   $("view-report").hidden = v !== "report";
   const notice = $("report-notice");
   notice.hidden = !opts.notice;
   if (opts.notice) notice.textContent = opts.notice;
   if (v === "report") {
-    reportWeek = opts.week || defaultReportWeek();
+    reportWeek = opts.week || reportWeek || defaultReportWeek();
     renderReport();
   } else {
     renderToday();
@@ -373,28 +431,36 @@ function show(v, opts = {}) {
 
 /* On Saturday, the current week. Otherwise, the last finished week. */
 function defaultReportWeek() {
-  const t = todayKey();
-  return parseKey(t).getDay() === 6 ? weekStart(t) : addDays(weekStart(t), -7);
+  const today = todayKey();
+  return isSaturday(today) ? weekStart(today) : addDays(weekStart(today), -7);
 }
 
 /* Decide, from the PC's date alone, whether a report should open by itself. */
 function autoReport() {
-  const t = todayKey();
-  const thisWeek = weekStart(t);
+  const today = todayKey();
+  const thisWeek = weekStart(today);
   const lastWeek = addDays(thisWeek, -7);
   const hasData = (w) => weekData(w).some((d) => d.study > 0);
 
-  if (parseKey(t).getDay() === 6 && !state.seen[thisWeek]) {
+  if (isSaturday(today) && !state.seen[thisWeek]) {
     state.seen[thisWeek] = true;
     save();
-    return { week: thisWeek, notice: "It's Saturday. Here is how your week went." };
+    return { week: thisWeek, notice: t("saturday") };
   }
   if (!state.seen[lastWeek] && hasData(lastWeek)) {
     state.seen[lastWeek] = true;
     save();
-    return { week: lastWeek, notice: "You missed Saturday, so here is last week's report." };
+    return { week: lastWeek, notice: t("missed") };
   }
   return null;
+}
+
+function openStartView() {
+  let auto;
+  if (DEMO) auto = params.get("view") === "report" ? { week: weekStart(todayKey()), notice: params.get("notice") ? t("saturday") : null } : null;
+  else auto = autoReport();
+  if (auto) show("report", auto);
+  else show("today");
 }
 
 function commitAndRender() {
@@ -406,8 +472,8 @@ function commitAndRender() {
 /* ---------- demo data (for screenshots, ?demo) ---------- */
 
 function seedDemo() {
-  const t = todayKey();
-  const ws = weekStart(t);
+  const today = todayKey();
+  const ws = weekStart(today);
   const h = 3600000, m = 60000;
   const plan = [
     [-7, 0], [-6, 2 * h + 10 * m], [-5, 3 * h + 5 * m], [-4, 0], [-3, 2 * h + 40 * m], [-2, 1 * h + 50 * m], [-1, 2 * h + 20 * m],
@@ -415,8 +481,8 @@ function seedDemo() {
   ];
   for (const [off, study] of plan) {
     const k = addDays(ws, off);
-    if (k > t) continue;
-    if (k === t && params.get("state") !== "closed") continue;
+    if (k > today) continue;
+    if (k === today && params.get("state") !== "closed") continue;
     if (!study) continue;
     const pauses = Math.max(1, Math.round(study / (50 * m)));
     state.days[k] = { study, breaks: pauses * 7 * m, pauses, sessions: 1, closed: true };
@@ -424,10 +490,11 @@ function seedDemo() {
   const st = params.get("state");
   if (st === "running" || st === "paused") {
     state.active = {
-      date: t, status: st, since: now() - (st === "paused" ? 4 * m + 12000 : 0),
+      date: today, status: st, since: now() - (st === "paused" ? 4 * m + 12000 : 0),
       study: 1 * h + 24 * m + 7000, breaks: 6 * m, pauses: 1,
     };
   }
+  state.lang = params.has("pick") ? null : params.get("lang") || "en";
   state.seen = {};
 }
 
@@ -437,17 +504,25 @@ function seedDemo() {
   await load();
   settleStaleSession();
 
-  document.querySelectorAll(".tab").forEach((t) => t.addEventListener("click", () => show(t.dataset.view)));
+  document.querySelectorAll(".tab[data-view]").forEach((el) => el.addEventListener("click", () => show(el.dataset.view)));
+  $("lang-btn").addEventListener("click", showPicker);
   $("prev-week").addEventListener("click", () => { reportWeek = addDays(reportWeek, -7); $("report-notice").hidden = true; renderReport(); });
   $("next-week").addEventListener("click", () => { reportWeek = addDays(reportWeek, 7); $("report-notice").hidden = true; renderReport(); });
 
-  const auto = DEMO ? (params.get("view") === "report" ? { week: weekStart(todayKey()), notice: params.get("notice") || null } : null) : autoReport();
-  if (auto) show("report", auto);
-  else show("today");
+  if (!state.lang || !STRINGS[state.lang]) {
+    state.lang = null;
+    showPicker();
+  } else {
+    lang = state.lang;
+    applyLanguage();
+    $("app").hidden = false;
+    openStartView();
+  }
 
   /* tick: update the clock; re-render everything when the date changes */
   let lastDay = todayKey();
   setInterval(() => {
+    if (!state.lang || !$("picker").hidden) return;
     if (todayKey() !== lastDay) {
       lastDay = todayKey();
       settleStaleSession();
