@@ -71,17 +71,16 @@ function applyTheme() {
   if (state.theme === "light" || state.theme === "dark") document.documentElement.dataset.theme = state.theme;
   else delete document.documentElement.dataset.theme;
   const current = effectiveTheme();
-  document.querySelectorAll(".theme-opt").forEach((b) => {
-    const on = b.dataset.set === current;
-    b.setAttribute("aria-pressed", String(on));
-    b.title = t(`theme_${b.dataset.set}`);
-    b.setAttribute("aria-label", t(`theme_${b.dataset.set}`));
-  });
+  const btn = $("theme-btn");
+  btn.dataset.mode = current;
+  // the label names what a click will do
+  const next = current === "dark" ? "light" : "dark";
+  btn.title = t(`theme_${next}`);
+  btn.setAttribute("aria-label", t(`theme_${next}`));
 }
 
-function setTheme(theme) {
-  if (effectiveTheme() === theme && state.theme === theme) return;
-  state.theme = theme;
+function toggleTheme() {
+  state.theme = effectiveTheme() === "dark" ? "light" : "dark";
   save();
   applyTheme();
 }
@@ -782,7 +781,7 @@ function seedDemo() {
 
   document.querySelectorAll(".tab[data-view]").forEach((el) => el.addEventListener("click", () => show(el.dataset.view)));
   $("lang-btn").addEventListener("click", showPicker);
-  document.querySelectorAll(".theme-opt").forEach((b) => b.addEventListener("click", () => setTheme(b.dataset.set)));
+  $("theme-btn").addEventListener("click", toggleTheme);
   darkQuery.addEventListener("change", applyTheme);
 
   /* update banner */
