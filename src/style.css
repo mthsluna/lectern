@@ -21,6 +21,35 @@
   --sans: -apple-system, "SF Pro Text", "Inter", "Segoe UI", var(--cjk), var(--world), system-ui, sans-serif;
 }
 
+/* Dark palette: warm charcoal, not pure black, with a lifted jade.
+   Applies when the system is dark, unless the user forced light. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #161615;
+    --surface: #1f1f1d;
+    --line: #2f2e2b;
+    --ink: #f1efe8;
+    --ink-soft: #d4d1c7;
+    --muted: #9b9990;
+    --faint: #5e5c56;
+    --accent: #5aa588;
+    --accent-soft: #1d332b;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #161615;
+  --surface: #1f1f1d;
+  --line: #2f2e2b;
+  --ink: #f1efe8;
+  --ink-soft: #d4d1c7;
+  --muted: #9b9990;
+  --faint: #5e5c56;
+  --accent: #5aa588;
+  --accent-soft: #1d332b;
+  color-scheme: dark;
+}
+
 * { box-sizing: border-box; margin: 0; padding: 0; }
 [hidden] { display: none !important; }
 
