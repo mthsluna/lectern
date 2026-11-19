@@ -420,4 +420,3 @@ main::-webkit-scrollbar-thumb { background: var(--line); border-radius: 4px; }
 .update-link:hover { color: var(--ink); }
 .update[data-phase="busy"] .update-actions { display: none; }
 .update[data-phase="busy"] .update-dot { animation: pulse 1.2s ease-in-out infinite; }
-.update[data-phase="failed"] .update-skip-hide { display: none; }
