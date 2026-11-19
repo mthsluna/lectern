@@ -377,3 +377,9 @@ main::-webkit-scrollbar-thumb { background: var(--line); border-radius: 4px; }
 .subjects li:first-child .s-bar span { background: var(--accent); }
 .s-time { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
 .streak { color: var(--accent); }
+
+/* The mark is drawn in ink; flip it to ivory on dark backgrounds. */
+:root[data-theme="dark"] .mark { filter: invert(1) brightness(0.96); }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .mark { filter: invert(1) brightness(0.96); }
+}
