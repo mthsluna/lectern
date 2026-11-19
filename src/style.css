@@ -24,8 +24,8 @@
   --ink-soft: #3d3d3a;
   --muted: #73726c;
   --faint: #b0aea5;
-  --accent: #d97757;
-  --accent-soft: #f2d8cc;
+  --accent: #2f6b55;
+  --accent-soft: #dde8e1;
   --cjk: "Microsoft YaHei UI", "Microsoft YaHei", "PingFang SC";
   --world: "Nirmala UI", "Segoe UI", "Noto Sans";
   --serif: "Newsreader", Georgia, var(--cjk), var(--world), serif;
@@ -190,7 +190,7 @@ body[data-state="closed"] .dot { background: var(--ink); }
 .btn-primary:hover { background: var(--ink-soft); }
 .btn-ghost { border: 1px solid var(--line); background: transparent; }
 .btn-ghost:hover { border-color: var(--faint); }
-.btn-warn { border: 1px solid var(--accent); color: var(--accent); }
+.btn-warn { border: 1px solid var(--ink); color: var(--ink); }
 .btn-link { color: var(--muted); font-size: 13px; text-decoration: underline; text-underline-offset: 3px; }
 .btn-link:hover { color: var(--ink); }
 
@@ -265,8 +265,8 @@ body[data-state="closed"] .dot { background: var(--ink); }
   letter-spacing: -0.02em;
 }
 .sub { font-size: 13px; color: var(--muted); }
-.sub.up { color: #5a7a4f; }
-.sub.down { color: var(--accent); }
+.sub.up { color: var(--accent); }
+.sub.down { color: var(--muted); }
 .summary {
   margin-top: 16px;
   font-family: var(--serif);

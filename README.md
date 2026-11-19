@@ -75,6 +75,17 @@ Lectern knows it. Dates and weekday names follow the conventions of the language
 you choose, and Arabic is laid out right to left. You can switch at any time from
 the two-letter code in the top corner.
 
+## Out of the way
+
+Closing the window does not quit Lectern. The window is unloaded from memory
+entirely and Lectern stays in the system tray as a single small process, about
+27 MB, down from roughly 370 MB with the window open. Click the tray icon, or
+open Lectern from the Start menu, to bring it back. To quit for real, right-click
+the tray icon and choose Quit.
+
+Your timer does not care either way. It keeps counting while the window is
+closed, and even after quitting.
+
 ## Lightweight by design
 
 Lectern is built with [Tauri](https://tauri.app) and plain HTML, CSS and
@@ -108,7 +119,7 @@ other code) to preview a language.
 
 ## Design
 
-The palette is warm ivory and near-black ink with a single clay accent. Headings
+The palette is warm ivory and near-black ink with a single deep jade accent. Headings
 and numbers are set in [Newsreader](https://fonts.google.com/specimen/Newsreader),
 body text in [Inter](https://rsms.me/inter/). Both fonts are bundled, so the app
 looks the same offline. Scripts they do not cover, such as Chinese, Japanese,
