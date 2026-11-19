@@ -284,7 +284,12 @@ fn silent() -> Res {
     close_running();
     copy_files()?;
     shortcuts(ctx.desktop)?;
-    register(ctx.startup)
+    register(ctx.startup)?;
+    // used by the in-app updater: bring Lectern back once it is replaced
+    if std::env::args().any(|a| a == "--relaunch") {
+        launch()?;
+    }
+    Ok(())
 }
 
 /* ---------- window ---------- */
