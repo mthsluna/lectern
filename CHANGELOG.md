@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.9.3
+
+- The theme icon animates: the sun sets and the moon rises, or the moon sets and the sun rises.
+
 ## 1.9.2
 
 - A new moon for the theme icon: a crescent with the Lectern sparkle.
