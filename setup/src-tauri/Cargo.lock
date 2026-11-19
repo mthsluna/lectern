@@ -1780,7 +1780,7 @@ dependencies = [
 
 [[package]]
 name = "lectern-setup"
-version = "1.9.1"
+version = "1.9.2"
 dependencies = [
  "dirs 6.0.0",
  "flate2",
