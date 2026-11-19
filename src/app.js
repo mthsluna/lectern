@@ -205,71 +205,124 @@ function dayRec(k) {
   return state.days[k] || (state.days[k] = { study: 0, breaks: 0, pauses: 0, sessions: 0, closed: false, subjects: {} });
 }
 
+/* ---------- sessions that cross midnight ----------
+ *
+ * A session keeps its own per-day ledger, active.days[YYYY-MM-DD] =
+ * { study, breaks, pauses }. Every stretch of studying or pausing is cut at
+ * local midnight, so 22:00 to 03:00 counts 2 h on the first day and 3 h on
+ * the next, in the chart, the streak, the goal and the subjects alike.
+ */
+
+/* Splits [t0, t1) at local midnights: [{ key, ms }, ...] */
+function splitByDay(t0, t1) {
+  const parts = [];
+  let t = t0;
+  while (t < t1) {
+    const d = new Date(t);
+    const next = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1).getTime();
+    const end = Math.min(next, t1);
+    parts.push({ key: keyOf(d), ms: end - t });
+    t = end;
+  }
+  return parts;
+}
+
+function ledger(a, k) {
+  return a.days[k] || (a.days[k] = { study: 0, breaks: 0, pauses: 0 });
+}
+
+/* Books the stretch since the last change as study or break time. */
+function bank(a, field) {
+  for (const { key, ms } of splitByDay(a.since, now())) ledger(a, key)[field] += ms;
+  a.since = now();
+}
+
+/* Sessions saved by Lectern 1.8 and earlier kept one total; give it a ledger. */
+function migrateActive(a) {
+  if (!a || a.days) return;
+  a.days = { [a.date]: { study: a.study || 0, breaks: a.breaks || 0, pauses: a.pauses || 0 } };
+  delete a.study; delete a.breaks; delete a.pauses;
+}
+
 function start() {
   const k = todayKey();
   if (state.days[k]) state.days[k].closed = false;
   const subject = draftSubject.trim().slice(0, 40);
-  state.active = { date: k, status: "running", since: now(), study: 0, breaks: 0, pauses: 0, subject };
+  state.active = { date: k, status: "running", since: now(), subject, days: {} };
   commitAndRender();
 }
 function pause() {
   const a = state.active;
-  a.study += now() - a.since;
-  a.pauses += 1;
+  bank(a, "study");
+  ledger(a, todayKey()).pauses += 1;
   a.status = "paused";
-  a.since = now();
   commitAndRender();
 }
 function resume() {
   const a = state.active;
-  a.breaks += now() - a.since;
+  bank(a, "breaks");
   a.status = "running";
-  a.since = now();
   commitAndRender();
 }
 function stop() {
   const a = state.active;
-  if (a.status === "running") a.study += now() - a.since;
+  if (a.status === "running") bank(a, "study");
   closeActive(a);
   commitAndRender();
 }
+
+/* Moves the session's ledger into the days. The session counts once, on the
+   day it began, and that day is the one marked as done. */
 function closeActive(a) {
-  const d = dayRec(a.date);
-  d.study += a.study;
-  d.breaks += a.breaks;
-  d.pauses += a.pauses;
-  d.sessions += 1;
-  d.closed = true;
-  d.subjects = d.subjects || {};
   const s = a.subject || "";
-  d.subjects[s] = (d.subjects[s] || 0) + a.study;
+  for (const [k, part] of Object.entries(a.days)) {
+    const d = dayRec(k);
+    d.study += part.study;
+    d.breaks += part.breaks;
+    d.pauses += part.pauses;
+    d.subjects = d.subjects || {};
+    if (part.study > 0) d.subjects[s] = (d.subjects[s] || 0) + part.study;
+  }
+  const first = dayRec(a.date);
+  first.sessions += 1;
+  first.closed = true;
   state.active = null;
 }
 
-/* A break left open past midnight ends the day at the moment of the pause. */
+/* A break left open past midnight ends the session at the moment of the
+   pause: the hours spent asleep are not a break. */
 function settleStaleSession() {
   const a = state.active;
-  if (a && a.status === "paused" && a.date < todayKey()) {
+  if (a && a.status === "paused" && keyOf(new Date(a.since)) < todayKey()) {
     closeActive(a);
     save();
   }
 }
 
-/* Live totals for a given day, including the running session. */
+/* Live totals for a given day, including the part of the running session
+   that falls on it. */
 function liveFor(k) {
   const d = state.days[k] || { study: 0, breaks: 0, pauses: 0, sessions: 0, closed: false };
   const out = { study: d.study, breaks: d.breaks, pauses: d.pauses, sessions: d.sessions, closed: d.closed,
     subjects: { ...(d.subjects || {}) } };
   const a = state.active;
-  if (a && a.date === k) {
-    const el = now() - a.since;
-    const live = a.study + (a.status === "running" ? el : 0);
-    out.study += live;
-    out.breaks += a.breaks + (a.status === "paused" ? el : 0);
-    out.pauses += a.pauses;
-    out.sessions += 1;
+  if (!a) return out;
+
+  const part = a.days[k] || { study: 0, breaks: 0, pauses: 0 };
+  let study = part.study, breaks = part.breaks;
+  for (const { key, ms } of splitByDay(a.since, now())) {
+    if (key !== k) continue;
+    if (a.status === "running") study += ms; else breaks += ms;
+  }
+  if (study === 0 && breaks === 0 && part.pauses === 0 && a.date !== k) return out;
+
+  out.study += study;
+  out.breaks += breaks;
+  out.pauses += part.pauses;
+  if (a.date === k) out.sessions += 1;
+  if (study > 0) {
     const s = a.subject || "";
-    out.subjects[s] = (out.subjects[s] || 0) + live;
+    out.subjects[s] = (out.subjects[s] || 0) + study;
   }
   return out;
 }
@@ -371,8 +424,8 @@ function renderTimer() {
   const s = currentState();
   document.body.dataset.state = s;
   const a = state.active;
-  const k = a ? a.date : todayKey();
-  $("timer").textContent = clock(liveFor(k).study);
+  // Today's total; a session that began yesterday only brings its part since midnight.
+  $("timer").textContent = clock(liveFor(todayKey()).study);
 
   let text = t("ready");
   if (s === "running") text = a.subject ? `${t("studying")} · ${a.subject}` : t("studying");
@@ -711,8 +764,8 @@ function seedDemo() {
   const st = params.get("state");
   if (st === "running" || st === "paused") {
     state.active = {
-      date: today, status: st, since: now() - (st === "paused" ? 4 * m + 12000 : 0),
-      study: 1 * h + 24 * m + 7000, breaks: 6 * m, pauses: 1, subject: "Calculus",
+      date: today, status: st, since: now() - (st === "paused" ? 4 * m + 12000 : 0), subject: "Calculus",
+      days: { [today]: { study: 1 * h + 24 * m + 7000, breaks: 6 * m, pauses: 1 } },
     };
   }
   state.lang = params.has("pick") ? null : params.get("lang") || "en";
@@ -724,6 +777,7 @@ function seedDemo() {
 
 (async function boot() {
   await load();
+  migrateActive(state.active);
   settleStaleSession();
 
   document.querySelectorAll(".tab[data-view]").forEach((el) => el.addEventListener("click", () => show(el.dataset.view)));

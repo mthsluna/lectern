@@ -101,6 +101,12 @@ counting either way.
 **What if I do not open the app on Saturday?**
 The report is waiting the next time you do. Nothing is skipped.
 
+**What if I study past midnight?**
+Each day gets its own share. Studying from 22:00 to 03:00 counts 2 hours on the
+first day and 3 on the next, and so do breaks and subjects. The session ends on
+the day it began, so the next day is still free for a fresh one. A break left open
+overnight ends the session when the break began; sleep is not a break.
+
 **When does a week start?**
 Sunday. The report on Saturday covers Sunday through Saturday.
 
