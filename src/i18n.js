@@ -48,6 +48,7 @@ const STRINGS = {
     subject: "What are you studying? (optional)", setGoal: "Set a weekly goal", goal: "Goal",
     goalOf: (h) => `of ${h}h`, reached: "Reached", streak: (n) => `${n}-day streak`,
     bySubject: "By subject", unlabeled: "Unlabeled", bestWeek: "Your best week so far.",
+    theme_system: "Theme: system", theme_light: "Theme: light", theme_dark: "Theme: dark",
     sep: ". ", space: " ",
   },
   pt: {
@@ -76,6 +77,7 @@ const STRINGS = {
     subject: "O que você vai estudar? (opcional)", setGoal: "Definir meta semanal", goal: "Meta",
     goalOf: (h) => `de ${h}h`, reached: "Atingida", streak: (n) => `${n} dias seguidos`,
     bySubject: "Por matéria", unlabeled: "Sem matéria", bestWeek: "Sua melhor semana até agora.",
+    theme_system: "Tema: sistema", theme_light: "Tema: claro", theme_dark: "Tema: escuro",
     sep: ". ", space: " ",
   },
   es: {
@@ -104,6 +106,7 @@ const STRINGS = {
     subject: "¿Qué vas a estudiar? (opcional)", setGoal: "Fijar meta semanal", goal: "Meta",
     goalOf: (h) => `de ${h}h`, reached: "Cumplida", streak: (n) => `${n} días seguidos`,
     bySubject: "Por materia", unlabeled: "Sin materia", bestWeek: "Tu mejor semana hasta ahora.",
+    theme_system: "Tema: sistema", theme_light: "Tema: claro", theme_dark: "Tema: oscuro",
     sep: ". ", space: " ",
   },
   fr: {
@@ -132,6 +135,7 @@ const STRINGS = {
     subject: "Qu'allez-vous étudier ? (facultatif)", setGoal: "Fixer un objectif", goal: "Objectif",
     goalOf: (h) => `sur ${h}h`, reached: "Atteint", streak: (n) => `${n} jours d'affilée`,
     bySubject: "Par matière", unlabeled: "Sans matière", bestWeek: "Votre meilleure semaine à ce jour.",
+    theme_system: "Thème : système", theme_light: "Thème : clair", theme_dark: "Thème : sombre",
     sep: ". ", space: " ",
   },
   de: {
@@ -160,6 +164,7 @@ const STRINGS = {
     subject: "Was lernst du? (optional)", setGoal: "Wochenziel setzen", goal: "Ziel",
     goalOf: (h) => `von ${h}h`, reached: "Erreicht", streak: (n) => `${n} Tage in Folge`,
     bySubject: "Nach Fach", unlabeled: "Ohne Fach", bestWeek: "Deine bisher beste Woche.",
+    theme_system: "Design: System", theme_light: "Design: hell", theme_dark: "Design: dunkel",
     sep: ". ", space: " ",
   },
   ru: {
@@ -188,6 +193,7 @@ const STRINGS = {
     subject: "Что вы изучаете? (необязательно)", setGoal: "Задать цель на неделю", goal: "Цель",
     goalOf: (h) => `из ${h}h`, reached: "Достигнута", streak: (n) => `${n} ${ruDays(n)} подряд`,
     bySubject: "По предметам", unlabeled: "Без предмета", bestWeek: "Это ваша лучшая неделя.",
+    theme_system: "Тема: системная", theme_light: "Тема: светлая", theme_dark: "Тема: тёмная",
     sep: ". ", space: " ",
   },
   zh: {
@@ -216,6 +222,7 @@ const STRINGS = {
     subject: "你要学习什么？（可选）", setGoal: "设定每周目标", goal: "目标",
     goalOf: (h) => `/ ${h}h`, reached: "已达成", streak: (n) => `连续 ${n} 天`,
     bySubject: "按科目", unlabeled: "未分类", bestWeek: "这是你迄今最好的一周。",
+    theme_system: "主题：跟随系统", theme_light: "主题：浅色", theme_dark: "主题：深色",
     sep: "。", space: "",
   },
   ja: {
@@ -244,6 +251,7 @@ const STRINGS = {
     subject: "何を勉強しますか？（任意）", setGoal: "週の目標を設定", goal: "目標",
     goalOf: (h) => `/ ${h}h`, reached: "達成", streak: (n) => `${n}日連続`,
     bySubject: "科目別", unlabeled: "未分類", bestWeek: "これまでで最高の一週間です。",
+    theme_system: "テーマ：システム", theme_light: "テーマ：ライト", theme_dark: "テーマ：ダーク",
     sep: "。", space: "",
   },
   hi: {
@@ -272,6 +280,7 @@ const STRINGS = {
     subject: "आप क्या पढ़ रहे हैं? (वैकल्पिक)", setGoal: "साप्ताहिक लक्ष्य तय करें", goal: "लक्ष्य",
     goalOf: (h) => `/ ${h}h`, reached: "पूरा हुआ", streak: (n) => `लगातार ${n} दिन`,
     bySubject: "विषय के अनुसार", unlabeled: "बिना विषय", bestWeek: "अब तक का आपका सबसे अच्छा सप्ताह।",
+    theme_system: "थीम: सिस्टम", theme_light: "थीम: हल्की", theme_dark: "थीम: गहरी",
     sep: "। ", space: " ",
   },
   ar: {
@@ -300,6 +309,7 @@ const STRINGS = {
     subject: "ماذا تدرس؟ (اختياري)", setGoal: "حدد هدفًا أسبوعيًا", goal: "الهدف",
     goalOf: (h) => `من ${h}h`, reached: "تحقق", streak: (n) => `${n} أيام متتالية`,
     bySubject: "حسب المادة", unlabeled: "بدون مادة", bestWeek: "أفضل أسبوع لك حتى الآن.",
+    theme_system: "المظهر: النظام", theme_light: "المظهر: فاتح", theme_dark: "المظهر: داكن",
     sep: ". ", space: " ",
   },
 };
