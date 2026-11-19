@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.9.2
+
+- A new moon for the theme icon: a crescent with the Lectern sparkle.
+
 ## 1.9.1
 
 - The theme control is a single icon: the sun by day, the moon by night. One click flips it.
