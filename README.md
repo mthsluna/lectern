@@ -22,7 +22,7 @@
 <p align="center">
   <img src="docs/language.png" width="24%" alt="Choosing a language">
   <img src="docs/today.png" width="24%" alt="Timer running">
-  <img src="docs/break.png" width="24%" alt="On a break, in Portuguese">
+  <img src="docs/break.png" width="24%" alt="Ready to start, in Portuguese">
   <img src="docs/report.png" width="24%" alt="Weekly report">
 </p>
 
@@ -57,13 +57,28 @@ Each report includes:
 - A day-by-day chart, with your best day highlighted
 - Days studied, daily average and best day
 - Focus: the share of your sitting time spent studying rather than on breaks
-- Number of breaks and sessions
-- A short written summary of the week
+- Number of breaks, and progress toward your weekly goal
+- Time per subject, if you labelled your sessions
+- A short written summary of the week, which notes when it is your best week yet
 
 **Nothing is lost.** Time is recorded as timestamps, not as a counter in memory.
 If you close the window while the clock is running, it keeps counting, and you
 will find the correct time when you return. A break left open past midnight ends
 that day at the moment the break began.
+
+## Small things
+
+A few extras, each one out of sight until you want it.
+
+- **Weekly goal.** Set a number of hours once. A hairline under the week's total
+  fills as you study and turns green when you reach it.
+- **Subjects.** Before starting, you can type what you are studying, or leave it
+  blank. Past subjects are suggested as you type, and the report breaks the week
+  down by subject.
+- **Streak.** After two days in a row, the week card quietly counts your streak.
+  It survives until the end of the day, so it is not lost before you sit down.
+- **Keyboard.** `Space` starts, pauses and resumes. `S` stops (press twice).
+  The arrow keys move between weeks in the report.
 
 ## Languages
 

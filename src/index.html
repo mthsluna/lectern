@@ -35,15 +35,29 @@
         <h1 class="timer" id="timer">00:00:00</h1>
         <p class="status" id="status"><span class="dot"></span><span id="status-text"></span></p>
 
+        <div class="subject" id="subject-wrap" hidden>
+          <input class="subject-input" id="subject" type="text" maxlength="40" autocomplete="off"
+                 list="subject-list" data-i18n-placeholder="subject" spellcheck="false">
+          <datalist id="subject-list"></datalist>
+        </div>
+
         <div class="controls" id="controls"></div>
 
         <div class="week-card">
           <div class="week-head">
-            <span class="label" data-i18n="thisWeek">This week</span>
-            <span class="week-total" id="week-total">0h 00m</span>
+            <span class="label"><span data-i18n="thisWeek">This week</span><span class="streak" id="week-streak"></span></span>
+            <span class="week-total"><span id="week-total">0h 00m</span><small id="week-goal"></small></span>
           </div>
+          <div class="goal-track" id="goal-track" hidden><div class="goal-fill" id="goal-fill"></div></div>
           <div class="strip" id="strip"></div>
-          <p class="hint" id="week-hint"></p>
+          <div class="week-foot">
+            <p class="hint" id="week-hint"></p>
+            <button class="goal-btn" id="goal-btn"></button>
+            <label class="goal-edit" id="goal-edit" hidden>
+              <input id="goal-input" type="number" min="1" max="100" step="1" inputmode="numeric">
+              <span>h</span>
+            </label>
+          </div>
         </div>
       </section>
 
@@ -65,6 +79,11 @@
         <div class="chart" id="chart"></div>
 
         <dl class="stats" id="stats"></dl>
+
+        <div class="subjects" id="subjects" hidden>
+          <p class="label" data-i18n="bySubject">By subject</p>
+          <ul id="subject-rows"></ul>
+        </div>
       </section>
     </main>
   </div>

@@ -54,6 +54,7 @@ function applyLanguage() {
   document.documentElement.dir = info.rtl ? "rtl" : "ltr";
   document.querySelectorAll("[data-i18n]").forEach((el) => { el.textContent = t(el.dataset.i18n); });
   document.querySelectorAll("[data-i18n-title]").forEach((el) => { el.title = t(el.dataset.i18nTitle); });
+  document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => { el.placeholder = t(el.dataset.i18nPlaceholder); });
   $("lang-btn").textContent = info.code.toUpperCase();
 }
 
@@ -142,7 +143,8 @@ function rangeLabel(start) {
 
 /* ---------- storage ---------- */
 
-let state = { version: 1, lang: null, days: {}, active: null, seen: {} };
+let state = { version: 1, lang: null, goal: null, days: {}, active: null, seen: {} };
+let draftSubject = "";
 
 async function load() {
   if (DEMO) return seedDemo();
@@ -167,13 +169,14 @@ async function save() {
 /* ---------- timer actions ---------- */
 
 function dayRec(k) {
-  return state.days[k] || (state.days[k] = { study: 0, breaks: 0, pauses: 0, sessions: 0, closed: false });
+  return state.days[k] || (state.days[k] = { study: 0, breaks: 0, pauses: 0, sessions: 0, closed: false, subjects: {} });
 }
 
 function start() {
   const k = todayKey();
   if (state.days[k]) state.days[k].closed = false;
-  state.active = { date: k, status: "running", since: now(), study: 0, breaks: 0, pauses: 0 };
+  const subject = draftSubject.trim().slice(0, 40);
+  state.active = { date: k, status: "running", since: now(), study: 0, breaks: 0, pauses: 0, subject };
   commitAndRender();
 }
 function pause() {
@@ -204,6 +207,9 @@ function closeActive(a) {
   d.pauses += a.pauses;
   d.sessions += 1;
   d.closed = true;
+  d.subjects = d.subjects || {};
+  const s = a.subject || "";
+  d.subjects[s] = (d.subjects[s] || 0) + a.study;
   state.active = null;
 }
 
@@ -219,16 +225,49 @@ function settleStaleSession() {
 /* Live totals for a given day, including the running session. */
 function liveFor(k) {
   const d = state.days[k] || { study: 0, breaks: 0, pauses: 0, sessions: 0, closed: false };
-  const out = { study: d.study, breaks: d.breaks, pauses: d.pauses, sessions: d.sessions, closed: d.closed };
+  const out = { study: d.study, breaks: d.breaks, pauses: d.pauses, sessions: d.sessions, closed: d.closed,
+    subjects: { ...(d.subjects || {}) } };
   const a = state.active;
   if (a && a.date === k) {
     const el = now() - a.since;
-    out.study += a.study + (a.status === "running" ? el : 0);
+    const live = a.study + (a.status === "running" ? el : 0);
+    out.study += live;
     out.breaks += a.breaks + (a.status === "paused" ? el : 0);
     out.pauses += a.pauses;
     out.sessions += 1;
+    const s = a.subject || "";
+    out.subjects[s] = (out.subjects[s] || 0) + live;
   }
   return out;
+}
+
+/* Consecutive days with at least a minute of study, ending today
+   (or yesterday, so a streak is not "lost" before you sit down). */
+function streak() {
+  let k = todayKey();
+  if (liveFor(k).study < 60000) k = addDays(k, -1);
+  let n = 0;
+  while (liveFor(k).study >= 60000) { n++; k = addDays(k, -1); }
+  return n;
+}
+
+/* Every subject used before, most studied first (for suggestions). */
+function knownSubjects() {
+  const totals = {};
+  for (const d of Object.values(state.days)) {
+    for (const [s, ms] of Object.entries(d.subjects || {})) if (s) totals[s] = (totals[s] || 0) + ms;
+  }
+  return Object.keys(totals).sort((a, b) => totals[b] - totals[a]);
+}
+
+/* Totals of every earlier week that has data, to spot a personal best. */
+function previousWeekTotals(start) {
+  const weeks = {};
+  for (const [k, d] of Object.entries(state.days)) {
+    const w = weekStart(k);
+    if (w < start) weeks[w] = (weeks[w] || 0) + d.study;
+  }
+  return Object.values(weeks).filter((v) => v >= 60000);
 }
 
 function weekData(start) {
@@ -264,19 +303,35 @@ function renderControls() {
     c.appendChild(b);
     return b;
   };
-  if (s === "idle") btn(t("start"), "btn-primary", start);
-  if (s === "running") btn(t("pause"), "btn-primary", pause);
-  if (s === "paused") btn(t("resume"), "btn-primary", resume);
+  if (s === "idle") btn(t("start"), "btn-primary", start).title = "Space";
+  if (s === "running") btn(t("pause"), "btn-primary", pause).title = "Space";
+  if (s === "paused") btn(t("resume"), "btn-primary", resume).title = "Space";
   if (s === "running" || s === "paused") {
-    const b = btn(t("stop"), "btn-ghost", () => {
-      if (b.dataset.armed) { clearTimeout(confirmTimer); return stop(); }
-      b.dataset.armed = "1";
-      b.textContent = t("confirmStop");
-      b.className = "btn btn-warn";
-      confirmTimer = setTimeout(renderControls, 3000);
-    });
+    const b = btn(t("stop"), "btn-ghost", armStop);
+    b.id = "stop-btn";
+    b.title = "S";
   }
   if (s === "closed") btn(t("startAnother"), "btn-link", start);
+
+  /* the optional subject field only exists before a session starts */
+  const idle = s === "idle" || s === "closed";
+  $("subject-wrap").hidden = !idle;
+  if (idle) {
+    $("subject").value = draftSubject;
+    $("subject-list").innerHTML = knownSubjects().slice(0, 12)
+      .map((x) => `<option value="${x.replace(/"/g, "&quot;")}">`).join("");
+  }
+}
+
+/* Stop takes two presses, so it never happens by accident. */
+function armStop() {
+  const b = $("stop-btn");
+  if (!b) return;
+  if (b.dataset.armed) { clearTimeout(confirmTimer); return stop(); }
+  b.dataset.armed = "1";
+  b.textContent = t("confirmStop");
+  b.className = "btn btn-warn";
+  confirmTimer = setTimeout(renderControls, 3000);
 }
 
 function renderTimer() {
@@ -287,7 +342,7 @@ function renderTimer() {
   $("timer").textContent = clock(liveFor(k).study);
 
   let text = t("ready");
-  if (s === "running") text = t("studying");
+  if (s === "running") text = a.subject ? `${t("studying")} · ${a.subject}` : t("studying");
   if (s === "paused") text = `${t("onBreak")} · ${clock(now() - a.since).replace(/^00:/, "")}`;
   if (s === "closed") text = t("done");
   if (a && a.date !== todayKey()) text += ` · ${t("startedYesterday")}`;
@@ -312,8 +367,42 @@ function renderWeekStrip() {
   }
   $("week-total").textContent = hm(total);
 
+  /* weekly goal: a hairline of progress, nothing more */
+  const goal = state.goal;
+  $("week-goal").textContent = goal ? ` / ${goal}h` : "";
+  $("goal-track").hidden = !goal;
+  if (goal) {
+    const pct = Math.min(1, total / (goal * 3600000));
+    $("goal-fill").style.width = `${pct * 100}%`;
+    $("goal-fill").classList.toggle("done", pct >= 1);
+  }
+  if ($("goal-edit").hidden) $("goal-btn").textContent = goal ? t("goal") : t("setGoal");
+
   const left = 6 - parseKey(today).getDay();
+  const n = streak();
   $("week-hint").textContent = left === 0 ? t("reportReady") : t("reportIn", left);
+  $("week-streak").textContent = n >= 2 ? ` · ${t("streak", n)}` : "";
+}
+
+function openGoalEditor() {
+  $("goal-btn").hidden = true;
+  $("goal-edit").hidden = false;
+  const input = $("goal-input");
+  input.value = state.goal || "";
+  input.placeholder = "10";
+  input.focus();
+  input.select();
+}
+function closeGoalEditor(saveIt) {
+  if ($("goal-edit").hidden) return;
+  if (saveIt) {
+    const v = Math.round(Number($("goal-input").value));
+    state.goal = v >= 1 && v <= 100 ? v : null;   // empty or 0 removes the goal
+    save();
+  }
+  $("goal-edit").hidden = true;
+  $("goal-btn").hidden = false;
+  renderWeekStrip();
 }
 
 function renderToday() {
@@ -331,7 +420,12 @@ function percentDiff(total, prev) {
   return Math.round(((total - prev) / prev) * 100);
 }
 
-function summarize(days, total, prevTotal) {
+function summarize(days, total, prevTotal, best) {
+  const base = summarizeBase(days, total, prevTotal);
+  return best ? base + t("space") + t("bestWeek") : base;
+}
+
+function summarizeBase(days, total, prevTotal) {
   const studied = days.filter((d) => d.study >= 60000);
   if (total < 60000) return t("quiet");
   const best = studied.reduce((a, b) => (b.study > a.study ? b : a));
@@ -371,7 +465,9 @@ function renderReport() {
   } else {
     delta.textContent = t("studiedThisWeek");
   }
-  $("report-summary").textContent = summarize(days, total, prevTotal);
+  const earlier = previousWeekTotals(start);
+  const personalBest = earlier.length > 0 && total > Math.max(...earlier);
+  $("report-summary").textContent = summarize(days, total, prevTotal, personalBest);
 
   /* chart */
   const max = Math.max(3600000, ...days.map((d) => d.study));
@@ -405,9 +501,29 @@ function renderReport() {
     [t("bestDay"), best ? `${cap(dayName(best.key))}<small>${hm(best.study)}</small>` : "—"],
     [t("focus"), total ? `${focus}%<small>${t("onTask")}</small>` : "—"],
     [t("breaks"), `${pauses}<small>${hm(breaks)}</small>`],
-    [t("sessions"), `${sessions}`],
+    state.goal
+      ? [t("goal"), total >= state.goal * 3600000
+          ? `${t("reached")}<small>${state.goal}h</small>`
+          : `${Math.round((total / (state.goal * 3600000)) * 100)}%<small>${t("goalOf", state.goal)}</small>`]
+      : [t("sessions"), `${sessions}`],
   ];
   $("stats").innerHTML = rows.map(([k, v]) => `<div class="stat"><dt>${k}</dt><dd>${v}</dd></div>`).join("");
+
+  /* subjects: only when at least one session was labelled */
+  const bySubject = {};
+  for (const d of days) for (const [s, ms] of Object.entries(d.subjects || {})) bySubject[s] = (bySubject[s] || 0) + ms;
+  const entries = Object.entries(bySubject).filter(([, ms]) => ms >= 60000).sort((a, b) => b[1] - a[1]);
+  const labelled = entries.some(([s]) => s);
+  $("subjects").hidden = !labelled;
+  if (labelled) {
+    const top = entries[0][1];
+    const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;");
+    $("subject-rows").innerHTML = entries.map(([s, ms]) => `<li${s ? "" : ' class="none"'}>
+        <span class="s-name">${s ? esc(s) : t("unlabeled")}</span>
+        <span class="s-bar"><span style="width:${(ms / top) * 100}%"></span></span>
+        <span class="s-time">${hm(ms)}</span>
+      </li>`).join("");
+  }
 }
 
 /* ---------- views ---------- */
@@ -485,13 +601,19 @@ function seedDemo() {
     if (k === today && params.get("state") !== "closed") continue;
     if (!study) continue;
     const pauses = Math.max(1, Math.round(study / (50 * m)));
-    state.days[k] = { study, breaks: pauses * 7 * m, pauses, sessions: 1, closed: true };
+    const subjects = ["Calculus", "Organic chemistry", "History"];
+    const main = subjects[(off + 14) % 3];
+    const side = subjects[(off + 15) % 3];
+    const split = Math.round(study * 0.65);
+    state.days[k] = { study, breaks: pauses * 7 * m, pauses, sessions: 1, closed: true,
+      subjects: { [main]: split, [side]: study - split } };
   }
+  state.goal = 15;
   const st = params.get("state");
   if (st === "running" || st === "paused") {
     state.active = {
       date: today, status: st, since: now() - (st === "paused" ? 4 * m + 12000 : 0),
-      study: 1 * h + 24 * m + 7000, breaks: 6 * m, pauses: 1,
+      study: 1 * h + 24 * m + 7000, breaks: 6 * m, pauses: 1, subject: "Calculus",
     };
   }
   state.lang = params.has("pick") ? null : params.get("lang") || "en";
@@ -508,6 +630,41 @@ function seedDemo() {
   $("lang-btn").addEventListener("click", showPicker);
   $("prev-week").addEventListener("click", () => { reportWeek = addDays(reportWeek, -7); $("report-notice").hidden = true; renderReport(); });
   $("next-week").addEventListener("click", () => { reportWeek = addDays(reportWeek, 7); $("report-notice").hidden = true; renderReport(); });
+
+  /* subject field */
+  $("subject").addEventListener("input", (e) => { draftSubject = e.target.value; });
+  $("subject").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") { e.preventDefault(); e.target.blur(); start(); }
+  });
+
+  /* weekly goal editor */
+  $("goal-btn").addEventListener("click", openGoalEditor);
+  $("goal-input").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") closeGoalEditor(true);
+    if (e.key === "Escape") closeGoalEditor(false);
+  });
+  $("goal-input").addEventListener("blur", () => closeGoalEditor(true));
+
+  /* keyboard: Space start/pause/resume, S stop (twice), ←/→ change week */
+  document.addEventListener("keydown", (e) => {
+    const el = e.target instanceof Element ? e.target : null;
+    if ((el && el.closest("input, textarea, button")) || e.ctrlKey || e.metaKey || e.altKey || e.repeat) return;
+    if (!$("picker").hidden) return;
+    if (view === "today") {
+      if (e.code === "Space") {
+        e.preventDefault();
+        const s = currentState();
+        if (s === "idle" || s === "closed") start();
+        else if (s === "running") pause();
+        else resume();
+      } else if (e.key.toLowerCase() === "s") {
+        armStop();
+      }
+    } else if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+      const dir = (e.key === "ArrowRight") !== (document.documentElement.dir === "rtl") ? 1 : -1;
+      (dir > 0 ? $("next-week") : $("prev-week")).click();
+    }
+  });
 
   if (!state.lang || !STRINGS[state.lang]) {
     state.lang = null;
