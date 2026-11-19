@@ -9,7 +9,10 @@
 import http from "node:http";
 import fs from "node:fs";
 import path from "node:path";
-import { execFileSync } from "node:child_process";
+import { execFile } from "node:child_process";
+import { promisify } from "node:util";
+
+const run = promisify(execFile);
 import { fileURLToPath } from "node:url";
 import sharp from "sharp";
 
@@ -28,10 +31,10 @@ const BROWSERS = [
 const browser = BROWSERS.find((b) => fs.existsSync(b));
 if (!browser) throw new Error("No Chromium browser found. Set BROWSER=/path/to/chrome.");
 
-const W = 460, H = 800, SCALE = 2;
+const W = 520, H = 688, SCALE = 2;
 const SCREENS = [
   ["today", "state=running"],
-  ["report", "view=report&today=2026-11-21&state=closed&notice=1"],
+  ["report", "view=report&today=2026-11-21&state=closed"],
   ["languages", "pick"],
 ];
 
@@ -48,15 +51,16 @@ const server = http.createServer((req, res) => {
 await new Promise((r) => server.listen(0, r));
 const base = `http://localhost:${server.address().port}`;
 
-function shoot(name, query, theme) {
+// async on purpose: the static server above lives in this same process
+async function shoot(name, query, theme) {
   const file = path.join(tmp, `${name}-${theme}.png`);
   // headless Chromium enforces a minimum window width, so render wider and crop
-  execFileSync(browser, [
+  await run(browser, [
     "--headless=new", "--disable-gpu", "--hide-scrollbars", "--lang=en-US",
     `--force-device-scale-factor=${SCALE}`, `--window-size=520,${H}`,
     "--virtual-time-budget=3000", `--screenshot=${file}`,
     `${base}/?demo&${query}&theme=${theme}`,
-  ], { stdio: "ignore" });
+  ], { timeout: 60000 });
   return file;
 }
 
@@ -74,7 +78,7 @@ for (const theme of ["light", "dark"]) {
   const gap = 40 * SCALE;
   const tiles = [];
   for (const [i, [name, query]] of SCREENS.entries()) {
-    tiles.push({ input: await screen(shoot(name, query, theme), theme), left: i * (W * SCALE + gap), top: 0 });
+    tiles.push({ input: await screen(await shoot(name, query, theme), theme), left: i * (W * SCALE + gap), top: 0 });
   }
   const width = SCREENS.length * W * SCALE + (SCREENS.length - 1) * gap;
   await sharp({ create: { width, height: H * SCALE, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } } })
