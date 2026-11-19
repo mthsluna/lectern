@@ -50,7 +50,7 @@ const STRINGS = {
     bySubject: "By subject", unlabeled: "Unlabeled", bestWeek: "Your best week so far.",
     theme_system: "Theme: system", theme_light: "Theme: light", theme_dark: "Theme: dark",
     updateAvailable: (v) => `Lectern ${v} is available.`, updateNow: "Update", notNow: "Not now", skipVersion: "Skip this version",
-    updateBusy: "Updating. Lectern will reopen in a moment.", updateFailed: "The update could not be installed.", tryAgain: "Try again",
+    updateOpened: "The installer is downloading in your browser. Open it to finish updating.", close: "Close", updateFailed: "The update could not be installed.", tryAgain: "Try again",
     sep: ". ", space: " ",
   },
   pt: {
@@ -81,7 +81,7 @@ const STRINGS = {
     bySubject: "Por matéria", unlabeled: "Sem matéria", bestWeek: "Sua melhor semana até agora.",
     theme_system: "Tema: sistema", theme_light: "Tema: claro", theme_dark: "Tema: escuro",
     updateAvailable: (v) => `O Lectern ${v} está disponível.`, updateNow: "Atualizar", notNow: "Agora não", skipVersion: "Pular esta versão",
-    updateBusy: "Atualizando. O Lectern vai reabrir em instantes.", updateFailed: "Não foi possível instalar a atualização.", tryAgain: "Tentar de novo",
+    updateOpened: "O instalador está baixando no navegador. Abra-o para concluir a atualização.", close: "Fechar", updateFailed: "Não foi possível instalar a atualização.", tryAgain: "Tentar de novo",
     sep: ". ", space: " ",
   },
   es: {
@@ -112,7 +112,7 @@ const STRINGS = {
     bySubject: "Por materia", unlabeled: "Sin materia", bestWeek: "Tu mejor semana hasta ahora.",
     theme_system: "Tema: sistema", theme_light: "Tema: claro", theme_dark: "Tema: oscuro",
     updateAvailable: (v) => `Lectern ${v} está disponible.`, updateNow: "Actualizar", notNow: "Ahora no", skipVersion: "Omitir esta versión",
-    updateBusy: "Actualizando. Lectern se volverá a abrir en un momento.", updateFailed: "No se pudo instalar la actualización.", tryAgain: "Reintentar",
+    updateOpened: "El instalador se está descargando en tu navegador. Ábrelo para terminar la actualización.", close: "Cerrar", updateFailed: "No se pudo instalar la actualización.", tryAgain: "Reintentar",
     sep: ". ", space: " ",
   },
   fr: {
@@ -143,7 +143,7 @@ const STRINGS = {
     bySubject: "Par matière", unlabeled: "Sans matière", bestWeek: "Votre meilleure semaine à ce jour.",
     theme_system: "Thème : système", theme_light: "Thème : clair", theme_dark: "Thème : sombre",
     updateAvailable: (v) => `Lectern ${v} est disponible.`, updateNow: "Mettre à jour", notNow: "Plus tard", skipVersion: "Ignorer cette version",
-    updateBusy: "Mise à jour. Lectern va se rouvrir dans un instant.", updateFailed: "La mise à jour n'a pas pu être installée.", tryAgain: "Réessayer",
+    updateOpened: "Le programme d'installation se télécharge dans votre navigateur. Ouvrez-le pour terminer la mise à jour.", close: "Fermer", updateFailed: "La mise à jour n'a pas pu être installée.", tryAgain: "Réessayer",
     sep: ". ", space: " ",
   },
   de: {
@@ -174,7 +174,7 @@ const STRINGS = {
     bySubject: "Nach Fach", unlabeled: "Ohne Fach", bestWeek: "Deine bisher beste Woche.",
     theme_system: "Design: System", theme_light: "Design: hell", theme_dark: "Design: dunkel",
     updateAvailable: (v) => `Lectern ${v} ist verfügbar.`, updateNow: "Aktualisieren", notNow: "Nicht jetzt", skipVersion: "Diese Version überspringen",
-    updateBusy: "Wird aktualisiert. Lectern öffnet sich gleich wieder.", updateFailed: "Das Update konnte nicht installiert werden.", tryAgain: "Erneut versuchen",
+    updateOpened: "Das Installationsprogramm wird im Browser heruntergeladen. Öffne es, um das Update abzuschließen.", close: "Schließen", updateFailed: "Das Update konnte nicht installiert werden.", tryAgain: "Erneut versuchen",
     sep: ". ", space: " ",
   },
   ru: {
@@ -205,7 +205,7 @@ const STRINGS = {
     bySubject: "По предметам", unlabeled: "Без предмета", bestWeek: "Это ваша лучшая неделя.",
     theme_system: "Тема: системная", theme_light: "Тема: светлая", theme_dark: "Тема: тёмная",
     updateAvailable: (v) => `Доступна версия Lectern ${v}.`, updateNow: "Обновить", notNow: "Не сейчас", skipVersion: "Пропустить эту версию",
-    updateBusy: "Обновляем. Lectern скоро откроется снова.", updateFailed: "Не удалось установить обновление.", tryAgain: "Повторить",
+    updateOpened: "Установщик загружается в браузере. Откройте его, чтобы завершить обновление.", close: "Закрыть", updateFailed: "Не удалось установить обновление.", tryAgain: "Повторить",
     sep: ". ", space: " ",
   },
   zh: {
@@ -236,7 +236,7 @@ const STRINGS = {
     bySubject: "按科目", unlabeled: "未分类", bestWeek: "这是你迄今最好的一周。",
     theme_system: "主题：跟随系统", theme_light: "主题：浅色", theme_dark: "主题：深色",
     updateAvailable: (v) => `Lectern ${v} 已发布。`, updateNow: "更新", notNow: "以后再说", skipVersion: "跳过此版本",
-    updateBusy: "正在更新，Lectern 稍后将重新打开。", updateFailed: "无法安装更新。", tryAgain: "重试",
+    updateOpened: "安装程序正在浏览器中下载。打开它即可完成更新。", close: "关闭", updateFailed: "无法安装更新。", tryAgain: "重试",
     sep: "。", space: "",
   },
   ja: {
@@ -267,7 +267,7 @@ const STRINGS = {
     bySubject: "科目別", unlabeled: "未分類", bestWeek: "これまでで最高の一週間です。",
     theme_system: "テーマ：システム", theme_light: "テーマ：ライト", theme_dark: "テーマ：ダーク",
     updateAvailable: (v) => `Lectern ${v} が利用できます。`, updateNow: "アップデート", notNow: "あとで", skipVersion: "このバージョンをスキップ",
-    updateBusy: "アップデート中です。まもなく Lectern が再び開きます。", updateFailed: "アップデートをインストールできませんでした。", tryAgain: "再試行",
+    updateOpened: "インストーラーをブラウザーでダウンロードしています。開いてアップデートを完了してください。", close: "閉じる", updateFailed: "アップデートをインストールできませんでした。", tryAgain: "再試行",
     sep: "。", space: "",
   },
   hi: {
@@ -298,7 +298,7 @@ const STRINGS = {
     bySubject: "विषय के अनुसार", unlabeled: "बिना विषय", bestWeek: "अब तक का आपका सबसे अच्छा सप्ताह।",
     theme_system: "थीम: सिस्टम", theme_light: "थीम: हल्की", theme_dark: "थीम: गहरी",
     updateAvailable: (v) => `Lectern ${v} उपलब्ध है।`, updateNow: "अपडेट करें", notNow: "अभी नहीं", skipVersion: "यह संस्करण छोड़ें",
-    updateBusy: "अपडेट हो रहा है। Lectern थोड़ी देर में फिर खुलेगा।", updateFailed: "अपडेट इंस्टॉल नहीं हो सका।", tryAgain: "फिर कोशिश करें",
+    updateOpened: "इंस्टॉलर आपके ब्राउज़र में डाउनलोड हो रहा है। अपडेट पूरा करने के लिए उसे खोलें।", close: "बंद करें", updateFailed: "अपडेट इंस्टॉल नहीं हो सका।", tryAgain: "फिर कोशिश करें",
     sep: "। ", space: " ",
   },
   ar: {
@@ -329,7 +329,7 @@ const STRINGS = {
     bySubject: "حسب المادة", unlabeled: "بدون مادة", bestWeek: "أفضل أسبوع لك حتى الآن.",
     theme_system: "المظهر: النظام", theme_light: "المظهر: فاتح", theme_dark: "المظهر: داكن",
     updateAvailable: (v) => `يتوفر Lectern ${v}.`, updateNow: "تحديث", notNow: "ليس الآن", skipVersion: "تخطي هذا الإصدار",
-    updateBusy: "جارٍ التحديث. سيُعاد فتح Lectern بعد لحظات.", updateFailed: "تعذر تثبيت التحديث.", tryAgain: "إعادة المحاولة",
+    updateOpened: "يجري تنزيل المثبّت في متصفحك. افتحه لإكمال التحديث.", close: "إغلاق", updateFailed: "تعذر تثبيت التحديث.", tryAgain: "إعادة المحاولة",
     sep: ". ", space: " ",
   },
 };

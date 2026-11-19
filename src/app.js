@@ -610,18 +610,39 @@ function commitAndRender() {
 
 /* ---------- updates ---------- */
 
+/* Lectern never downloads or runs anything by itself. It asks GitHub whether
+   a newer release exists; "Update" opens that release's installer in the
+   browser, and the installer updates Lectern in place. */
+
+const RELEASES = "https://api.github.com/repos/mthsluna/lectern/releases/latest";
+const DOWNLOADS = "https://github.com/mthsluna/lectern/";
 let pendingUpdate = null;
 
-/* Asks GitHub (through the Rust side) whether a newer release exists.
-   Nothing is downloaded unless the user presses Update. */
+const versionTuple = (v) => String(v).replace(/^v/, "").split(/[.-]/).slice(0, 3).map((n) => parseInt(n, 10) || 0);
+function isNewer(a, b) {
+  const x = versionTuple(a), y = versionTuple(b);
+  for (let i = 0; i < 3; i++) if (x[i] !== y[i]) return x[i] > y[i];
+  return false;
+}
+
 async function checkForUpdate() {
   let found = null;
   if (DEMO) {
-    if (params.get("update")) found = { version: params.get("update") };
+    if (params.get("update")) found = { version: params.get("update"), url: DOWNLOADS };
   } else if (tauri) {
-    try { found = await tauri.invoke("check_update"); } catch { return; }   // offline: stay quiet
+    try {
+      const current = await window.__TAURI__.app.getVersion();
+      const res = await fetch(RELEASES, { headers: { Accept: "application/vnd.github+json" } });
+      if (!res.ok) return;
+      const release = await res.json();
+      if (release.draft || release.prerelease || !isNewer(release.tag_name, current)) return;
+      const asset = (release.assets || []).find((x) => /^Lectern-Setup.*\.exe$/.test(x.name));
+      found = { version: release.tag_name.replace(/^v/, ""), url: asset ? asset.browser_download_url : release.html_url };
+    } catch {
+      return;   // offline: stay quiet
+    }
   }
-  if (!found || state.skipVersion === found.version) return;
+  if (!found || !found.url.startsWith(DOWNLOADS) || state.skipVersion === found.version) return;
   pendingUpdate = found;
   renderUpdate();
 }
@@ -632,21 +653,21 @@ function renderUpdate(phase = "offer") {
   if (!pendingUpdate) return;
   box.dataset.phase = phase;
   $("update-text").textContent =
-    phase === "busy" ? t("updateBusy") :
+    phase === "opened" ? t("updateOpened") :
     phase === "failed" ? t("updateFailed") :
     t("updateAvailable", pendingUpdate.version);
   $("update-now").textContent = phase === "failed" ? t("tryAgain") : t("updateNow");
-  $("update-later").textContent = t("notNow");
+  $("update-later").textContent = phase === "opened" ? t("close") : t("notNow");
   $("update-skip").textContent = t("skipVersion");
 }
 
 async function installUpdate() {
-  renderUpdate("busy");
-  if (!tauri) return;
+  if (!tauri) return renderUpdate("opened");
   try {
-    await tauri.invoke("install_update", { update: pendingUpdate });
+    await window.__TAURI__.opener.openUrl(pendingUpdate.url);
+    renderUpdate("opened");
   } catch (e) {
-    console.error("Update failed", e);
+    console.error("Could not open the download", e);
     renderUpdate("failed");
   }
 }
