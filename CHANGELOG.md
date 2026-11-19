@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.8.1
+
+- Fixes Windows Defender quarantining Lectern 1.8.0 (a false positive). Lectern no longer downloads or runs installers itself; Update opens the installer in your browser.
+- Sun and moon theme switch, one click.
+- The report's week range is a calendar chip: "18 – 24 de outubro" with the year beside it.
+- The installer refreshes the Windows icon cache, so the taskbar shows the current icon.
+
 ## 1.8.0
 
 - Updates from GitHub. When a new release is out, a quiet line offers it: Update, Not now or Skip this version.

@@ -56,7 +56,7 @@
 :lang(ja) { --cjk: "Yu Gothic UI", "Meiryo", "Hiragino Sans"; }
 :lang(zh) .eyebrow, :lang(ja) .eyebrow, :lang(hi) .eyebrow, :lang(ar) .eyebrow { letter-spacing: 0; }
 [dir="rtl"] .arrow { transform: scaleX(-1); }
-.timer, .hero-number, .week-total, #report-range { direction: ltr; unicode-bidi: isolate; }
+.timer, .hero-number, .week-total, .range-year { direction: ltr; unicode-bidi: isolate; }
 
 .app { flex: 1; min-height: 0; display: flex; flex-direction: column; }
 
@@ -244,13 +244,30 @@ body[data-state="closed"] .dot { background: var(--ink); }
 /* Report */
 .report-nav { display: flex; align-items: center; justify-content: space-between; }
 .arrow {
+  flex: none;
   width: 32px; height: 32px;
+  display: grid; place-items: center;
   border-radius: 50%;
+  border: 1px solid var(--line);
   color: var(--muted);
-  font-size: 15px;
+  transition: background .15s, color .15s, border-color .15s;
 }
-.arrow:hover:not(:disabled) { background: var(--surface); color: var(--ink); }
-.arrow:disabled { opacity: .3; cursor: default; }
+.arrow:hover:not(:disabled) { background: var(--surface); border-color: var(--faint); color: var(--ink); }
+.arrow:disabled { opacity: .35; cursor: default; }
+
+/* Week range: a quiet chip with a calendar glyph */
+.range {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 7px 14px 7px 12px;
+  border-radius: 999px;
+  background: var(--surface);
+}
+.range-icon { flex: none; color: var(--muted); }
+.range-main { font-size: 13.5px; font-weight: 600; letter-spacing: -0.01em; white-space: nowrap; }
+.range-year { font-size: 13.5px; font-weight: 500; color: var(--muted); font-variant-numeric: tabular-nums; }
 
 .notice {
   margin-top: 20px;
@@ -384,11 +401,33 @@ main::-webkit-scrollbar-thumb { background: var(--line); border-radius: 4px; }
   :root:not([data-theme="light"]) .mark { filter: invert(1) brightness(0.96); }
 }
 
-/* Theme toggle: the filled half shows the mode at a glance */
-.theme-btn { display: inline-flex; align-items: center; padding: 6px 9px; }
-.theme-btn svg { display: block; }
-.theme-btn[data-mode="light"] .theme-half { opacity: 0; }
-.theme-btn[data-mode="dark"] .theme-half { d: path("M8 1.75a6.25 6.25 0 1 1 0 12.5a6.25 6.25 0 1 1 0-12.5z"); }
+/* Theme switch: a sun and a moon side by side, the chosen one lit */
+.theme-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  margin: 0 4px;
+  padding: 2px;
+  border-radius: 999px;
+  background: var(--surface);
+}
+.theme-opt {
+  width: 30px; height: 26px;
+  display: grid; place-items: center;
+  border-radius: 999px;
+  color: var(--faint);
+  transition: background .2s, color .2s, transform .15s;
+  --sun-face: currentColor;
+  --moon-ring: var(--surface);
+}
+.theme-opt svg { display: block; transition: transform .35s cubic-bezier(.3, .7, .4, 1); }
+.theme-opt:hover { color: var(--muted); }
+.theme-opt:active { transform: scale(.94); }
+.theme-opt[aria-pressed="true"] { background: var(--bg); box-shadow: 0 1px 2px rgba(0, 0, 0, .08); }
+.theme-opt.sun[aria-pressed="true"] { color: #d2902f; }
+.theme-opt.sun[aria-pressed="true"] svg { transform: rotate(45deg); }
+.theme-opt.moon[aria-pressed="true"] { color: #b9c6d4; --moon-ring: var(--bg); }
+.theme-opt.moon[aria-pressed="true"] svg { transform: rotate(-20deg); }
 
 /* Update banner: one quiet line at the top, only when GitHub has news */
 .update {
@@ -418,5 +457,4 @@ main::-webkit-scrollbar-thumb { background: var(--line); border-radius: 4px; }
 .update-btn:hover { background: var(--ink-soft); }
 .update-link { font-size: 12.5px; color: var(--muted); }
 .update-link:hover { color: var(--ink); }
-.update[data-phase="busy"] .update-actions { display: none; }
-.update[data-phase="busy"] .update-dot { animation: pulse 1.2s ease-in-out infinite; }
+.update[data-phase="opened"] #update-now, .update[data-phase="opened"] #update-skip { display: none; }

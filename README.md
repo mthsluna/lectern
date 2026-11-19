@@ -119,10 +119,10 @@ your history.
 
 **How do updates work?**
 When Lectern opens, it asks GitHub whether a newer release exists. If one does, a
-line at the top offers it: **Update**, **Not now** or **Skip this version**. Nothing
-is downloaded until you choose to update. The installer comes only from this
-repository's releases and is checked against the SHA-256 digest GitHub publishes
-for it, then Lectern updates and reopens on its own.
+line at the top offers it: **Update**, **Not now** or **Skip this version**.
+**Update** opens the new installer from this repository's releases in your browser;
+run it and Lectern updates in place, history included. Lectern itself never
+downloads or runs anything.
 
 **Does it need the internet?**
 No. The update check is the only time Lectern goes online, and it sends nothing

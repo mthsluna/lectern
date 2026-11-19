@@ -60,23 +60,28 @@ function applyLanguage() {
   if (pendingUpdate) renderUpdate($("update").dataset.phase || "offer");
 }
 
-/* ---------- theme: system → light → dark ---------- */
+/* ---------- theme: sun or moon, one click ---------- */
 
-const THEMES = ["system", "light", "dark"];
+/* "system" is only the starting point; the first click picks a side. */
+const darkQuery = window.matchMedia("(prefers-color-scheme: dark)");
+const effectiveTheme = () =>
+  state.theme === "light" || state.theme === "dark" ? state.theme : darkQuery.matches ? "dark" : "light";
 
 function applyTheme() {
-  const theme = THEMES.includes(state.theme) ? state.theme : "system";
-  if (theme === "system") delete document.documentElement.dataset.theme;
-  else document.documentElement.dataset.theme = theme;
-  const btn = $("theme-btn");
-  btn.dataset.mode = theme;
-  btn.title = t(`theme_${theme}`);
-  btn.setAttribute("aria-label", t(`theme_${theme}`));
+  if (state.theme === "light" || state.theme === "dark") document.documentElement.dataset.theme = state.theme;
+  else delete document.documentElement.dataset.theme;
+  const current = effectiveTheme();
+  document.querySelectorAll(".theme-opt").forEach((b) => {
+    const on = b.dataset.set === current;
+    b.setAttribute("aria-pressed", String(on));
+    b.title = t(`theme_${b.dataset.set}`);
+    b.setAttribute("aria-label", t(`theme_${b.dataset.set}`));
+  });
 }
 
-function cycleTheme() {
-  const i = THEMES.indexOf(state.theme || "system");
-  state.theme = THEMES[(i + 1) % THEMES.length];
+function setTheme(theme) {
+  if (effectiveTheme() === theme && state.theme === theme) return;
+  state.theme = theme;
   save();
   applyTheme();
 }
@@ -158,10 +163,15 @@ function shortHours(ms) {
   const h = ms / 3600000;
   return h < 1 ? `${Math.round(ms / 60000)}m` : `${h.toFixed(1).replace(/\.0$/, "")}h`;
 }
+/* "18 – 24 de outubro" + "2026": the days lead, the year steps back.
+   Weeks that span two months use short month names to stay on one line. */
 function rangeLabel(start) {
-  const f = new Intl.DateTimeFormat(locale(), { month: "short", day: "numeric", year: "numeric" });
   const a = parseKey(start), b = parseKey(addDays(start, 6));
-  return f.formatRange ? f.formatRange(a, b) : `${f.format(a)} – ${f.format(b)}`;
+  const month = a.getMonth() === b.getMonth() ? "long" : "short";
+  const f = new Intl.DateTimeFormat(locale(), { day: "numeric", month });
+  const main = f.formatRange ? f.formatRange(a, b) : `${f.format(a)} – ${f.format(b)}`;
+  const y1 = a.getFullYear(), y2 = b.getFullYear();
+  return { main, year: y1 === y2 ? String(y1) : `${y1} – ${y2}` };
 }
 
 /* ---------- storage ---------- */
@@ -472,7 +482,9 @@ function renderReport() {
   const total = days.reduce((s, d) => s + d.study, 0);
   const prevTotal = weekData(addDays(start, -7)).reduce((s, d) => s + d.study, 0);
 
-  $("report-range").textContent = rangeLabel(start);
+  const range = rangeLabel(start);
+  $("report-range").textContent = range.main;
+  $("report-year").textContent = range.year;
   $("next-week").disabled = start >= current;
 
   const inProgress = start === current && !isSaturday(today);
@@ -610,18 +622,39 @@ function commitAndRender() {
 
 /* ---------- updates ---------- */
 
+/* Lectern never downloads or runs anything by itself. It asks GitHub whether
+   a newer release exists; "Update" opens that release's installer in the
+   browser, and the installer updates Lectern in place. */
+
+const RELEASES = "https://api.github.com/repos/mthsluna/lectern/releases/latest";
+const DOWNLOADS = "https://github.com/mthsluna/lectern/";
 let pendingUpdate = null;
 
-/* Asks GitHub (through the Rust side) whether a newer release exists.
-   Nothing is downloaded unless the user presses Update. */
+const versionTuple = (v) => String(v).replace(/^v/, "").split(/[.-]/).slice(0, 3).map((n) => parseInt(n, 10) || 0);
+function isNewer(a, b) {
+  const x = versionTuple(a), y = versionTuple(b);
+  for (let i = 0; i < 3; i++) if (x[i] !== y[i]) return x[i] > y[i];
+  return false;
+}
+
 async function checkForUpdate() {
   let found = null;
   if (DEMO) {
-    if (params.get("update")) found = { version: params.get("update") };
+    if (params.get("update")) found = { version: params.get("update"), url: DOWNLOADS };
   } else if (tauri) {
-    try { found = await tauri.invoke("check_update"); } catch { return; }   // offline: stay quiet
+    try {
+      const current = await window.__TAURI__.app.getVersion();
+      const res = await fetch(RELEASES, { headers: { Accept: "application/vnd.github+json" } });
+      if (!res.ok) return;
+      const release = await res.json();
+      if (release.draft || release.prerelease || !isNewer(release.tag_name, current)) return;
+      const asset = (release.assets || []).find((x) => /^Lectern-Setup.*\.exe$/.test(x.name));
+      found = { version: release.tag_name.replace(/^v/, ""), url: asset ? asset.browser_download_url : release.html_url };
+    } catch {
+      return;   // offline: stay quiet
+    }
   }
-  if (!found || state.skipVersion === found.version) return;
+  if (!found || !found.url.startsWith(DOWNLOADS) || state.skipVersion === found.version) return;
   pendingUpdate = found;
   renderUpdate();
 }
@@ -632,21 +665,21 @@ function renderUpdate(phase = "offer") {
   if (!pendingUpdate) return;
   box.dataset.phase = phase;
   $("update-text").textContent =
-    phase === "busy" ? t("updateBusy") :
+    phase === "opened" ? t("updateOpened") :
     phase === "failed" ? t("updateFailed") :
     t("updateAvailable", pendingUpdate.version);
   $("update-now").textContent = phase === "failed" ? t("tryAgain") : t("updateNow");
-  $("update-later").textContent = t("notNow");
+  $("update-later").textContent = phase === "opened" ? t("close") : t("notNow");
   $("update-skip").textContent = t("skipVersion");
 }
 
 async function installUpdate() {
-  renderUpdate("busy");
-  if (!tauri) return;
+  if (!tauri) return renderUpdate("opened");
   try {
-    await tauri.invoke("install_update", { update: pendingUpdate });
+    await window.__TAURI__.opener.openUrl(pendingUpdate.url);
+    renderUpdate("opened");
   } catch (e) {
-    console.error("Update failed", e);
+    console.error("Could not open the download", e);
     renderUpdate("failed");
   }
 }
@@ -695,7 +728,8 @@ function seedDemo() {
 
   document.querySelectorAll(".tab[data-view]").forEach((el) => el.addEventListener("click", () => show(el.dataset.view)));
   $("lang-btn").addEventListener("click", showPicker);
-  $("theme-btn").addEventListener("click", cycleTheme);
+  document.querySelectorAll(".theme-opt").forEach((b) => b.addEventListener("click", () => setTheme(b.dataset.set)));
+  darkQuery.addEventListener("change", applyTheme);
 
   /* update banner */
   $("update-now").addEventListener("click", installUpdate);
