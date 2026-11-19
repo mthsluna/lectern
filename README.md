@@ -44,8 +44,10 @@ what day it is.
 - **It installs like it looks.** A calm installer in the same style, no
   administrator prompt, and an optional start with Windows that goes straight to
   the tray.
-- **It is yours.** No account, no internet, no tracking. Your history is a single
-  file on your own computer.
+- **It is yours.** No account and no tracking. Your history is a single file on
+  your own computer.
+- **It keeps itself current.** When a new version is out, Lectern says so in one
+  quiet line. Update with a click, or don't.
 - **It speaks your language.** English, 中文, हिन्दी, Español, Français, العربية,
   Português, Русский, 日本語 and Deutsch, in light or dark.
 
@@ -115,8 +117,16 @@ Yes. `Lectern-Setup.exe --silent` installs or updates without a window, keeping
 your current choices. `uninstall.exe --uninstall --silent` removes it and keeps
 your history.
 
+**How do updates work?**
+When Lectern opens, it asks GitHub whether a newer release exists. If one does, a
+line at the top offers it: **Update**, **Not now** or **Skip this version**. Nothing
+is downloaded until you choose to update. The installer comes only from this
+repository's releases and is checked against the SHA-256 digest GitHub publishes
+for it, then Lectern updates and reopens on its own.
+
 **Does it need the internet?**
-No. Lectern never connects to anything.
+No. The update check is the only time Lectern goes online, and it sends nothing
+about you or your studying. Offline, it simply skips the check.
 
 ## Build from source
 
