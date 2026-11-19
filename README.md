@@ -1,8 +1,6 @@
 <p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="docs/lectern-dark.gif">
-    <img src="docs/lectern-light.gif" width="200" alt="Lectern">
-  </picture>
+  <img src="docs/lectern-light.webp#gh-light-mode-only" width="200" alt="Lectern">
+  <img src="docs/lectern-dark.webp#gh-dark-mode-only" width="200" alt="Lectern">
 </p>
 
 <h1 align="center">Lectern</h1>
