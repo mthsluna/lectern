@@ -383,3 +383,9 @@ main::-webkit-scrollbar-thumb { background: var(--line); border-radius: 4px; }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) .mark { filter: invert(1) brightness(0.96); }
 }
+
+/* Theme toggle: the filled half shows the mode at a glance */
+.theme-btn { display: inline-flex; align-items: center; padding: 6px 9px; }
+.theme-btn svg { display: block; }
+.theme-btn[data-mode="light"] .theme-half { opacity: 0; }
+.theme-btn[data-mode="dark"] .theme-half { d: path("M8 1.75a6.25 6.25 0 1 1 0 12.5a6.25 6.25 0 1 1 0-12.5z"); }

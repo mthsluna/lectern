@@ -56,6 +56,28 @@ function applyLanguage() {
   document.querySelectorAll("[data-i18n-title]").forEach((el) => { el.title = t(el.dataset.i18nTitle); });
   document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => { el.placeholder = t(el.dataset.i18nPlaceholder); });
   $("lang-btn").textContent = info.code.toUpperCase();
+  applyTheme();
+}
+
+/* ---------- theme: system → light → dark ---------- */
+
+const THEMES = ["system", "light", "dark"];
+
+function applyTheme() {
+  const theme = THEMES.includes(state.theme) ? state.theme : "system";
+  if (theme === "system") delete document.documentElement.dataset.theme;
+  else document.documentElement.dataset.theme = theme;
+  const btn = $("theme-btn");
+  btn.dataset.mode = theme;
+  btn.title = t(`theme_${theme}`);
+  btn.setAttribute("aria-label", t(`theme_${theme}`));
+}
+
+function cycleTheme() {
+  const i = THEMES.indexOf(state.theme || "system");
+  state.theme = THEMES[(i + 1) % THEMES.length];
+  save();
+  applyTheme();
 }
 
 function showPicker() {
@@ -143,7 +165,7 @@ function rangeLabel(start) {
 
 /* ---------- storage ---------- */
 
-let state = { version: 1, lang: null, goal: null, days: {}, active: null, seen: {} };
+let state = { version: 1, lang: null, theme: "system", goal: null, days: {}, active: null, seen: {} };
 let draftSubject = "";
 
 async function load() {
@@ -628,6 +650,7 @@ function seedDemo() {
 
   document.querySelectorAll(".tab[data-view]").forEach((el) => el.addEventListener("click", () => show(el.dataset.view)));
   $("lang-btn").addEventListener("click", showPicker);
+  $("theme-btn").addEventListener("click", cycleTheme);
   $("prev-week").addEventListener("click", () => { reportWeek = addDays(reportWeek, -7); $("report-notice").hidden = true; renderReport(); });
   $("next-week").addEventListener("click", () => { reportWeek = addDays(reportWeek, 7); $("report-notice").hidden = true; renderReport(); });
 
