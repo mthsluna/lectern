@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.9.0
+
+- Sessions that cross midnight are split between the days: 22:00 to 03:00 counts 2 h on the first day and 3 h on the next, for study, breaks and subjects alike.
+
 ## 1.8.1
 
 - Fixes Windows Defender quarantining Lectern 1.8.0 (a false positive). Lectern no longer downloads or runs installers itself; Update opens the installer in your browser.
