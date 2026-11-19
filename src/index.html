@@ -35,6 +35,17 @@
     </header>
 
     <main>
+      <!-- A newer release on GitHub (only shown when there is one) -->
+      <div class="update" id="update" hidden>
+        <span class="update-dot" aria-hidden="true"></span>
+        <p class="update-text" id="update-text"></p>
+        <div class="update-actions">
+          <button class="update-btn" id="update-now"></button>
+          <button class="update-link" id="update-later"></button>
+          <button class="update-link" id="update-skip"></button>
+        </div>
+      </div>
+
       <!-- Today -->
       <section class="view" id="view-today">
         <p class="eyebrow" id="today-date"></p>
