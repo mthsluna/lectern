@@ -401,33 +401,28 @@ main::-webkit-scrollbar-thumb { background: var(--line); border-radius: 4px; }
   :root:not([data-theme="light"]) .mark { filter: invert(1) brightness(0.96); }
 }
 
-/* Theme switch: a sun and a moon side by side, the chosen one lit */
-.theme-switch {
-  display: inline-flex;
-  align-items: center;
-  gap: 2px;
-  margin: 0 4px;
-  padding: 2px;
-  border-radius: 999px;
-  background: var(--surface);
-}
-.theme-opt {
-  width: 30px; height: 26px;
+/* Theme: just the icon. Sun by day, moon by night; a click swaps them. */
+.theme-btn {
+  position: relative;
+  width: 32px; height: 32px;
+  margin: 0 2px;
   display: grid; place-items: center;
-  border-radius: 999px;
-  color: var(--faint);
-  transition: background .2s, color .2s, transform .15s;
-  --sun-face: currentColor;
-  --moon-ring: var(--surface);
+  border-radius: 50%;
+  transition: transform .12s;
 }
-.theme-opt svg { display: block; transition: transform .35s cubic-bezier(.3, .7, .4, 1); }
-.theme-opt:hover { color: var(--muted); }
-.theme-opt:active { transform: scale(.94); }
-.theme-opt[aria-pressed="true"] { background: var(--bg); box-shadow: 0 1px 2px rgba(0, 0, 0, .08); }
-.theme-opt.sun[aria-pressed="true"] { color: #d2902f; }
-.theme-opt.sun[aria-pressed="true"] svg { transform: rotate(45deg); }
-.theme-opt.moon[aria-pressed="true"] { color: #b9c6d4; --moon-ring: var(--bg); }
-.theme-opt.moon[aria-pressed="true"] svg { transform: rotate(-20deg); }
+.theme-btn .glyph { filter: saturate(.85); }
+.theme-btn:hover .glyph { filter: saturate(1.15) brightness(1.05); }
+.theme-btn:active { transform: scale(.92); }
+.theme-btn .glyph {
+  grid-area: 1 / 1;
+  transition: opacity .3s ease, transform .45s cubic-bezier(.3, .7, .4, 1);
+}
+.theme-btn .sun { color: #d2902f; }
+.theme-btn .moon { color: #b9c6d4; }
+.theme-btn[data-mode="light"] .moon,
+.theme-btn[data-mode="dark"] .sun { opacity: 0; transform: rotate(-90deg) scale(.5); }
+.theme-btn[data-mode="light"] .sun,
+.theme-btn[data-mode="dark"] .moon { opacity: 1; transform: none; }
 
 /* Update banner: one quiet line at the top, only when GitHub has news */
 .update {
