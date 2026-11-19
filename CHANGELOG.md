@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.7.0
+
+- A new installer in Lectern's own style: the rising-star mark, calm screens for install, update and removal, and dark mode. No administrator prompt.
+- Optional desktop shortcut and start with Windows (straight to the tray).
+- Uninstalling asks whether to keep your study history.
+- `--silent` for scripted installs and removals.
+- Updates an existing install in place.
+
 ## 1.6.1
 
 - The installer uses the Lectern icon and branded setup pages instead of the default NSIS look.

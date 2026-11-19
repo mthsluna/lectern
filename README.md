@@ -41,7 +41,9 @@ what day it is.
   back.
 - **It stays out of the way.** Closing the window sends Lectern to the system tray
   and unloads the interface, so it uses about 27 MB in the background.
-- **It is tiny.** A 1.2 MB installer. It starts instantly.
+- **It installs like it looks.** A calm installer in the same style, no
+  administrator prompt, and an optional start with Windows that goes straight to
+  the tray.
 - **It is yours.** No account, no internet, no tracking. Your history is a single
   file on your own computer.
 - **It speaks your language.** English, 中文, हिन्दी, Español, Français, العربية,
@@ -104,6 +106,15 @@ Sunday. The report on Saturday covers Sunday through Saturday.
 In a single JSON file at `%APPDATA%\app.lectern.studytimer\lectern.json`. Copy it
 to back up your history, or to move it to another computer.
 
+**How do I uninstall it?**
+From Windows Settings, under Apps. Lectern asks whether to keep your study history,
+so a reinstall picks up where you left off.
+
+**Can I install it from a script?**
+Yes. `Lectern-Setup.exe --silent` installs or updates without a window, keeping
+your current choices. `uninstall.exe --uninstall --silent` removes it and keeps
+your history.
+
 **Does it need the internet?**
 No. Lectern never connects to anything.
 
@@ -116,7 +127,7 @@ git clone https://github.com/mthsluna/lectern.git
 cd lectern
 npm install
 npm run dev      # run it
-npm run build    # make the installer
+npm run build    # dist/Lectern-Setup-<version>.exe
 ```
 
 Built with [Tauri](https://tauri.app) and plain HTML, CSS and JavaScript.

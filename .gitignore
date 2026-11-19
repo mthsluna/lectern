@@ -2,3 +2,9 @@ node_modules/
 src-tauri/target/
 src-tauri/gen/
 .claude/
+
+# installer build artifacts
+setup/payload/
+setup/ui/fonts/
+setup/src-tauri/gen/
+dist/
