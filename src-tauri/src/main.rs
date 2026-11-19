@@ -8,6 +8,8 @@
 //! again. The timer never depends on the window being open: it is stored as
 //! timestamps, so nothing is lost while the interface is unloaded.
 
+mod update;
+
 use std::{fs, path::PathBuf};
 use tauri::{
     menu::{Menu, MenuItem},
@@ -97,7 +99,12 @@ fn main() {
     let app = tauri::Builder::default()
         // Launching Lectern again while it sits in the tray reopens the window.
         .plugin(tauri_plugin_single_instance::init(|app, _, _| open_window(app)))
-        .invoke_handler(tauri::generate_handler![load_data, save_data])
+        .invoke_handler(tauri::generate_handler![
+            load_data,
+            save_data,
+            update::check_update,
+            update::install_update
+        ])
         .setup(|app| {
             let saved = fs::read_to_string(data_dir(app.handle())?.join(FILE)).unwrap_or_default();
             let (open_label, quit_label) = tray_labels(&lang_of(&saved));
