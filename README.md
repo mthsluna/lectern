@@ -122,11 +122,14 @@ other code) to preview a language.
 
 ## Design
 
-The palette is warm ivory and near-black ink with a single deep jade accent. Headings
-and numbers are set in [Newsreader](https://fonts.google.com/specimen/Newsreader),
-body text in [Inter](https://rsms.me/inter/). Both fonts are bundled, so the app
-looks the same offline. Scripts they do not cover, such as Chinese, Japanese,
-Devanagari and Arabic, use the system fonts that ship with Windows.
+The palette is warm ivory and near-black ink with a single deep jade accent.
+
+Type follows the conventions of Apple's system interfaces: tight tracking on large
+sizes, semibold headings, an ultralight timer and bold figures in the report. It is
+set in [Inter](https://rsms.me/inter/), bundled so the app looks the same offline,
+and switches to SF Pro automatically on Apple devices. Scripts Inter does not cover,
+such as Chinese, Japanese, Devanagari and Arabic, use the system fonts that ship
+with Windows.
 
 ## The mark
 
