@@ -413,16 +413,58 @@ main::-webkit-scrollbar-thumb { background: var(--line); border-radius: 4px; }
 .theme-btn .glyph { filter: saturate(.85); }
 .theme-btn:hover .glyph { filter: saturate(1.15) brightness(1.05); }
 .theme-btn:active { transform: scale(.92); }
-.theme-btn .glyph {
-  grid-area: 1 / 1;
-  transition: opacity .3s ease, transform .45s cubic-bezier(.3, .7, .4, 1);
-}
+.theme-btn .glyph { grid-area: 1 / 1; overflow: visible; }
+.theme-btn .rays, .theme-btn .core, .theme-btn .sparkle { transform-box: fill-box; transform-origin: center; }
 .theme-btn .sun { color: #d2902f; }
 .theme-btn .moon { color: #b9c6d4; }
 .theme-btn[data-mode="light"] .moon,
 .theme-btn[data-mode="dark"] .sun { opacity: 0; transform: rotate(-90deg) scale(.5); }
 .theme-btn[data-mode="light"] .sun,
 .theme-btn[data-mode="dark"] .moon { opacity: 1; transform: none; }
+
+/* On click: the sun sets and the moon rises, or the other way round. */
+.theme-btn.to-dark .sun  { animation: sun-set .45s cubic-bezier(.5, 0, .75, 0) both; }
+.theme-btn.to-dark .moon { animation: moon-rise .7s cubic-bezier(.34, 1.56, .64, 1) .15s both; }
+.theme-btn.to-dark .sparkle { animation: twinkle .55s ease-out .7s both; }
+
+.theme-btn.to-light .moon { animation: moon-set .45s cubic-bezier(.5, 0, .75, 0) both; }
+.theme-btn.to-light .sun  { animation: sun-rise .6s cubic-bezier(.22, 1, .36, 1) .12s both; }
+.theme-btn.to-light .rays { animation: rays-open .8s cubic-bezier(.22, 1, .36, 1) .12s both; }
+.theme-btn.to-light .core { animation: glow .6s ease-out .55s both; }
+
+@keyframes sun-set {
+  from { opacity: 1; transform: none; }
+  to   { opacity: 0; transform: translateY(9px) rotate(70deg) scale(.45); }
+}
+@keyframes moon-rise {
+  from { opacity: 0; transform: translateY(11px) rotate(-35deg) scale(.7); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes twinkle {
+  0%   { transform: scale(0) rotate(-45deg); }
+  60%  { transform: scale(1.5) rotate(20deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+@keyframes moon-set {
+  from { opacity: 1; transform: none; }
+  to   { opacity: 0; transform: translateY(9px) rotate(30deg) scale(.6); }
+}
+@keyframes sun-rise {
+  from { opacity: 0; transform: translateY(11px) scale(.6); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes rays-open {
+  from { transform: rotate(-120deg) scale(.4); }
+  to   { transform: none; }
+}
+@keyframes glow {
+  0%, 100% { transform: none; }
+  45%      { transform: scale(1.22); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-btn .glyph, .theme-btn .glyph * { animation: none !important; }
+}
 
 /* Update banner: one quiet line at the top, only when GitHub has news */
 .update {

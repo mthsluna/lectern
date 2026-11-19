@@ -83,6 +83,14 @@ function toggleTheme() {
   state.theme = effectiveTheme() === "dark" ? "light" : "dark";
   save();
   applyTheme();
+
+  // sunset into moonrise, or moonset into sunrise
+  const btn = $("theme-btn");
+  btn.classList.remove("to-dark", "to-light");
+  void btn.offsetWidth;                       // restart if clicked mid-animation
+  btn.classList.add(state.theme === "dark" ? "to-dark" : "to-light");
+  clearTimeout(toggleTheme.timer);
+  toggleTheme.timer = setTimeout(() => btn.classList.remove("to-dark", "to-light"), 1100);
 }
 
 function showPicker() {
