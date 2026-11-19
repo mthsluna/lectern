@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.9.1
+
+- The theme control is a single icon: the sun by day, the moon by night. One click flips it.
+
 ## 1.9.0
 
 - Sessions that cross midnight are split between the days: 22:00 to 03:00 counts 2 h on the first day and 3 h on the next, for study, breaks and subjects alike.
