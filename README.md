@@ -1,155 +1,125 @@
 <p align="center">
-  <img src="docs/lectern-light.webp#gh-light-mode-only" width="200" alt="Lectern">
-  <img src="docs/lectern-dark.webp#gh-dark-mode-only" width="200" alt="Lectern">
+  <img src="docs/lectern-light.webp#gh-light-mode-only" width="180" alt="Lectern">
+  <img src="docs/lectern-dark.webp#gh-dark-mode-only" width="180" alt="Lectern">
 </p>
 
 <h1 align="center">Lectern</h1>
 
 <p align="center">
-  A quiet study timer that writes you a weekly report every Saturday.
+  Press start when you sit down to study.<br>
+  Every Saturday, find out how the week really went.
 </p>
 
 <p align="center">
-  <a href="https://github.com/mthsluna/lectern/releases/latest">Download for Windows</a>
+  <a href="https://github.com/mthsluna/lectern/releases/latest"><b>Download for Windows</b></a>
   &nbsp;&middot;&nbsp;
-  <a href="#how-it-works">How it works</a>
+  <a href="#what-you-get">What you get</a>
   &nbsp;&middot;&nbsp;
-  <a href="#building-from-source">Build from source</a>
+  <a href="#questions">Questions</a>
 </p>
 
 <br>
 
 <p align="center">
-  <img src="docs/language.png" width="24%" alt="Choosing a language">
-  <img src="docs/today.png" width="24%" alt="Timer running">
-  <img src="docs/break.png" width="24%" alt="Ready to start, in Portuguese">
-  <img src="docs/report.png" width="24%" alt="Weekly report">
+  <img src="docs/showcase-light.png#gh-light-mode-only" alt="Lectern: timer, weekly report and language picker">
+  <img src="docs/showcase-dark.png#gh-dark-mode-only" alt="Lectern: timer, weekly report and language picker">
 </p>
 
 <br>
 
-## About
+Most study apps want you to plan, tag, configure and log before you can begin.
+Lectern asks for one thing: press start. It keeps the time, notices the breaks, and
+on Saturday it writes you an honest report of the week, without you ever telling it
+what day it is.
 
-Lectern does one thing. You press start when you sit down to study, and it keeps
-the time. At the end of the week it tells you, plainly, how the week went.
+## Why people keep it open
 
-There is almost nothing to configure. On first launch Lectern asks which language
-you speak, and that is all. It reads the date from your computer, so it always
-knows what day it is, which week you are in, and when Saturday has arrived.
+- **It is honest about breaks.** Paused time is never counted as study. The report
+  shows how much of your sitting time was real focus.
+- **It never loses a minute.** Time is stored as timestamps, not as a counter. Close
+  the window, quit the app or restart your PC: the clock is still right when you come
+  back.
+- **It stays out of the way.** Closing the window sends Lectern to the system tray
+  and unloads the interface, so it uses about 27 MB in the background.
+- **It is tiny.** A 1.2 MB installer. It starts instantly.
+- **It is yours.** No account, no internet, no tracking. Your history is a single
+  file on your own computer.
+- **It speaks your language.** English, 中文, हिन्दी, Español, Français, العربية,
+  Português, Русский, 日本語 and Deutsch, in light or dark.
 
-## How it works
+## What you get
 
-| Action | Meaning |
+### Every day
+
+| | |
 | :-- | :-- |
 | **Start** | You are studying. The clock runs. |
-| **Pause** | You are taking a break. Break time is tracked separately and never counts as study. |
-| **Resume** | Back to work. |
-| **Stop** | You are done for the day. The session is closed and saved. Stopping asks for a second click, so it never happens by accident. |
+| **Pause** | You are on a break. It is tracked, but never counted as study. |
+| **Stop** | You are done for the day. It asks twice, so it never happens by accident. |
 
-**The weekly report.** Weeks run from Sunday to Saturday. The first time you open
-Lectern on a Saturday, the report opens by itself. If you skip Saturday, it is
-waiting for you the next time you open the app. Every past week stays available
-from the Report tab.
+You can type what you are studying before you start, or leave it blank. Lectern
+remembers your subjects and suggests them next time.
 
-Each report includes:
+### Every Saturday
 
-- Total hours studied, compared with the week before
-- A day-by-day chart, with your best day highlighted
-- Days studied, daily average and best day
-- Focus: the share of your sitting time spent studying rather than on breaks
-- Number of breaks, and progress toward your weekly goal
-- Time per subject, if you labelled your sessions
-- A short written summary of the week, which notes when it is your best week yet
+The first time you open Lectern on a Saturday, the report opens by itself. Miss
+Saturday and it is waiting for you next time. Every past week stays one click away.
 
-**Nothing is lost.** Time is recorded as timestamps, not as a counter in memory.
-If you close the window while the clock is running, it keeps counting, and you
-will find the correct time when you return. A break left open past midnight ends
-that day at the moment the break began.
+- Total hours, and how they compare with the week before
+- A day-by-day chart with your best day highlighted
+- Days studied, daily average and focus ratio
+- Time per subject
+- Progress toward your weekly goal
+- A short written summary, which tells you when it is your best week yet
 
-## Small things
+### Along the way
 
-A few extras, each one out of sight until you want it.
+- **Weekly goal.** Set your hours once. A thin line under the week's total fills
+  as you go and turns green when you get there.
+- **Streak.** After two days in a row, Lectern starts counting. The streak is safe
+  until the day ends, so it never breaks just because it is morning.
 
-- **Weekly goal.** Set a number of hours once. A hairline under the week's total
-  fills as you study and turns green when you reach it.
-- **Subjects.** Before starting, you can type what you are studying, or leave it
-  blank. Past subjects are suggested as you type, and the report breaks the week
-  down by subject.
-- **Streak.** After two days in a row, the week card quietly counts your streak.
-  It survives until the end of the day, so it is not lost before you sit down.
-- **Keyboard.** `Space` starts, pauses and resumes. `S` stops (press twice).
-  The arrow keys move between weeks in the report.
+## Keyboard
 
-## Languages
+| Key | Action |
+| :-- | :-- |
+| `Space` | Start, pause or resume |
+| `S` | Stop (press twice) |
+| `←` `→` | Previous or next week, in the report |
 
-Lectern speaks the ten most widely spoken languages:
+## Questions
 
-English, 中文, हिन्दी, Español, Français, العربية, Português, Русский, 日本語 and Deutsch.
+**What happens when I close the window?**
+Lectern keeps running in the system tray, near the clock. Click the icon to bring it
+back, or right-click it and choose Quit to close it for good. The timer keeps
+counting either way.
 
-The question on the first screen is already asked in your system language when
-Lectern knows it. Dates and weekday names follow the conventions of the language
-you choose, and Arabic is laid out right to left. You can switch at any time from
-the two-letter code in the top corner.
+**What if I do not open the app on Saturday?**
+The report is waiting the next time you do. Nothing is skipped.
 
-## Out of the way
+**When does a week start?**
+Sunday. The report on Saturday covers Sunday through Saturday.
 
-Closing the window does not quit Lectern. The window is unloaded from memory
-entirely and Lectern stays in the system tray as a single small process, about
-27 MB, down from roughly 370 MB with the window open. Click the tray icon, or
-open Lectern from the Start menu, to bring it back. To quit for real, right-click
-the tray icon and choose Quit.
+**Where is my data?**
+In a single JSON file at `%APPDATA%\app.lectern.studytimer\lectern.json`. Copy it
+to back up your history, or to move it to another computer.
 
-Your timer does not care either way. It keeps counting while the window is
-closed, and even after quitting.
+**Does it need the internet?**
+No. Lectern never connects to anything.
 
-## Lightweight by design
+## Build from source
 
-Lectern is built with [Tauri](https://tauri.app) and plain HTML, CSS and
-JavaScript. There is no framework and no bundler. It uses the WebView already
-built into Windows instead of shipping a browser, so the app is a few megabytes
-and starts instantly.
-
-Your data is a single JSON file on your own machine:
-
-```
-%APPDATA%\app.lectern.studytimer\lectern.json
-```
-
-No accounts, no network, no telemetry.
-
-## Building from source
-
-Requirements: [Rust](https://rustup.rs) and [Node.js](https://nodejs.org).
+You need [Rust](https://rustup.rs) and [Node.js](https://nodejs.org).
 
 ```bash
 git clone https://github.com/mthsluna/lectern.git
 cd lectern
 npm install
-npm run dev      # run in development
-npm run build    # produce the installer in src-tauri/target/release/bundle
+npm run dev      # run it
+npm run build    # make the installer
 ```
 
-The interface lives in `src/` and can also be opened in any browser. In that case
-data is kept in `localStorage`. Add `?demo` to the URL to preview it with sample data, and `&lang=pt` (or any
-other code) to preview a language.
-
-## Design
-
-The palette is warm ivory and near-black ink with a single deep jade accent.
-
-Type follows the conventions of Apple's system interfaces: tight tracking on large
-sizes, semibold headings, an ultralight timer and bold figures in the report. It is
-set in [Inter](https://rsms.me/inter/), bundled so the app looks the same offline,
-and switches to SF Pro automatically on Apple devices. Scripts Inter does not cover,
-such as Chinese, Japanese, Devanagari and Arabic, use the system fonts that ship
-with Windows.
-
-## The mark
-
-A four-pointed star rising from a horizon, set in a bookplate shield. The guiding
-star is the one scholars and navigators followed: insight arriving, and a sense of
-direction. The vector files live in [`docs/brand`](docs/brand), in ink for light
-backgrounds and ivory for dark ones.
+Built with [Tauri](https://tauri.app) and plain HTML, CSS and JavaScript.
 
 ## License
 
