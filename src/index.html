@@ -30,8 +30,14 @@
             <circle cx="10" cy="10" r="4.1" fill="currentColor"/>
           </svg>
           <svg class="glyph moon" viewBox="0 0 20 20" width="18" height="18" aria-hidden="true">
-            <circle cx="10" cy="10" r="7.6" fill="currentColor"/>
-            <circle cx="10" cy="10" r="5.2" fill="none" stroke="var(--bg)" stroke-width="1.5" opacity=".6"/>
+            <defs>
+              <mask id="moon-cut" maskUnits="userSpaceOnUse" x="0" y="0" width="20" height="20">
+                <rect width="20" height="20" fill="#fff"/>
+                <circle cx="14.4" cy="7" r="6.6" fill="#000"/>
+              </mask>
+            </defs>
+            <circle cx="9.4" cy="10.6" r="7.6" fill="currentColor" mask="url(#moon-cut)"/>
+            <path d="M15.2 2.7 C15.84 4.96 15.84 4.96 18.1 5.6 C15.84 6.24 15.84 6.24 15.2 8.5 C14.56 6.24 14.56 6.24 12.3 5.6 C14.56 4.96 14.56 4.96 15.2 2.7Z" fill="currentColor"/>
           </svg>
         </button>
         <button class="tab lang-btn" id="lang-btn" data-i18n-title="language" title="Language">EN</button>
