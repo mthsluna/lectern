@@ -31,6 +31,20 @@ const DETACHED: u32 = 0x0000_0008;
 
 type Res<T = ()> = Result<T, String>;
 
+#[link(name = "shell32")]
+extern "system" {
+    fn SHChangeNotify(event: i32, flags: u32, item1: *const std::ffi::c_void, item2: *const std::ffi::c_void);
+}
+
+/// Windows caches icons by file path, and Lectern has always lived at the
+/// same path, so the taskbar kept showing an old icon. Tell the shell that
+/// icons changed so it redraws them.
+fn refresh_icons() {
+    const SHCNE_ASSOCCHANGED: i32 = 0x0800_0000;
+    const SHCNF_IDLIST: u32 = 0;
+    unsafe { SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, std::ptr::null(), std::ptr::null()) };
+}
+
 fn err(e: impl std::fmt::Display) -> String {
     e.to_string()
 }
@@ -221,6 +235,7 @@ fn register(startup: bool) -> Res {
     } else {
         let _ = run.delete_value("Lectern");
     }
+    refresh_icons();
     Ok(())
 }
 
