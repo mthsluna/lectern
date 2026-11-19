@@ -60,23 +60,28 @@ function applyLanguage() {
   if (pendingUpdate) renderUpdate($("update").dataset.phase || "offer");
 }
 
-/* ---------- theme: system → light → dark ---------- */
+/* ---------- theme: sun or moon, one click ---------- */
 
-const THEMES = ["system", "light", "dark"];
+/* "system" is only the starting point; the first click picks a side. */
+const darkQuery = window.matchMedia("(prefers-color-scheme: dark)");
+const effectiveTheme = () =>
+  state.theme === "light" || state.theme === "dark" ? state.theme : darkQuery.matches ? "dark" : "light";
 
 function applyTheme() {
-  const theme = THEMES.includes(state.theme) ? state.theme : "system";
-  if (theme === "system") delete document.documentElement.dataset.theme;
-  else document.documentElement.dataset.theme = theme;
-  const btn = $("theme-btn");
-  btn.dataset.mode = theme;
-  btn.title = t(`theme_${theme}`);
-  btn.setAttribute("aria-label", t(`theme_${theme}`));
+  if (state.theme === "light" || state.theme === "dark") document.documentElement.dataset.theme = state.theme;
+  else delete document.documentElement.dataset.theme;
+  const current = effectiveTheme();
+  document.querySelectorAll(".theme-opt").forEach((b) => {
+    const on = b.dataset.set === current;
+    b.setAttribute("aria-pressed", String(on));
+    b.title = t(`theme_${b.dataset.set}`);
+    b.setAttribute("aria-label", t(`theme_${b.dataset.set}`));
+  });
 }
 
-function cycleTheme() {
-  const i = THEMES.indexOf(state.theme || "system");
-  state.theme = THEMES[(i + 1) % THEMES.length];
+function setTheme(theme) {
+  if (effectiveTheme() === theme && state.theme === theme) return;
+  state.theme = theme;
   save();
   applyTheme();
 }
@@ -723,7 +728,8 @@ function seedDemo() {
 
   document.querySelectorAll(".tab[data-view]").forEach((el) => el.addEventListener("click", () => show(el.dataset.view)));
   $("lang-btn").addEventListener("click", showPicker);
-  $("theme-btn").addEventListener("click", cycleTheme);
+  document.querySelectorAll(".theme-opt").forEach((b) => b.addEventListener("click", () => setTheme(b.dataset.set)));
+  darkQuery.addEventListener("change", applyTheme);
 
   /* update banner */
   $("update-now").addEventListener("click", installUpdate);

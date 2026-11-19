@@ -24,12 +24,20 @@
       <nav class="tabs" role="tablist">
         <button class="tab is-active" data-view="today" data-i18n="today" role="tab">Today</button>
         <button class="tab" data-view="report" data-i18n="report" role="tab">Report</button>
-        <button class="tab theme-btn" id="theme-btn" aria-label="Theme">
-          <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
-            <circle cx="8" cy="8" r="6.25" fill="none" stroke="currentColor" stroke-width="1.5"/>
-            <path class="theme-half" d="M8 1.75a6.25 6.25 0 0 1 0 12.5z" fill="currentColor"/>
-          </svg>
-        </button>
+        <div class="theme-switch" id="theme-switch" role="group">
+          <button class="theme-opt sun" data-set="light">
+            <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true">
+              <path d="M9.28 4.55 L10.00 0.60 L10.72 4.55Z M12.62 5.16 L15.53 2.40 L13.79 6.01Z M14.96 7.63 L18.94 7.10 L15.41 9.00Z M15.41 11.00 L18.94 12.90 L14.96 12.37Z M13.79 13.99 L15.53 17.60 L12.62 14.84Z M10.72 15.45 L10.00 19.40 L9.28 15.45Z M7.38 14.84 L4.47 17.60 L6.21 13.99Z M5.04 12.37 L1.06 12.90 L4.59 11.00Z M4.59 9.00 L1.06 7.10 L5.04 7.63Z M6.21 6.01 L4.47 2.40 L7.38 5.16Z" fill="currentColor"/>
+              <circle cx="10" cy="10" r="4.1" fill="currentColor"/>
+            </svg>
+          </button>
+          <button class="theme-opt moon" data-set="dark">
+            <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true">
+              <circle cx="10" cy="10" r="8" fill="currentColor"/>
+              <circle cx="10" cy="10" r="5.6" fill="none" stroke="var(--moon-ring, #000)" stroke-width="1.5" opacity=".55"/>
+            </svg>
+          </button>
+        </div>
         <button class="tab lang-btn" id="lang-btn" data-i18n-title="language" title="Language">EN</button>
       </nav>
     </header>
