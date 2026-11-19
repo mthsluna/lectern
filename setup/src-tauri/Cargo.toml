@@ -1,6 +1,6 @@
 [package]
 name = "lectern-setup"
-version = "1.9.2"
+version = "1.9.3"
 description = "Installer for Lectern."
 edition = "2021"
 
