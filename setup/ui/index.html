@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lectern Setup</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="bar" data-tauri-drag-region>
+    <span class="bar-title" data-tauri-drag-region>Lectern</span>
+    <div class="bar-buttons">
+      <button class="win" id="min" aria-label="Minimize">
+        <svg viewBox="0 0 10 10" width="10" height="10"><path d="M1 5h8" stroke="currentColor" stroke-width="1.2"/></svg>
+      </button>
+      <button class="win" id="close" aria-label="Close">
+        <svg viewBox="0 0 10 10" width="10" height="10"><path d="M1.5 1.5l7 7M8.5 1.5l-7 7" stroke="currentColor" stroke-width="1.2"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <svg class="mark" id="mark" viewBox="300 186 653 890" aria-hidden="true">
+      <defs><clipPath id="sky"><rect x="0" y="0" width="1254" height="800"/></clipPath></defs>
+      <path class="shield" d="M317 400 L317.53 377.88 L319.12 361.56 L321.77 346.98 L325.47 333.53 L330.21 320.94 L336 309.11 L342.81 297.95 L350.64 287.43 L359.48 277.53 L369.32 268.23 L380.15 259.54 L391.94 251.46 L404.71 243.99 L418.43 237.13 L433.1 230.9 L448.74 225.3 L465.35 220.34 L482.97 216.03 L501.66 212.37 L521.53 209.36 L542.78 207.02 L565.8 205.34 L591.57 204.34 L626.5 204 L661.43 204.34 L687.2 205.34 L710.22 207.02 L731.47 209.36 L751.34 212.37 L770.03 216.03 L787.65 220.34 L804.26 225.3 L819.9 230.9 L834.57 237.13 L848.29 243.99 L861.06 251.46 L872.85 259.54 L883.68 268.23 L893.52 277.53 L902.36 287.43 L910.19 297.95 L917 309.11 L922.79 320.94 L927.53 333.53 L931.23 346.98 L933.88 361.56 L935.47 377.88 L936 400 L936 868 Q936 902.8 884.15 928.8 L649.38 1046.52 Q626.5 1058 603.62 1046.52 L368.85 928.8 Q317 902.8 317 868 Z"/>
+      <rect class="cut" x="300" y="800" width="660" height="26"/>
+      <g clip-path="url(#sky)">
+        <g transform="translate(626.5 553)"><path class="star" d="M-8.5 -237 Q0 -253 8.5 -237 L26 -110 C33.17 -58 64 -32.4 116 -24 L212 -8.5 Q228 0 212 8.5 L116 24 C64 32.4 33.17 58 26 110 L8.5 237 L8.5 260 L-8.5 260 L-8.5 237 L-26 110 C-33.17 58 -64 32.4 -116 24 L-212 8.5 Q-228 0 -212 -8.5 L-116 -24 C-64 -32.4 -33.17 -58 -26 -110 L-8.5 -237 Z"/></g>
+      </g>
+    </svg>
+
+    <section class="screen" id="screen">
+      <h1 id="title"></h1>
+      <p class="lede" id="lede"></p>
+
+      <div class="options" id="options" hidden></div>
+
+      <div class="progress" id="progress" hidden>
+        <div class="track"><div class="fill" id="fill"></div></div>
+        <p class="step" id="step"></p>
+      </div>
+
+      <div class="actions" id="actions"></div>
+      <p class="foot" id="foot"></p>
+    </section>
+  </main>
+
+  <script src="i18n.js"></script>
+  <script src="setup.js"></script>
+</body>
+</html>
