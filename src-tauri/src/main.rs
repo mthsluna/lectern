@@ -60,6 +60,7 @@ fn open_window(app: &AppHandle) {
     }
     if let Some(cfg) = app.config().app.windows.first() {
         if let Ok(w) = WebviewWindowBuilder::from_config(app, cfg).and_then(|b| b.build()) {
+            let _ = w.show();
             let _ = w.set_focus();
         }
     }
@@ -127,6 +128,16 @@ fn main() {
                 .build(app)?;
 
             app.manage(TrayMenu { open, quit });
+
+            // The window starts hidden so that `--hidden` (used when Lectern opens
+            // with Windows) can go straight to the tray without a flash.
+            if let Some(w) = app.get_webview_window("main") {
+                if std::env::args().any(|a| a == "--hidden") {
+                    let _ = w.destroy();
+                } else {
+                    let _ = w.show();
+                }
+            }
             Ok(())
         })
         .build(tauri::generate_context!())
