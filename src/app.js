@@ -158,10 +158,15 @@ function shortHours(ms) {
   const h = ms / 3600000;
   return h < 1 ? `${Math.round(ms / 60000)}m` : `${h.toFixed(1).replace(/\.0$/, "")}h`;
 }
+/* "18 – 24 de outubro" + "2026": the days lead, the year steps back.
+   Weeks that span two months use short month names to stay on one line. */
 function rangeLabel(start) {
-  const f = new Intl.DateTimeFormat(locale(), { month: "short", day: "numeric", year: "numeric" });
   const a = parseKey(start), b = parseKey(addDays(start, 6));
-  return f.formatRange ? f.formatRange(a, b) : `${f.format(a)} – ${f.format(b)}`;
+  const month = a.getMonth() === b.getMonth() ? "long" : "short";
+  const f = new Intl.DateTimeFormat(locale(), { day: "numeric", month });
+  const main = f.formatRange ? f.formatRange(a, b) : `${f.format(a)} – ${f.format(b)}`;
+  const y1 = a.getFullYear(), y2 = b.getFullYear();
+  return { main, year: y1 === y2 ? String(y1) : `${y1} – ${y2}` };
 }
 
 /* ---------- storage ---------- */
@@ -472,7 +477,9 @@ function renderReport() {
   const total = days.reduce((s, d) => s + d.study, 0);
   const prevTotal = weekData(addDays(start, -7)).reduce((s, d) => s + d.study, 0);
 
-  $("report-range").textContent = rangeLabel(start);
+  const range = rangeLabel(start);
+  $("report-range").textContent = range.main;
+  $("report-year").textContent = range.year;
   $("next-week").disabled = start >= current;
 
   const inProgress = start === current && !isSaturday(today);

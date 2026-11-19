@@ -56,7 +56,7 @@
 :lang(ja) { --cjk: "Yu Gothic UI", "Meiryo", "Hiragino Sans"; }
 :lang(zh) .eyebrow, :lang(ja) .eyebrow, :lang(hi) .eyebrow, :lang(ar) .eyebrow { letter-spacing: 0; }
 [dir="rtl"] .arrow { transform: scaleX(-1); }
-.timer, .hero-number, .week-total, #report-range { direction: ltr; unicode-bidi: isolate; }
+.timer, .hero-number, .week-total, .range-year { direction: ltr; unicode-bidi: isolate; }
 
 .app { flex: 1; min-height: 0; display: flex; flex-direction: column; }
 
@@ -244,13 +244,30 @@ body[data-state="closed"] .dot { background: var(--ink); }
 /* Report */
 .report-nav { display: flex; align-items: center; justify-content: space-between; }
 .arrow {
+  flex: none;
   width: 32px; height: 32px;
+  display: grid; place-items: center;
   border-radius: 50%;
+  border: 1px solid var(--line);
   color: var(--muted);
-  font-size: 15px;
+  transition: background .15s, color .15s, border-color .15s;
 }
-.arrow:hover:not(:disabled) { background: var(--surface); color: var(--ink); }
-.arrow:disabled { opacity: .3; cursor: default; }
+.arrow:hover:not(:disabled) { background: var(--surface); border-color: var(--faint); color: var(--ink); }
+.arrow:disabled { opacity: .35; cursor: default; }
+
+/* Week range: a quiet chip with a calendar glyph */
+.range {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 7px 14px 7px 12px;
+  border-radius: 999px;
+  background: var(--surface);
+}
+.range-icon { flex: none; color: var(--muted); }
+.range-main { font-size: 13.5px; font-weight: 600; letter-spacing: -0.01em; white-space: nowrap; }
+.range-year { font-size: 13.5px; font-weight: 500; color: var(--muted); font-variant-numeric: tabular-nums; }
 
 .notice {
   margin-top: 20px;
