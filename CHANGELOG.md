@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.6.1
+
+- The installer uses the Lectern icon and branded setup pages instead of the default NSIS look.
+
 ## 1.6.0
 
 - Dark mode. Follows Windows by default; a toggle in the header cycles System, Light and Dark.
