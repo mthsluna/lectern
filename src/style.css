@@ -389,3 +389,34 @@ main::-webkit-scrollbar-thumb { background: var(--line); border-radius: 4px; }
 .theme-btn svg { display: block; }
 .theme-btn[data-mode="light"] .theme-half { opacity: 0; }
 .theme-btn[data-mode="dark"] .theme-half { d: path("M8 1.75a6.25 6.25 0 1 1 0 12.5a6.25 6.25 0 1 1 0-12.5z"); }
+
+/* Update banner: one quiet line at the top, only when GitHub has news */
+.update {
+  margin: 16px 28px 0;
+  padding: 12px 14px 12px 16px;
+  border-radius: 12px;
+  background: var(--surface);
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  column-gap: 10px;
+  row-gap: 10px;
+  animation: rise .35s ease both;
+}
+.update-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
+.update-text { font-size: 13.5px; font-weight: 500; letter-spacing: -0.008em; }
+.update-actions { grid-column: 2; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.update-btn {
+  height: 30px;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--bg);
+  font-size: 12.5px;
+  font-weight: 600;
+}
+.update-btn:hover { background: var(--ink-soft); }
+.update-link { font-size: 12.5px; color: var(--muted); }
+.update-link:hover { color: var(--ink); }
+.update[data-phase="busy"] .update-actions { display: none; }
+.update[data-phase="busy"] .update-dot { animation: pulse 1.2s ease-in-out infinite; }

@@ -57,6 +57,7 @@ function applyLanguage() {
   document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => { el.placeholder = t(el.dataset.i18nPlaceholder); });
   $("lang-btn").textContent = info.code.toUpperCase();
   applyTheme();
+  if (pendingUpdate) renderUpdate($("update").dataset.phase || "offer");
 }
 
 /* ---------- theme: system → light → dark ---------- */
@@ -607,6 +608,49 @@ function commitAndRender() {
   else renderReport();
 }
 
+/* ---------- updates ---------- */
+
+let pendingUpdate = null;
+
+/* Asks GitHub (through the Rust side) whether a newer release exists.
+   Nothing is downloaded unless the user presses Update. */
+async function checkForUpdate() {
+  let found = null;
+  if (DEMO) {
+    if (params.get("update")) found = { version: params.get("update") };
+  } else if (tauri) {
+    try { found = await tauri.invoke("check_update"); } catch { return; }   // offline: stay quiet
+  }
+  if (!found || state.skipVersion === found.version) return;
+  pendingUpdate = found;
+  renderUpdate();
+}
+
+function renderUpdate(phase = "offer") {
+  const box = $("update");
+  box.hidden = !pendingUpdate;
+  if (!pendingUpdate) return;
+  box.dataset.phase = phase;
+  $("update-text").textContent =
+    phase === "busy" ? t("updateBusy") :
+    phase === "failed" ? t("updateFailed") :
+    t("updateAvailable", pendingUpdate.version);
+  $("update-now").textContent = phase === "failed" ? t("tryAgain") : t("updateNow");
+  $("update-later").textContent = t("notNow");
+  $("update-skip").textContent = t("skipVersion");
+}
+
+async function installUpdate() {
+  renderUpdate("busy");
+  if (!tauri) return;
+  try {
+    await tauri.invoke("install_update", { update: pendingUpdate });
+  } catch (e) {
+    console.error("Update failed", e);
+    renderUpdate("failed");
+  }
+}
+
 /* ---------- demo data (for screenshots, ?demo) ---------- */
 
 function seedDemo() {
@@ -652,6 +696,17 @@ function seedDemo() {
   document.querySelectorAll(".tab[data-view]").forEach((el) => el.addEventListener("click", () => show(el.dataset.view)));
   $("lang-btn").addEventListener("click", showPicker);
   $("theme-btn").addEventListener("click", cycleTheme);
+
+  /* update banner */
+  $("update-now").addEventListener("click", installUpdate);
+  $("update-later").addEventListener("click", () => { pendingUpdate = null; renderUpdate(); });
+  $("update-skip").addEventListener("click", () => {
+    state.skipVersion = pendingUpdate.version;
+    save();
+    pendingUpdate = null;
+    renderUpdate();
+  });
+  checkForUpdate();
   $("prev-week").addEventListener("click", () => { reportWeek = addDays(reportWeek, -7); $("report-notice").hidden = true; renderReport(); });
   $("next-week").addEventListener("click", () => { reportWeek = addDays(reportWeek, 7); $("report-notice").hidden = true; renderReport(); });
 

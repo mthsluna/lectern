@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.8.0
+
+- Updates from GitHub. When a new release is out, a quiet line offers it: Update, Not now or Skip this version.
+- Updates are verified against GitHub's SHA-256 digest, installed silently, and Lectern reopens on its own.
+
 ## 1.7.0
 
 - A new installer in Lectern's own style: the rising-star mark, calm screens for install, update and removal, and dark mode. No administrator prompt.
