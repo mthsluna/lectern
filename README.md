@@ -1,5 +1,8 @@
 <p align="center">
-  <img src="docs/icon.png" width="72" alt="Lectern">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/lectern-dark.gif">
+    <img src="docs/lectern-light.gif" width="200" alt="Lectern">
+  </picture>
 </p>
 
 <h1 align="center">Lectern</h1>
@@ -124,6 +127,13 @@ and numbers are set in [Newsreader](https://fonts.google.com/specimen/Newsreader
 body text in [Inter](https://rsms.me/inter/). Both fonts are bundled, so the app
 looks the same offline. Scripts they do not cover, such as Chinese, Japanese,
 Devanagari and Arabic, use the system fonts that ship with Windows.
+
+## The mark
+
+A four-pointed star rising from a horizon, set in a bookplate shield. The guiding
+star is the one scholars and navigators followed: insight arriving, and a sense of
+direction. The vector files live in [`docs/brand`](docs/brand), in ink for light
+backgrounds and ivory for dark ones.
 
 ## License
 

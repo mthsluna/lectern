@@ -54,7 +54,7 @@
   text-align: center;
   animation: rise .4s ease both;
 }
-.mark-lg { width: 30px; height: 30px; border-width: 2px; }
+.mark.mark-lg { width: 46px; height: 46px; }
 .picker-title {
   margin-top: 26px;
   font-family: var(--serif);
@@ -116,12 +116,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   font-weight: 500;
   letter-spacing: -0.01em;
 }
-.mark {
-  width: 16px; height: 16px;
-  border-radius: 50%;
-  border: 1.5px solid var(--ink);
-  background: conic-gradient(var(--accent) 0 25%, transparent 25% 100%);
-}
+.mark { width: 22px; height: 22px; display: block; }
 .tabs { display: flex; gap: 4px; }
 .tab {
   padding: 6px 12px;
