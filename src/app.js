@@ -639,6 +639,7 @@ function seedDemo() {
     };
   }
   state.lang = params.has("pick") ? null : params.get("lang") || "en";
+  state.theme = params.get("theme") || "system";
   state.seen = {};
 }
 
