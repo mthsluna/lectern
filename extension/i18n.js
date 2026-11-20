@@ -60,6 +60,7 @@ const STRINGS = {
     extDownloading: "Downloading…", extStep1: "Unzip <b>Lectern-Extension.zip</b> into a folder you will keep.", extStep2: "Open <code>chrome://extensions</code> and turn on <b>Developer mode</b>.", extStep3: "Click <b>Load unpacked</b> and choose that folder.", extGuide: "Step-by-step guide",
     extAddTo: (n) => `Add to ${n}`, extOpened: (n) => `${n} is open on its extensions page.`, extStepDev: "Turn on <b>Developer mode</b>.", extStepLoad: "Click <b>Load unpacked</b>.", extStepPaste: "Paste the folder with <b>Ctrl+V</b> and press <b>Enter</b>.", extCopy: "Copy", extCopied: "Copied", extAgain: (n) => `Open ${n} again`,
     extSetupTitle: (n) => `Add Lectern to ${n}`, extS1: (n) => `${n} is open. Paste this address in its address bar and press <b>Enter</b>.`, extS2: "Turn on <b>Developer mode</b> on that page.", extS3: "Click <b>Load unpacked</b>. In the window that opens, paste this folder into the <b>Folder</b> field and click <b>Select Folder</b>.", extReveal: "Show the folder", extWaiting: "Waiting for the extension to connect…", extCancel: "Cancel",
+    blockToggle: "Block sites while studying", blockedList: "Blocked sites", extTitle: "Browser extension", sitePlaceholder: "Add a site, like instagram.com",
     sep: ". ", space: " ",
   },
   pt: {
@@ -100,6 +101,7 @@ const STRINGS = {
     extDownloading: "Baixando…", extStep1: "Descompacte o <b>Lectern-Extension.zip</b> numa pasta que você vai manter.", extStep2: "Abra <code>chrome://extensions</code> e ligue o <b>Modo do desenvolvedor</b>.", extStep3: "Clique em <b>Carregar sem compactação</b> e escolha a pasta.", extGuide: "Guia passo a passo",
     extAddTo: (n) => `Adicionar ao ${n}`, extOpened: (n) => `O ${n} abriu na página de extensões.`, extStepDev: "Ligue o <b>Modo do desenvolvedor</b>.", extStepLoad: "Clique em <b>Carregar sem compactação</b>.", extStepPaste: "Cole a pasta com <b>Ctrl+V</b> e aperte <b>Enter</b>.", extCopy: "Copiar", extCopied: "Copiado", extAgain: (n) => `Abrir o ${n} de novo`,
     extSetupTitle: (n) => `Adicionar o Lectern ao ${n}`, extS1: (n) => `O ${n} está aberto. Cole este endereço na barra de endereço e aperte <b>Enter</b>.`, extS2: "Ligue o <b>Modo do desenvolvedor</b> nessa página.", extS3: "Clique em <b>Carregar sem compactação</b>. Na janela que abrir, cole esta pasta no campo <b>Pasta</b> e clique em <b>Selecionar pasta</b>.", extReveal: "Mostrar a pasta", extWaiting: "Esperando a extensão se conectar…", extCancel: "Cancelar",
+    blockToggle: "Bloquear sites enquanto estuda", blockedList: "Sites bloqueados", extTitle: "Extensão do navegador", sitePlaceholder: "Adicionar um site, como instagram.com",
     sep: ". ", space: " ",
   },
   es: {
@@ -140,6 +142,7 @@ const STRINGS = {
     extDownloading: "Descargando…", extStep1: "Descomprime <b>Lectern-Extension.zip</b> en una carpeta que vayas a conservar.", extStep2: "Abre <code>chrome://extensions</code> y activa el <b>Modo de desarrollador</b>.", extStep3: "Pulsa <b>Cargar descomprimida</b> y elige esa carpeta.", extGuide: "Guía paso a paso",
     extAddTo: (n) => `Añadir a ${n}`, extOpened: (n) => `${n} está abierto en su página de extensiones.`, extStepDev: "Activa el <b>Modo de desarrollador</b>.", extStepLoad: "Pulsa <b>Cargar descomprimida</b>.", extStepPaste: "Pega la carpeta con <b>Ctrl+V</b> y pulsa <b>Intro</b>.", extCopy: "Copiar", extCopied: "Copiado", extAgain: (n) => `Abrir ${n} otra vez`,
     extSetupTitle: (n) => `Añadir Lectern a ${n}`, extS1: (n) => `${n} está abierto. Pega esta dirección en la barra de direcciones y pulsa <b>Intro</b>.`, extS2: "Activa el <b>Modo de desarrollador</b> en esa página.", extS3: "Pulsa <b>Cargar descomprimida</b>. En la ventana que se abre, pega esta carpeta en el campo <b>Carpeta</b> y pulsa <b>Seleccionar carpeta</b>.", extReveal: "Mostrar la carpeta", extWaiting: "Esperando a que la extensión se conecte…", extCancel: "Cancelar",
+    blockToggle: "Bloquear sitios mientras estudias", blockedList: "Sitios bloqueados", extTitle: "Extensión del navegador", sitePlaceholder: "Añade un sitio, como instagram.com",
     sep: ". ", space: " ",
   },
   fr: {
@@ -180,6 +183,7 @@ const STRINGS = {
     extDownloading: "Téléchargement…", extStep1: "Décompressez <b>Lectern-Extension.zip</b> dans un dossier que vous garderez.", extStep2: "Ouvrez <code>chrome://extensions</code> et activez le <b>Mode développeur</b>.", extStep3: "Cliquez sur <b>Charger l’extension non empaquetée</b> et choisissez ce dossier.", extGuide: "Guide pas à pas",
     extAddTo: (n) => `Ajouter à ${n}`, extOpened: (n) => `${n} est ouvert sur sa page d’extensions.`, extStepDev: "Activez le <b>Mode développeur</b>.", extStepLoad: "Cliquez sur <b>Charger l’extension non empaquetée</b>.", extStepPaste: "Collez le dossier avec <b>Ctrl+V</b> puis <b>Entrée</b>.", extCopy: "Copier", extCopied: "Copié", extAgain: (n) => `Rouvrir ${n}`,
     extSetupTitle: (n) => `Ajouter Lectern à ${n}`, extS1: (n) => `${n} est ouvert. Collez cette adresse dans la barre d’adresse et appuyez sur <b>Entrée</b>.`, extS2: "Activez le <b>Mode développeur</b> sur cette page.", extS3: "Cliquez sur <b>Charger l’extension non empaquetée</b>. Dans la fenêtre, collez ce dossier dans le champ <b>Dossier</b> et cliquez sur <b>Sélectionner un dossier</b>.", extReveal: "Afficher le dossier", extWaiting: "En attente de l’extension…", extCancel: "Annuler",
+    blockToggle: "Bloquer des sites pendant l’étude", blockedList: "Sites bloqués", extTitle: "Extension du navigateur", sitePlaceholder: "Ajouter un site, comme instagram.com",
     sep: ". ", space: " ",
   },
   de: {
@@ -220,6 +224,7 @@ const STRINGS = {
     extDownloading: "Wird geladen…", extStep1: "Entpacke <b>Lectern-Extension.zip</b> in einen Ordner, den du behältst.", extStep2: "Öffne <code>chrome://extensions</code> und aktiviere den <b>Entwicklermodus</b>.", extStep3: "Klicke auf <b>Entpackte Erweiterung laden</b> und wähle den Ordner.", extGuide: "Schritt-für-Schritt-Anleitung",
     extAddTo: (n) => `Zu ${n} hinzufügen`, extOpened: (n) => `${n} ist auf der Erweiterungsseite geöffnet.`, extStepDev: "Aktiviere den <b>Entwicklermodus</b>.", extStepLoad: "Klicke auf <b>Entpackte Erweiterung laden</b>.", extStepPaste: "Füge den Ordner mit <b>Strg+V</b> ein und drücke <b>Enter</b>.", extCopy: "Kopieren", extCopied: "Kopiert", extAgain: (n) => `${n} erneut öffnen`,
     extSetupTitle: (n) => `Lectern zu ${n} hinzufügen`, extS1: (n) => `${n} ist geöffnet. Füge diese Adresse in die Adressleiste ein und drücke <b>Enter</b>.`, extS2: "Aktiviere auf dieser Seite den <b>Entwicklermodus</b>.", extS3: "Klicke auf <b>Entpackte Erweiterung laden</b>. Füge im Fenster diesen Ordner in das Feld <b>Ordner</b> ein und klicke auf <b>Ordner auswählen</b>.", extReveal: "Ordner anzeigen", extWaiting: "Warte auf die Erweiterung…", extCancel: "Abbrechen",
+    blockToggle: "Seiten beim Lernen sperren", blockedList: "Gesperrte Seiten", extTitle: "Browser-Erweiterung", sitePlaceholder: "Seite hinzufügen, z. B. instagram.com",
     sep: ". ", space: " ",
   },
   ru: {
@@ -260,6 +265,7 @@ const STRINGS = {
     extDownloading: "Загрузка…", extStep1: "Распакуйте <b>Lectern-Extension.zip</b> в папку, которую не будете удалять.", extStep2: "Откройте <code>chrome://extensions</code> и включите <b>Режим разработчика</b>.", extStep3: "Нажмите <b>Загрузить распакованное</b> и выберите эту папку.", extGuide: "Пошаговая инструкция",
     extAddTo: (n) => `Добавить в ${n}`, extOpened: (n) => `${n} открыт на странице расширений.`, extStepDev: "Включите <b>Режим разработчика</b>.", extStepLoad: "Нажмите <b>Загрузить распакованное</b>.", extStepPaste: "Вставьте папку через <b>Ctrl+V</b> и нажмите <b>Enter</b>.", extCopy: "Копировать", extCopied: "Скопировано", extAgain: (n) => `Снова открыть ${n}`,
     extSetupTitle: (n) => `Добавить Lectern в ${n}`, extS1: (n) => `${n} открыт. Вставьте этот адрес в адресную строку и нажмите <b>Enter</b>.`, extS2: "Включите на этой странице <b>Режим разработчика</b>.", extS3: "Нажмите <b>Загрузить распакованное</b>. В открывшемся окне вставьте эту папку в поле <b>Папка</b> и нажмите <b>Выбор папки</b>.", extReveal: "Показать папку", extWaiting: "Ждём подключения расширения…", extCancel: "Отмена",
+    blockToggle: "Блокировать сайты во время учёбы", blockedList: "Заблокированные сайты", extTitle: "Расширение браузера", sitePlaceholder: "Добавьте сайт, например instagram.com",
     sep: ". ", space: " ",
   },
   zh: {
@@ -300,6 +306,7 @@ const STRINGS = {
     extDownloading: "正在下载…", extStep1: "将 <b>Lectern-Extension.zip</b> 解压到一个会保留的文件夹。", extStep2: "打开 <code>chrome://extensions</code>，开启<b>开发者模式</b>。", extStep3: "点击<b>加载已解压的扩展程序</b>，选择该文件夹。", extGuide: "分步指南",
     extAddTo: (n) => `添加到 ${n}`, extOpened: (n) => `${n} 已打开扩展程序页面。`, extStepDev: "开启<b>开发者模式</b>。", extStepLoad: "点击<b>加载已解压的扩展程序</b>。", extStepPaste: "用 <b>Ctrl+V</b> 粘贴文件夹并按 <b>Enter</b>。", extCopy: "复制", extCopied: "已复制", extAgain: (n) => `再次打开 ${n}`,
     extSetupTitle: (n) => `将 Lectern 添加到 ${n}`, extS1: (n) => `${n} 已打开。把这个地址粘贴到地址栏并按 <b>Enter</b>。`, extS2: "在该页面开启<b>开发者模式</b>。", extS3: "点击<b>加载已解压的扩展程序</b>。在弹出的窗口中，把这个文件夹粘贴到<b>文件夹</b>栏，然后点击<b>选择文件夹</b>。", extReveal: "显示文件夹", extWaiting: "正在等待扩展连接…", extCancel: "取消",
+    blockToggle: "学习时屏蔽网站", blockedList: "已屏蔽的网站", extTitle: "浏览器扩展", sitePlaceholder: "添加网站，例如 instagram.com",
     sep: "。", space: "",
   },
   ja: {
@@ -340,6 +347,7 @@ const STRINGS = {
     extDownloading: "ダウンロード中…", extStep1: "<b>Lectern-Extension.zip</b> を残しておくフォルダに展開します。", extStep2: "<code>chrome://extensions</code> を開き、<b>デベロッパー モード</b>をオンにします。", extStep3: "<b>パッケージ化されていない拡張機能を読み込む</b>を押し、そのフォルダを選びます。", extGuide: "手順ガイド",
     extAddTo: (n) => `${n} に追加`, extOpened: (n) => `${n} の拡張機能ページを開きました。`, extStepDev: "<b>デベロッパー モード</b>をオンにします。", extStepLoad: "<b>パッケージ化されていない拡張機能を読み込む</b>を押します。", extStepPaste: "<b>Ctrl+V</b> でフォルダを貼り付け、<b>Enter</b> を押します。", extCopy: "コピー", extCopied: "コピーしました", extAgain: (n) => `${n} をもう一度開く`,
     extSetupTitle: (n) => `Lectern を ${n} に追加`, extS1: (n) => `${n} が開きました。このアドレスをアドレスバーに貼り付けて <b>Enter</b> を押します。`, extS2: "そのページで<b>デベロッパー モード</b>をオンにします。", extS3: "<b>パッケージ化されていない拡張機能を読み込む</b>を押し、開いた画面の<b>フォルダー</b>欄にこのフォルダを貼り付けて<b>フォルダーの選択</b>を押します。", extReveal: "フォルダを表示", extWaiting: "拡張機能の接続を待っています…", extCancel: "キャンセル",
+    blockToggle: "勉強中はサイトをブロック", blockedList: "ブロックするサイト", extTitle: "ブラウザ拡張機能", sitePlaceholder: "サイトを追加（例: instagram.com）",
     sep: "。", space: "",
   },
   hi: {
@@ -380,6 +388,7 @@ const STRINGS = {
     extDownloading: "डाउनलोड हो रहा है…", extStep1: "<b>Lectern-Extension.zip</b> को किसी ऐसे फ़ोल्डर में खोलें जिसे आप रखेंगे।", extStep2: "<code>chrome://extensions</code> खोलें और <b>डेवलपर मोड</b> चालू करें।", extStep3: "<b>अनपैक्ड लोड करें</b> पर क्लिक करें और वह फ़ोल्डर चुनें।", extGuide: "चरण-दर-चरण गाइड",
     extAddTo: (n) => `${n} में जोड़ें`, extOpened: (n) => `${n} एक्सटेंशन पेज पर खुला है।`, extStepDev: "<b>डेवलपर मोड</b> चालू करें।", extStepLoad: "<b>अनपैक्ड लोड करें</b> पर क्लिक करें।", extStepPaste: "<b>Ctrl+V</b> से फ़ोल्डर चिपकाएँ और <b>Enter</b> दबाएँ।", extCopy: "कॉपी करें", extCopied: "कॉपी हो गया", extAgain: (n) => `${n} फिर से खोलें`,
     extSetupTitle: (n) => `Lectern को ${n} में जोड़ें`, extS1: (n) => `${n} खुल गया है। यह पता एड्रेस बार में चिपकाएँ और <b>Enter</b> दबाएँ।`, extS2: "उस पेज पर <b>डेवलपर मोड</b> चालू करें।", extS3: "<b>अनपैक्ड लोड करें</b> पर क्लिक करें। खुली विंडो में यह फ़ोल्डर <b>फ़ोल्डर</b> फ़ील्ड में चिपकाएँ और <b>फ़ोल्डर चुनें</b> पर क्लिक करें।", extReveal: "फ़ोल्डर दिखाएँ", extWaiting: "एक्सटेंशन के जुड़ने का इंतज़ार…", extCancel: "रद्द करें",
+    blockToggle: "पढ़ाई के दौरान साइटें ब्लॉक करें", blockedList: "ब्लॉक की गई साइटें", extTitle: "ब्राउज़र एक्सटेंशन", sitePlaceholder: "साइट जोड़ें, जैसे instagram.com",
     sep: "। ", space: " ",
   },
   ar: {
@@ -420,6 +429,7 @@ const STRINGS = {
     extDownloading: "جارٍ التنزيل…", extStep1: "فك ضغط <b>Lectern-Extension.zip</b> في مجلد ستحتفظ به.", extStep2: "افتح <code>chrome://extensions</code> وفعّل <b>وضع المطوّر</b>.", extStep3: "انقر <b>تحميل الإضافة غير المضغوطة</b> واختر ذلك المجلد.", extGuide: "دليل خطوة بخطوة",
     extAddTo: (n) => `إضافة إلى ${n}`, extOpened: (n) => `فُتح ${n} على صفحة الإضافات.`, extStepDev: "فعّل <b>وضع المطوّر</b>.", extStepLoad: "انقر <b>تحميل الإضافة غير المضغوطة</b>.", extStepPaste: "الصق المجلد بـ <b>Ctrl+V</b> واضغط <b>Enter</b>.", extCopy: "نسخ", extCopied: "تم النسخ", extAgain: (n) => `فتح ${n} مرة أخرى`,
     extSetupTitle: (n) => `إضافة Lectern إلى ${n}`, extS1: (n) => `${n} مفتوح. الصق هذا العنوان في شريط العناوين واضغط <b>Enter</b>.`, extS2: "فعّل <b>وضع المطوّر</b> في تلك الصفحة.", extS3: "انقر <b>تحميل الإضافة غير المضغوطة</b>. في النافذة التي تظهر، الصق هذا المجلد في حقل <b>المجلد</b> وانقر <b>تحديد مجلد</b>.", extReveal: "إظهار المجلد", extWaiting: "بانتظار اتصال الإضافة…", extCancel: "إلغاء",
+    blockToggle: "حجب المواقع أثناء الدراسة", blockedList: "المواقع المحجوبة", extTitle: "إضافة المتصفح", sitePlaceholder: "أضف موقعًا، مثل instagram.com",
     sep: ". ", space: " ",
   },
 };

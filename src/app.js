@@ -1330,7 +1330,7 @@ function renderSettings(animate = false) {
     const known = Boolean(SITE_ICONS[s]);
     const label = SITE_NAMES[s] || s;
     return `<li class="site${known ? "" : " site-wide"}" data-site="${s}" title="${s}">`
-      + siteIcon(s, known ? 22 : 16)
+      + siteIcon(s, known ? 18 : 15)
       + (known ? `<span class="sr">${label}</span>` : `<span class="site-domain">${s}</span>`)
       + `<button class="site-x" data-remove="${s}" aria-label="${t("remove")} ${label}"><svg viewBox="0 0 12 12" width="8" height="8" aria-hidden="true"><path d="m3 3 6 6m0-6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button></li>`;
   }).join("") || `<li class="sites-empty">${t("noSites")}</li>`;
@@ -1338,7 +1338,7 @@ function renderSettings(animate = false) {
 
   const rest = Object.keys(SITE_NAMES).filter((s) => !b.sites.includes(s));
   $("presets-wrap").hidden = rest.length === 0;
-  $("presets").innerHTML = rest.map((s) => `<button class="preset" data-add="${s}" title="${SITE_NAMES[s]}" aria-label="${t("addSite")} ${SITE_NAMES[s]}">${siteIcon(s, 18)}<span class="preset-plus" aria-hidden="true"><svg viewBox="0 0 12 12" width="8" height="8"><path d="M6 2.5v7M2.5 6h7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span></button>`).join("");
+  $("presets").innerHTML = rest.map((s) => `<button class="preset" data-add="${s}" title="${SITE_NAMES[s]}" aria-label="${t("addSite")} ${SITE_NAMES[s]}">${siteIcon(s, 16)}<span class="preset-plus" aria-hidden="true"><svg viewBox="0 0 12 12" width="8" height="8"><path d="M6 2.5v7M2.5 6h7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span></button>`).join("");
   renderExtStatus();
 }
 
