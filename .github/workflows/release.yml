@@ -42,5 +42,5 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          $installer = Get-ChildItem dist/Lectern-Setup-*.exe | Select-Object -First 1
-          gh release upload "${{ inputs.tag }}" $installer.FullName --clobber
+          $files = Get-ChildItem dist/Lectern-Setup-*.exe, dist/Lectern-*-update.gz | ForEach-Object FullName
+          gh release upload "${{ inputs.tag }}" $files --clobber
