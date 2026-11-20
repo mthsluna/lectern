@@ -8,7 +8,8 @@
 //! left behind as `uninstall.exe`; started with `--uninstall`, it removes
 //! Lectern again.
 
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
+use sha2::{Digest, Sha256};
 use std::{
     fs,
     io::Read,
@@ -28,6 +29,7 @@ const RUN_KEY: &str = r"Software\Microsoft\Windows\CurrentVersion\Run";
 const APP_ID: &str = "app.lectern.studytimer";
 const NO_WINDOW: u32 = 0x0800_0000;
 const DETACHED: u32 = 0x0000_0008;
+const REPO: &str = "mthsluna/lectern";
 
 type Res<T = ()> = Result<T, String>;
 
@@ -118,6 +120,8 @@ fn context() -> Context {
 
     let mode = if uninstalling() {
         "uninstall"
+    } else if std::env::args().any(|a| a == "--update") {
+        "self-update"
     } else if installed.is_some() && app_exe().exists() {
         "update"
     } else {
@@ -286,6 +290,113 @@ fn uninstall(keep_data: bool) -> Res {
     Ok(())
 }
 
+/* ---------- in-place updates ----------
+ *
+ * Lectern's Update button starts this program with --update. It finds the
+ * latest release, downloads only the compressed app (never an installer),
+ * checks it against the SHA-256 digest GitHub publishes, swaps the
+ * executable and reopens Lectern. Downloads go through Windows' own URL
+ * moniker (urlmon), the same machinery ordinary installers use.
+ */
+
+#[link(name = "urlmon")]
+extern "system" {
+    fn URLDownloadToFileW(
+        caller: *mut std::ffi::c_void,
+        url: *const u16,
+        file: *const u16,
+        reserved: u32,
+        callback: *mut std::ffi::c_void,
+    ) -> i32;
+}
+
+fn wide(s: &str) -> Vec<u16> {
+    s.encode_utf16().chain(std::iter::once(0)).collect()
+}
+
+fn download(url: &str, to: &Path) -> Res {
+    let hr = unsafe {
+        URLDownloadToFileW(
+            std::ptr::null_mut(),
+            wide(url).as_ptr(),
+            wide(&to.display().to_string()).as_ptr(),
+            0,
+            std::ptr::null_mut(),
+        )
+    };
+    if hr == 0 { Ok(()) } else { Err(format!("Download failed (0x{hr:08x})")) }
+}
+
+#[derive(Serialize, Deserialize, Clone)]
+struct Release {
+    version: String,
+    url: String,
+    digest: Option<String>,
+}
+
+/// The newest release and its update package.
+#[tauri::command(async)]
+fn fetch_update() -> Res<Release> {
+    let tmp = std::env::temp_dir().join("lectern-release.json");
+    let stamp = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map(|d| d.as_secs())
+        .unwrap_or(0);
+    download(&format!("https://api.github.com/repos/{REPO}/releases/latest?_={stamp}"), &tmp)?;
+    let text = fs::read_to_string(&tmp).map_err(err)?;
+    let _ = fs::remove_file(&tmp);
+    let v: serde_json::Value = serde_json::from_str(&text).map_err(err)?;
+
+    let version = v["tag_name"].as_str().ok_or("No release found")?.trim_start_matches('v').to_string();
+    let asset = v["assets"]
+        .as_array()
+        .and_then(|list| list.iter().find(|a| a["name"].as_str().is_some_and(|n| n.ends_with("-update.gz"))))
+        .ok_or("This release has no update package")?;
+    let url = asset["browser_download_url"].as_str().unwrap_or_default().to_string();
+    if !url.starts_with(&format!("https://github.com/{REPO}/releases/download/")) {
+        return Err("Unexpected download address".into());
+    }
+    Ok(Release { version, url, digest: asset["digest"].as_str().map(String::from) })
+}
+
+static STAGED: std::sync::Mutex<Option<Vec<u8>>> = std::sync::Mutex::new(None);
+
+/// Downloads and verifies the new app, keeping it in memory until applied.
+#[tauri::command(async)]
+fn download_update(release: Release) -> Res {
+    let tmp = std::env::temp_dir().join(format!("lectern-{}-update.gz", release.version));
+    download(&release.url, &tmp)?;
+    let gz = fs::read(&tmp).map_err(err)?;
+    let _ = fs::remove_file(&tmp);
+
+    if let Some(expected) = release.digest.as_deref().and_then(|d| d.strip_prefix("sha256:")) {
+        let actual: String = Sha256::digest(&gz).iter().map(|b| format!("{b:02x}")).collect();
+        if !actual.eq_ignore_ascii_case(expected) {
+            return Err("The download did not pass verification".into());
+        }
+    }
+    let mut exe = Vec::with_capacity(8 << 20);
+    flate2::read::GzDecoder::new(&gz[..]).read_to_end(&mut exe).map_err(err)?;
+    if exe.len() < (1 << 20) || &exe[..2] != b"MZ" {
+        return Err("The update package is damaged".into());
+    }
+    *STAGED.lock().map_err(err)? = Some(exe);
+    Ok(())
+}
+
+/// Swaps in the downloaded app and records the new version.
+#[tauri::command]
+fn apply_update(version: String) -> Res {
+    let exe = STAGED.lock().map_err(err)?.take().ok_or("Nothing to install")?;
+    write_replacing(&app_exe(), &exe)?;
+    let hk = RegKey::predef(HKEY_CURRENT_USER);
+    if let Ok(key) = hk.open_subkey_with_flags(UNINSTALL_KEY, winreg::enums::KEY_SET_VALUE) {
+        let _ = key.set_value("DisplayVersion", &version);
+    }
+    refresh_icons();
+    Ok(())
+}
+
 /* ---------- silent mode ---------- */
 
 /// `--silent` installs (or, with `--uninstall`, removes) without a window,
@@ -329,7 +440,10 @@ fn main() {
             shortcuts,
             register,
             launch,
-            uninstall
+            uninstall,
+            fetch_update,
+            download_update,
+            apply_update
         ])
         .setup(|app| {
             // Keep the setup's own WebView files out of the user's profile.

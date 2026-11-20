@@ -20,6 +20,8 @@ const S = {
     open: "Open Lectern", close: "Close",
     removed: "Lectern was removed",
     removedSub: (keep) => keep ? "Your study history is still here if you ever come back." : "Everything, including your history, is gone.",
+    updatingTitle: "Updating Lectern", s_check: "Looking for the new version", s_download: "Downloading the new version",
+    updated: "Lectern is up to date", reopening: "Opening it again",
     failed: "Something went wrong",
   },
   pt: {
@@ -37,6 +39,8 @@ const S = {
     open: "Abrir o Lectern", close: "Fechar",
     removed: "O Lectern foi removido",
     removedSub: (keep) => keep ? "Seu histórico continua aqui, caso você volte." : "Tudo foi apagado, inclusive o histórico.",
+    updatingTitle: "Atualizando o Lectern", s_check: "Procurando a nova versão", s_download: "Baixando a nova versão",
+    updated: "O Lectern está atualizado", reopening: "Abrindo de novo",
     failed: "Algo deu errado",
   },
   es: {
@@ -54,6 +58,8 @@ const S = {
     open: "Abrir Lectern", close: "Cerrar",
     removed: "Lectern se ha quitado",
     removedSub: (keep) => keep ? "Tu historial sigue aquí por si vuelves." : "Todo se ha borrado, incluido tu historial.",
+    updatingTitle: "Actualizando Lectern", s_check: "Buscando la nueva versión", s_download: "Descargando la nueva versión",
+    updated: "Lectern está actualizado", reopening: "Abriéndolo de nuevo",
     failed: "Algo salió mal",
   },
   fr: {
@@ -71,6 +77,8 @@ const S = {
     open: "Ouvrir Lectern", close: "Fermer",
     removed: "Lectern a été supprimé",
     removedSub: (keep) => keep ? "Votre historique est toujours là si vous revenez." : "Tout a été effacé, y compris votre historique.",
+    updatingTitle: "Mise à jour de Lectern", s_check: "Recherche de la nouvelle version", s_download: "Téléchargement de la nouvelle version",
+    updated: "Lectern est à jour", reopening: "Réouverture",
     failed: "Une erreur est survenue",
   },
   de: {
@@ -88,6 +96,8 @@ const S = {
     open: "Lectern öffnen", close: "Schließen",
     removed: "Lectern wurde entfernt",
     removedSub: (keep) => keep ? "Dein Lernverlauf bleibt erhalten, falls du zurückkommst." : "Alles wurde gelöscht, auch dein Verlauf.",
+    updatingTitle: "Lectern wird aktualisiert", s_check: "Neue Version wird gesucht", s_download: "Neue Version wird heruntergeladen",
+    updated: "Lectern ist aktuell", reopening: "Wird wieder geöffnet",
     failed: "Etwas ist schiefgelaufen",
   },
   ru: {
@@ -105,6 +115,8 @@ const S = {
     open: "Открыть Lectern", close: "Закрыть",
     removed: "Lectern удалён",
     removedSub: (keep) => keep ? "Ваша история сохранена на случай, если вы вернётесь." : "Всё удалено, включая историю.",
+    updatingTitle: "Обновляем Lectern", s_check: "Ищем новую версию", s_download: "Загружаем новую версию",
+    updated: "Lectern обновлён", reopening: "Открываем снова",
     failed: "Что-то пошло не так",
   },
   zh: {
@@ -122,6 +134,8 @@ const S = {
     open: "打开 Lectern", close: "关闭",
     removed: "Lectern 已移除",
     removedSub: (keep) => keep ? "你的学习记录仍然保留，随时欢迎回来。" : "所有内容（包括学习记录）都已删除。",
+    updatingTitle: "正在更新 Lectern", s_check: "正在查找新版本", s_download: "正在下载新版本",
+    updated: "Lectern 已是最新版本", reopening: "正在重新打开",
     failed: "出了点问题",
   },
   ja: {
@@ -139,6 +153,8 @@ const S = {
     open: "Lectern を開く", close: "閉じる",
     removed: "Lectern を削除しました",
     removedSub: (keep) => keep ? "学習履歴は残っています。いつでも戻ってきてください。" : "学習履歴を含め、すべて削除しました。",
+    updatingTitle: "Lectern をアップデート中", s_check: "新しいバージョンを確認しています", s_download: "新しいバージョンをダウンロードしています",
+    updated: "Lectern は最新です", reopening: "もう一度開いています",
     failed: "問題が発生しました",
   },
   hi: {
@@ -156,6 +172,8 @@ const S = {
     open: "Lectern खोलें", close: "बंद करें",
     removed: "Lectern हटा दिया गया",
     removedSub: (keep) => keep ? "आपका इतिहास सुरक्षित है, अगर आप लौटना चाहें।" : "इतिहास सहित सब कुछ हटा दिया गया।",
+    updatingTitle: "Lectern अपडेट हो रहा है", s_check: "नया संस्करण खोजा जा रहा है", s_download: "नया संस्करण डाउनलोड हो रहा है",
+    updated: "Lectern अप टू डेट है", reopening: "फिर से खोला जा रहा है",
     failed: "कुछ गलत हो गया",
   },
   ar: {
@@ -173,6 +191,8 @@ const S = {
     open: "فتح Lectern", close: "إغلاق",
     removed: "تمت إزالة Lectern",
     removedSub: (keep) => keep ? "سجل دراستك ما زال محفوظًا إن عدت يومًا." : "حُذف كل شيء، بما في ذلك السجل.",
+    updatingTitle: "جارٍ تحديث Lectern", s_check: "جارٍ البحث عن الإصدار الجديد", s_download: "جارٍ تنزيل الإصدار الجديد",
+    updated: "Lectern محدّث", reopening: "جارٍ فتحه من جديد",
     failed: "حدث خطأ ما",
   },
 };

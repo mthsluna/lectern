@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.13.0
+
+- Updates install in place: Update shows an "Updating Lectern" window and reopens Lectern when it is done. No installer to run.
+- Install this version by hand once; from here on, updates are a click.
+
 ## 1.12.0
 
 - The week carousel now works like Cover Flow, with weeks on both sides.

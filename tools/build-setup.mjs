@@ -44,4 +44,8 @@ sh(`"${tauri}" build --no-bundle`, path.join(root, "setup"));
 const out = path.join(root, "dist", `Lectern-Setup-${version}.exe`);
 fs.mkdirSync(path.dirname(out), { recursive: true });
 fs.copyFileSync(path.join(target, "release", "lectern-setup.exe"), out);
+// the in-place update package: the compressed app, attached to the release
+const pkg = path.join(root, "dist", `Lectern-${version}-update.gz`);
+fs.copyFileSync(path.join(root, "setup", "payload", "lectern.exe.gz"), pkg);
+console.log(`· ${path.relative(root, pkg)} (${(fs.statSync(pkg).size / 1048576).toFixed(1)} MB)`);
 console.log(`\n· ${path.relative(root, out)} (${(fs.statSync(out).size / 1048576).toFixed(1)} MB)`);

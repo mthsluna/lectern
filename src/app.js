@@ -936,8 +936,9 @@ function commitAndRender() {
 /* ---------- updates ---------- */
 
 /* Lectern never downloads or runs anything by itself. It asks GitHub whether
-   a newer release exists; "Update" opens that release's installer in the
-   browser, and the installer updates Lectern in place. */
+   a newer release exists; "Update" hands over to the installed updater, which
+   shows its own window, updates in place and reopens Lectern. Without it, the
+   release's installer opens in the browser instead. */
 
 const RELEASES = "https://api.github.com/repos/mthsluna/lectern/releases/latest";
 const DOWNLOADS = "https://github.com/mthsluna/lectern/";
@@ -988,6 +989,13 @@ function renderUpdate(phase = "offer") {
 
 async function installUpdate() {
   if (!tauri) return renderUpdate("opened");
+  // Installed with Lectern Setup: the updater takes over and reopens Lectern.
+  try {
+    await tauri.invoke("start_update");
+    return;
+  } catch {
+    // not installed by the setup (or it is missing): fall back to the download
+  }
   try {
     await window.__TAURI__.opener.openUrl(pendingUpdate.url);
     renderUpdate("opened");

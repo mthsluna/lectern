@@ -16,6 +16,7 @@ const backend = tauri
   : {
       invoke: async (cmd) => {
         await sleep(300);
+        if (cmd === "fetch_update") return { version: "1.13.0", url: "", digest: null };
         if (cmd === "context") {
           return {
             mode: params.get("mode") || "install", version: "1.7.0", installed: "1.6.1",
@@ -96,7 +97,36 @@ const close = () => backend.win.close();
 
 /* ---------- screens ---------- */
 
+/* Started by Lectern's Update button: no questions, just update and reopen. */
+async function runSelfUpdate() {
+  const fill = $("fill");
+  const step = (label, pct) => { $("step").textContent = label; fill.style.width = `${pct}%`; };
+  try {
+    screen({ title: t("updatingTitle"), progress: true });
+    mark("busy");
+    step(t("s_check"), 6);
+    const [release] = await Promise.all([backend.invoke("fetch_update"), sleep(450)]);
+    $("lede").textContent = `Lectern ${release.version}`;
+    step(t("s_download"), 22);
+    await Promise.all([backend.invoke("download_update", { release }), sleep(600)]);
+    step(t("s_close"), 62);
+    await Promise.all([backend.invoke("close_running"), sleep(400)]);
+    step(t("s_copy"), 82);
+    await Promise.all([backend.invoke("apply_update", { version: release.version }), sleep(450)]);
+    fill.style.width = "100%";
+    await sleep(350);
+    mark("done");
+    screen({ title: t("updated"), lede: t("reopening") });
+    await sleep(1100);
+    await backend.invoke("launch");
+    close();
+  } catch (e) {
+    failed(e);
+  }
+}
+
 function welcome() {
+  if (ctx.mode === "self-update") return runSelfUpdate();
   if (ctx.mode === "uninstall") {
     return screen({
       title: t("removeTitle"),
