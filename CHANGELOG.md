@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.17.0
+
+- Clear a day you started by mistake: click it in the report, then Clear day. Undo is there for a few seconds.
+- Calendar colours that read at a glance: green for studied days, an amber ring for today, a neutral band for the open week.
+- Subject suggestions in their own list, with keyboard support and hours per subject.
+- The week card keeps its size while you edit the goal.
+
 ## 1.16.0
 
 - Icons instead of words for the Today and Report tabs.
