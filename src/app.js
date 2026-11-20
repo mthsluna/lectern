@@ -404,7 +404,11 @@ function renderControls() {
     b.id = "stop-btn";
     b.title = "S";
   }
-  if (s === "closed") btn(t("startAnother"), "btn-link", start);
+  if (s === "closed") {
+    const b = btn("", "btn-soft", start);
+    b.innerHTML = `<svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M5 3.2v9.6a.6.6 0 0 0 .92.5l7.4-4.8a.6.6 0 0 0 0-1L5.92 2.7A.6.6 0 0 0 5 3.2Z" fill="currentColor"/></svg><span></span>`;
+    b.lastChild.textContent = t("startAnother");
+  }
 
   /* the optional subject field only exists before a session starts */
   const idle = s === "idle" || s === "closed";
@@ -469,7 +473,7 @@ function renderWeekStrip() {
     $("goal-fill").style.width = `${pct * 100}%`;
     $("goal-fill").classList.toggle("done", pct >= 1);
   }
-  if ($("goal-edit").hidden) $("goal-btn").textContent = goal ? t("goal") : t("setGoal");
+  if ($("goal-edit").hidden) $("goal-label").textContent = goal ? `${t("goal")} · ${goal}h` : t("setGoal");
 
   const left = 6 - parseKey(today).getDay();
   const n = streak();
@@ -618,6 +622,83 @@ function renderReport() {
         <span class="s-bar"><span style="width:${(ms / top) * 100}%"></span></span>
         <span class="s-time">${hm(ms)}</span>
       </li>`).join("");
+  }
+}
+
+/* ---------- week carousel and calendar ---------- */
+
+/* Moves the report to another week; the dates and the report slide in
+   from the side they come from. */
+function goToWeek(start) {
+  const current = weekStart(todayKey());
+  if (start > current) start = current;
+  if (start === reportWeek) return;
+  const dir = start > reportWeek ? "next" : "prev";
+  reportWeek = start;
+  $("report-notice").hidden = true;
+  renderReport();
+  for (const el of [$("range-text"), $("report-body")]) {
+    el.classList.remove("slide-next", "slide-prev");
+    void el.offsetWidth;
+    el.classList.add(`slide-${dir}`);
+  }
+}
+
+let calMonth = null;   // first day of the month on display
+
+function toggleCalendar() {
+  if (!$("cal").hidden) return closeCalendar();
+  const mid = parseKey(addDays(reportWeek, 3));
+  calMonth = new Date(mid.getFullYear(), mid.getMonth(), 1);
+  renderCalendar();
+  $("cal").hidden = false;
+  $("range-btn").setAttribute("aria-expanded", "true");
+}
+
+function closeCalendar() {
+  if ($("cal").hidden) return;
+  $("cal").hidden = true;
+  $("range-btn").setAttribute("aria-expanded", "false");
+}
+
+function moveCalendar(step) {
+  calMonth = new Date(calMonth.getFullYear(), calMonth.getMonth() + step, 1);
+  renderCalendar();
+}
+
+function renderCalendar() {
+  const today = todayKey();
+  const first = keyOf(calMonth);
+  const thisMonth = new Date(parseKey(today).getFullYear(), parseKey(today).getMonth(), 1);
+  const title = new Intl.DateTimeFormat(locale(), { month: "long", year: "numeric" }).format(calMonth);
+  $("cal-title").textContent = cap(title);
+  $("cal-next").disabled = calMonth >= thisMonth;
+
+  const sunday = weekStart(today);
+  $("cal-weekdays").innerHTML = Array.from({ length: 7 }, (_, i) =>
+    `<span>${dayName(addDays(sunday, i), "narrow")}</span>`).join("");
+
+  const grid = $("cal-grid");
+  grid.innerHTML = "";
+  for (let row = weekStart(first); parseKey(row) <= new Date(calMonth.getFullYear(), calMonth.getMonth() + 1, 0); row = addDays(row, 7)) {
+    const week = document.createElement("div");
+    week.className = "cal-row" + (row === reportWeek ? " is-selected" : "") + (row > today ? " is-future" : "");
+    for (let i = 0; i < 7; i++) {
+      const k = addDays(row, i);
+      const d = parseKey(k);
+      const day = document.createElement("button");
+      const studied = liveFor(k).study >= 60000;
+      day.className = "cal-day"
+        + (d.getMonth() !== calMonth.getMonth() ? " is-out" : "")
+        + (k === today ? " is-today" : "")
+        + (studied ? " has-study" : "");
+      day.disabled = k > today;
+      day.textContent = d.getDate();
+      day.title = `${cap(dayName(k))} · ${hm(liveFor(k).study)}`;
+      day.addEventListener("click", () => { closeCalendar(); goToWeek(weekStart(k)); });
+      week.appendChild(day);
+    }
+    grid.appendChild(week);
   }
 }
 
@@ -802,8 +883,14 @@ function seedDemo() {
     renderUpdate();
   });
   checkForUpdate();
-  $("prev-week").addEventListener("click", () => { reportWeek = addDays(reportWeek, -7); $("report-notice").hidden = true; renderReport(); });
-  $("next-week").addEventListener("click", () => { reportWeek = addDays(reportWeek, 7); $("report-notice").hidden = true; renderReport(); });
+  $("prev-week").addEventListener("click", () => goToWeek(addDays(reportWeek, -7)));
+  $("next-week").addEventListener("click", () => goToWeek(addDays(reportWeek, 7)));
+  $("range-btn").addEventListener("click", (e) => { e.stopPropagation(); toggleCalendar(); });
+  $("cal-prev").addEventListener("click", () => moveCalendar(-1));
+  $("cal-next").addEventListener("click", () => moveCalendar(1));
+  $("cal-today").addEventListener("click", () => { closeCalendar(); goToWeek(weekStart(todayKey())); });
+  $("cal").addEventListener("click", (e) => e.stopPropagation());
+  document.addEventListener("click", closeCalendar);
 
   /* subject field */
   $("subject").addEventListener("input", (e) => { draftSubject = e.target.value; });
@@ -821,6 +908,7 @@ function seedDemo() {
 
   /* keyboard: Space start/pause/resume, S stop (twice), ←/→ change week */
   document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && !$("cal").hidden) return closeCalendar();
     const el = e.target instanceof Element ? e.target : null;
     if ((el && el.closest("input, textarea, button")) || e.ctrlKey || e.metaKey || e.altKey || e.repeat) return;
     if (!$("picker").hidden) return;

@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.10.0
+
+- A calendar in the report: click the dates to see the month, with a dot on every day you studied, and jump to any week.
+- The week switcher works like a carousel, with the year above the dates.
+- Prettier buttons for setting a goal and starting another session.
+
 ## 1.9.3
 
 - The theme icon animates: the sun sets and the moon rises, or the moon sets and the sun rises.
