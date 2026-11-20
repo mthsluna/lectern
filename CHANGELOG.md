@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.21.3
+
+- The language picker shows only its question.
+- A week with no study now says so plainly: "No study time was recorded this week."
+
 ## 1.21.2
 
 - Settings redesigned as a quiet, Notion-like page: sections with a hairline, one row per option, small switch, flat tiles and inline add.
