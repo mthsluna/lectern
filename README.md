@@ -58,7 +58,7 @@ Requires [Rust](https://rustup.rs) and [Node.js](https://nodejs.org). Built with
 
 ## License
 
-[MIT](LICENSE). Chimes by [Qvantor](https://freesound.org/people/Qvantor/), CC0.
+[MIT](LICENSE). Chimes by [Qvantor](https://freesound.org/people/Qvantor/), CC0. Site marks from [Simple Icons](https://simpleicons.org), CC0.
 
 <br>
 

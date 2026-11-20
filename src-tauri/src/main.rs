@@ -9,6 +9,7 @@
 //! timestamps, so nothing is lost while the interface is unloaded.
 
 mod bridge;
+mod extension;
 
 use std::{
     fs,
@@ -113,6 +114,21 @@ fn bridge_seen() -> u64 {
     bridge::last_seen()
 }
 
+/// Browsers on this computer that can take the extension (empty if the app
+/// was built without it).
+#[tauri::command]
+fn ext_browsers() -> Vec<extension::Browser> {
+    if extension::available() { extension::browsers() } else { Vec::new() }
+}
+
+/// Unpacks the extension and opens the browser's extensions page; returns the folder.
+#[tauri::command]
+fn ext_install(browser: String) -> Result<String, String> {
+    extension::install(&browser)
+        .map(|p| p.display().to_string())
+        .map_err(|e| e.to_string())
+}
+
 #[tauri::command]
 fn take_remote(remote: tauri::State<Remote>) -> Option<String> {
     remote.0.lock().unwrap().take()
@@ -212,6 +228,8 @@ fn main() {
             start_update,
             take_remote,
             bridge_seen,
+            ext_browsers,
+            ext_install,
             set_keep_alive,
             release_window
         ])
@@ -224,8 +242,10 @@ fn main() {
             }
         })
         .setup(|app| {
-            // Let the browser extension find Lectern (rewritten only if it changed).
+            // Let the browser extension find Lectern (rewritten only if it changed),
+            // and bring an extension set up from here up to date.
             let _ = bridge::register();
+            std::thread::spawn(extension::refresh_if_installed);
 
             let saved = fs::read_to_string(data_dir(app.handle())?.join(FILE)).unwrap_or_default();
             let (open_label, quit_label) = tray_labels(&lang_of(&saved));

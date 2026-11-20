@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.21.0
+
+- Add to Chrome, Edge or Brave from Settings: Lectern unpacks the extension, opens the browser on its extensions page and copies the folder, then guides the last three clicks. Your default browser comes first.
+- The settings card notices the moment the extension connects.
+- An extension set up from the app is refreshed whenever the app updates.
+- The blocked sites are tiles with each site's mark instead of names, and the settings card is in neutral tones only.
+
 ## 1.20.1
 
 - Get the extension in Settings now downloads it at once, then shows the three steps to install it.
