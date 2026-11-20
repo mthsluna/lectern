@@ -1,180 +1,250 @@
-<p align="center">
-  <img src="docs/lectern-light.webp#gh-light-mode-only" width="180" alt="Lectern">
-  <img src="docs/lectern-dark.webp#gh-dark-mode-only" width="180" alt="Lectern">
-</p>
+<div align="center">
 
-<h1 align="center">Lectern</h1>
+<img src="docs/lectern-light.webp#gh-light-mode-only" width="120" alt="Lectern">
+<img src="docs/lectern-dark.webp#gh-dark-mode-only" width="120" alt="Lectern">
 
-<p align="center">
-  Press start when you sit down to study.<br>
-  Every Saturday, find out how the week really went.
-</p>
+# Lectern
 
-<p align="center">
-  <a href="https://github.com/mthsluna/lectern/releases/latest"><b>Download for Windows</b></a>
-  &nbsp;&middot;&nbsp;
-  <a href="https://mthsluna.github.io/lectern/">Website</a>
-  &nbsp;&middot;&nbsp;
-  <a href="#what-you-get">What you get</a>
-  &nbsp;&middot;&nbsp;
-  <a href="#questions">Questions</a>
-</p>
+**A quiet study timer for Windows that writes you a report of your week every Saturday.**
+
+[![Latest release](https://img.shields.io/github/v/release/mthsluna/lectern?style=flat-square&color=2f6b55&label=release)](https://github.com/mthsluna/lectern/releases/latest)
+[![Downloads](https://img.shields.io/github/downloads/mthsluna/lectern/total?style=flat-square&color=2f6b55)](https://github.com/mthsluna/lectern/releases)
+[![Platform](https://img.shields.io/badge/platform-Windows%2010%20%7C%2011-141413?style=flat-square)](#installation)
+[![License](https://img.shields.io/github/license/mthsluna/lectern?style=flat-square&color=141413)](LICENSE)
+
+[**Download**](https://github.com/mthsluna/lectern/releases/latest) &nbsp;·&nbsp;
+[Website](https://mthsluna.github.io/lectern/) &nbsp;·&nbsp;
+[Changelog](CHANGELOG.md) &nbsp;·&nbsp;
+[Report an issue](https://github.com/mthsluna/lectern/issues)
 
 <br>
 
-<p align="center">
-  <img src="docs/showcase-light.png#gh-light-mode-only" alt="Lectern: timer, weekly report and language picker">
-  <img src="docs/showcase-dark.png#gh-dark-mode-only" alt="Lectern: timer, weekly report and language picker">
-</p>
+<img src="docs/showcase-light.png#gh-light-mode-only" alt="Lectern: the timer, the weekly report and the language picker">
+<img src="docs/showcase-dark.png#gh-dark-mode-only" alt="Lectern: the timer, the weekly report and the language picker">
+
+</div>
 
 <br>
 
-Most study apps want you to plan, tag, configure and log before you can begin.
-Lectern asks for one thing: press start. It keeps the time, notices the breaks, and
-on Saturday it writes you an honest report of the week, without you ever telling it
-what day it is.
+## Overview
 
-## Why people keep it open
+Most study apps ask you to plan, tag and log before you can begin. Lectern asks for
+one click. Press start when you sit down and pause when you stand up. Lectern keeps
+the time, separates real focus from breaks, and every Saturday it opens a written
+report of how your week actually went.
 
-- **It is honest about breaks.** Paused time is never counted as study. The report
-  shows how much of your sitting time was real focus.
-- **It never loses a minute.** Time is stored as timestamps, not as a counter. Close
-  the window, quit the app or restart your PC: the clock is still right when you come
-  back.
-- **It stays out of the way.** Closing the window sends Lectern to the system tray
-  and unloads the interface, so it uses about 27 MB in the background.
-- **It installs like it looks.** A calm installer in the same style, no
-  administrator prompt, and an optional start with Windows that goes straight to
-  the tray.
-- **It is yours.** No account and no tracking. Your history is a single file on
-  your own computer.
-- **It keeps itself current.** When a new version is out, Lectern says so in one
-  quiet line. Update with a click, or don't.
-- **It speaks your language.** English, 中文, हिन्दी, Español, Français, العربية,
-  Português, Русский, 日本語 and Deutsch, in light or dark.
+It is small (about 5 MB), installs without administrator rights, runs from the
+system tray, works offline, and keeps your history in a single file on your own
+computer.
 
-## What you get
+## Contents
 
-### Every day
+- [Features](#features)
+- [See it in motion](#see-it-in-motion)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Privacy and data](#privacy-and-data)
+- [FAQ](#faq)
+- [Development](#development)
+- [Credits and license](#credits-and-license)
 
-<p align="center">
-  <img src="docs/clips/timer.webp" width="360" alt="Pressing start: the clock begins to run">
-</p>
+## Features
 
-| | |
+| Feature | Description |
+| :-- | :-- |
+| **One-click timer** | Start, pause and stop. Breaks are tracked but never counted as study, and stopping asks twice so it never happens by accident. |
+| **Weekly report** | Opens by itself on Saturday: total hours, change from last week, a day-by-day chart, focus ratio, time per subject and a short written summary. |
+| **Pomodoro mode** | Classic 25 / 5 / 15 out of the box. Every length is adjustable, with a chime of your choice to start and end each break. |
+| **Calendar** | Jump to any past week. Studied days, today and the open week each have their own marker. |
+| **Goal and streak** | Set weekly hours once and watch them fill. A streak starts after two days in a row. |
+| **Subjects** | Optionally name what you are studying. Lectern suggests past subjects with the hours already spent on each. |
+| **Corrections** | Started the timer by mistake? Clear that day from the report, with a few seconds to undo. |
+| **Accurate by design** | Time is stored as timestamps, not a counter. Sessions that cross midnight are split between the two days. |
+| **Out of the way** | Closing the window sends Lectern to the system tray, where it uses about 27 MB. |
+| **Ten languages** | English, 中文, हिन्दी, Español, Français, العربية, Português, Русский, 日本語 and Deutsch, in light or dark. |
+| **In-place updates** | A single line announces a new version. One click downloads, verifies and swaps it in. |
+
+## See it in motion
+
+<table>
+  <tr>
+    <td align="center" width="33%"><img src="docs/clips/timer.webp" alt="Pressing start: the clock begins to run"></td>
+    <td align="center" width="33%"><img src="docs/clips/pomodoro.webp" alt="Switching to Pomodoro, choosing a chime and the volume, then the countdown"></td>
+    <td align="center" width="33%"><img src="docs/clips/report.webp" alt="The weekly report: bars growing, moving between weeks and opening the calendar"></td>
+  </tr>
+  <tr>
+    <td align="center"><sub><b>Start studying</b><br>One click and the clock runs.</sub></td>
+    <td align="center"><sub><b>Pomodoro</b><br>Lengths, chimes and volume.</sub></td>
+    <td align="center"><sub><b>Weekly report</b><br>Charts, weeks and the calendar.</sub></td>
+  </tr>
+</table>
+
+## Installation
+
+1. Download **`Lectern-Setup-<version>.exe`** from the [latest release](https://github.com/mthsluna/lectern/releases/latest).
+2. Run it, and choose whether you want a desktop shortcut and whether Lectern opens when Windows starts.
+3. That is all. No administrator prompt and no account.
+
+**Requirements:** Windows 10 or 11 (64-bit) with the Microsoft Edge WebView2 runtime,
+which ships with Windows 11 and current versions of Windows 10.
+
+<details>
+<summary><b>Silent install and uninstall</b></summary>
+
+<br>
+
+| Command | Effect |
+| :-- | :-- |
+| `Lectern-Setup.exe --silent` | Installs or updates without a window, keeping your current choices. |
+| `uninstall.exe --uninstall --silent` | Removes Lectern and keeps your study history. |
+
+Lectern installs per user to `%LOCALAPPDATA%\Lectern`. To remove it normally, use
+**Settings → Apps**; you will be asked whether to keep your history.
+
+</details>
+
+## Usage
+
+### The timer
+
+| Action | What it means |
 | :-- | :-- |
 | **Start** | You are studying. The clock runs. |
-| **Pause** | You are on a break. It is tracked, but never counted as study. |
-| **Stop** | You are done for the day. It asks twice, so it never happens by accident. |
+| **Pause** | You are on a break. It is tracked, never counted as study. |
+| **Stop** | You are done for the day. Press twice to confirm. |
 
-You can type what you are studying before you start, or leave it blank. Lectern
-remembers your subjects and suggests them next time.
+Type a subject before you start if you like, or leave it blank.
 
-### Every Saturday
+### Pomodoro
 
-<p align="center">
-  <img src="docs/clips/report.webp" width="360" alt="The weekly report: bars growing, moving between weeks and opening the calendar">
-</p>
+Switch the timer from **Free** to **Pomodoro** and it counts down instead. Click
+**Pomodoro** again to open its settings.
 
-The first time you open Lectern on a Saturday, the report opens by itself. Miss
-Saturday and it is waiting for you next time. Click the dates to open a calendar
-and jump to any week you have studied.
+| Setting | Default | Range |
+| :-- | :-- | :-- |
+| Focus | 25 min | 5 to 120 min |
+| Short break | 5 min | 1 to 30 min |
+| Long break | 15 min | 5 to 60 min |
+| Long break after | 4 rounds | 2 to 8 rounds |
 
-- Total hours, and how they compare with the week before
-- A day-by-day chart with your best day highlighted
-- Days studied, daily average and focus ratio
-- Time per subject
-- Progress toward your weekly goal
-- A short written summary, which tells you when it is your best week yet
+Choose a chime for *time to rest* and another for *time to study* from eight sounds,
+or none, and set the volume to the exact percent. Focus counts as study and breaks as
+break time, so the weekly report reads the same in either mode.
 
-### Pomodoro, if you like it
+### The weekly report
 
-<p align="center">
-  <img src="docs/clips/pomodoro.webp" width="360" alt="Switching to Pomodoro, choosing a chime and the volume, then the countdown">
-</p>
+The first time you open Lectern on a Saturday, the report appears on its own. If you
+miss Saturday, it waits for your next visit. Use the arrows or the calendar to browse
+earlier weeks, and click a day in the chart to clear it.
 
-Switch the timer from **Free** to **Pomodoro** and it counts down instead. The
-classic rhythm comes ready: 25 minutes of focus, 5 of rest, and 15 after every
-fourth round. Click Pomodoro again to change any of it.
-
-A soft chime tells you when to rest and another when to get back to it. Pick each
-from eight clean sounds, or none, and set the volume. Focus counts as study and
-rest as break time, so the report reads the same either way.
-
-### Along the way
-
-- **Weekly goal.** Set your hours once. A thin line under the week's total fills
-  as you go and turns green when you get there.
-- **Streak.** After two days in a row, Lectern starts counting. The streak is safe
-  until the day ends, so it never breaks just because it is morning.
-
-## Keyboard
+### Keyboard shortcuts
 
 | Key | Action |
 | :-- | :-- |
-| `Space` | Start, pause or resume (or skip a Pomodoro break) |
-| `S` | Stop (press twice) |
-| `←` `→` | Previous or next week, in the report |
+| <kbd>Space</kbd> | Start, pause or resume; skip a Pomodoro break |
+| <kbd>S</kbd> | Stop (press twice) |
+| <kbd>←</kbd> <kbd>→</kbd> | Previous or next week in the report |
+| <kbd>Esc</kbd> | Close the calendar or the Pomodoro settings |
 
-## Questions
+## Privacy and data
 
-**What happens when I close the window?**
+- **No account, no telemetry.** Nothing about you or your studying leaves your computer.
+- **One local file.** Your history lives in `%APPDATA%\app.lectern.studytimer\lectern.json`.
+  Copy it to back up or move to another computer.
+- **Network use.** The only request Lectern makes is to GitHub, to check for a newer
+  release. Offline, it simply skips the check.
+
+## FAQ
+
+<details>
+<summary><b>What happens when I close the window?</b></summary>
+<br>
 Lectern keeps running in the system tray, near the clock. Click the icon to bring it
-back, or right-click it and choose Quit to close it for good. The timer keeps
-counting either way.
+back, or right-click it and choose <b>Quit</b>. The timer, and Pomodoro chimes, keep
+running either way.
+</details>
 
-**What if I do not open the app on Saturday?**
-The report is waiting the next time you do. Nothing is skipped.
+<details>
+<summary><b>What if I study past midnight?</b></summary>
+<br>
+Each day gets its own share. Studying from 22:00 to 03:00 counts 2 hours on the first
+day and 3 on the next, and so do breaks and subjects. A break left open overnight ends
+the session when the break began; sleep is not a break.
+</details>
 
-**What if I study past midnight?**
-Each day gets its own share. Studying from 22:00 to 03:00 counts 2 hours on the
-first day and 3 on the next, and so do breaks and subjects. The session ends on
-the day it began, so the next day is still free for a fresh one. A break left open
-overnight ends the session when the break began; sleep is not a break.
+<details>
+<summary><b>When does a week start?</b></summary>
+<br>
+On Sunday. The Saturday report covers Sunday through Saturday.
+</details>
 
-**When does a week start?**
-Sunday. The report on Saturday covers Sunday through Saturday.
+<details>
+<summary><b>How do updates work?</b></summary>
+<br>
+When Lectern opens, it asks GitHub whether a newer release exists. If so, a line at
+the top offers <b>Update</b>, <b>Not now</b> or <b>Skip this version</b>. Updating
+downloads the new build, checks it against the SHA-256 digest published by GitHub,
+replaces it and reopens Lectern. Your history is untouched.
+</details>
 
-**Where is my data?**
-In a single JSON file at `%APPDATA%\app.lectern.studytimer\lectern.json`. Copy it
-to back up your history, or to move it to another computer.
+<details>
+<summary><b>Will reinstalling erase my history?</b></summary>
+<br>
+No. The uninstaller asks whether to keep it, and a reinstall picks up where you left off.
+</details>
 
-**How do I uninstall it?**
-From Windows Settings, under Apps. Lectern asks whether to keep your study history,
-so a reinstall picks up where you left off.
+## Development
 
-**Can I install it from a script?**
-Yes. `Lectern-Setup.exe --silent` installs or updates without a window, keeping
-your current choices. `uninstall.exe --uninstall --silent` removes it and keeps
-your history.
+Lectern is built with [Tauri 2](https://tauri.app) (Rust) and plain HTML, CSS and
+JavaScript, with no frontend framework.
 
-**How do updates work?**
-When Lectern opens, it asks GitHub whether a newer release exists. If one does, a
-line at the top offers it: **Update**, **Not now** or **Skip this version**.
-**Update** shows a small "Updating Lectern" window that downloads the new version,
-checks it against the SHA-256 digest GitHub publishes, swaps it in and reopens
-Lectern. No installer to run, and your history stays as it is.
-
-**Does it need the internet?**
-No. Checking for and downloading updates are the only times Lectern goes online,
-and they send nothing about you or your studying. Offline, it simply skips them.
-
-## Build from source
-
-You need [Rust](https://rustup.rs) and [Node.js](https://nodejs.org).
+**Prerequisites:** [Rust](https://rustup.rs) and [Node.js](https://nodejs.org) 20 or later.
 
 ```bash
 git clone https://github.com/mthsluna/lectern.git
 cd lectern
 npm install
-npm run dev      # run it
-npm run build    # dist/Lectern-Setup-<version>.exe
+npm run dev
 ```
 
-Built with [Tauri](https://tauri.app) and plain HTML, CSS and JavaScript.
+| Script | Description |
+| :-- | :-- |
+| `npm run dev` | Run the app with live reload. |
+| `npm run build` | Build the installer and update package into `dist/`. |
+| `npm run screenshots` | Regenerate the README showcase images. |
+| `npm run screenshots:site` | Regenerate the website screenshots. |
+| `npm run clips` | Record the animated clips by driving the real interface. |
 
-## License
+<details>
+<summary><b>Project structure</b></summary>
 
-[MIT](LICENSE). The Pomodoro chimes are by
-[Qvantor](https://freesound.org/people/Qvantor/) on Freesound, released into the
-public domain under [CC0](https://creativecommons.org/publicdomain/zero/1.0/).
+<br>
+
+```text
+lectern/
+├── src/            App interface: HTML, CSS, JavaScript, translations, sounds
+├── src-tauri/      Rust shell: window, tray, storage, update hand-off
+├── setup/          The installer, a separate Tauri app in the same style
+├── tools/          Build, screenshot and clip scripts
+├── docs/           Website (GitHub Pages) and README images
+└── CHANGELOG.md
+```
+
+</details>
+
+Releases are published from the **Release build** workflow in GitHub Actions. Every
+change is recorded in the [changelog](CHANGELOG.md).
+
+## Credits and license
+
+Released under the [MIT License](LICENSE).
+
+Pomodoro chimes by [Qvantor](https://freesound.org/people/Qvantor/) on Freesound,
+dedicated to the public domain under [CC0](https://creativecommons.org/publicdomain/zero/1.0/).
+Interface typeface: [Inter](https://rsms.me/inter/), under the SIL Open Font License.
+
+<br>
+
+<div align="center">
+<sub>Made by <a href="https://github.com/mthsluna">@mthsluna</a></sub>
+</div>
