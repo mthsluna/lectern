@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.14.0
+
+- The week carousel curves like a drum.
+- A bigger play button to start another session.
+- A clearer week chart: tracks, hours per day, and a dashed line for the daily pace your goal needs.
+- On wide windows the content stays in a comfortable column.
+
 ## 1.13.0
 
 - Updates install in place: Update shows an "Updating Lectern" window and reopens Lectern when it is done. No installer to run.
