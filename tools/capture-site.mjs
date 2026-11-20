@@ -42,13 +42,20 @@ const SHOTS = [
   ["calendar", `view=report&${DAY}&state=closed&panel=cal`, "light", 720],
   ["languages", "pick", "light", 720],
 ];
+// the browser extension's popup, linked (a stand-in app) and on its own
+const POPUPS = [
+  ["extension-linked", "mock&lang=en&theme=light"],
+  ["extension", "lang=en&theme=light"],
+];
+const ext = path.join(root, "extension");
 
-const TYPES = { ".html": "text/html", ".css": "text/css", ".js": "text/javascript", ".svg": "image/svg+xml", ".woff2": "font/woff2", ".mp3": "audio/mpeg" };
+const TYPES = { ".png": "image/png", ".html": "text/html", ".css": "text/css", ".js": "text/javascript", ".svg": "image/svg+xml", ".woff2": "font/woff2", ".mp3": "audio/mpeg" };
 const server = http.createServer((req, res) => {
   let p = decodeURIComponent(new URL(req.url, "http://x").pathname);
   if (p === "/") p = "/index.html";
-  const file = path.join(src, p);
-  if (!file.startsWith(src) || !fs.existsSync(file)) { res.writeHead(404); return res.end(); }
+  const dir = p.startsWith("/ext/") ? ext : src;
+  const file = path.join(dir, p.startsWith("/ext/") ? p.slice(4) : p);
+  if (!file.startsWith(dir) || !fs.existsSync(file)) { res.writeHead(404); return res.end(); }
   res.writeHead(200, { "content-type": TYPES[path.extname(file)] || "application/octet-stream" });
   fs.createReadStream(file).pipe(res);
 });
@@ -71,6 +78,23 @@ for (const [name, query, theme, H] of SHOTS) {
   await sharp(shot).composite([{ input: mask, blend: "dest-in" }, { input: frame }])
     .webp({ quality: 88 })
     .toFile(path.join(out, `${name}.webp`));
+  console.log(`docs/shots/${name}.webp`);
+}
+
+for (const [name, query] of POPUPS) {
+  const raw = path.join(tmp, `${name}.png`);
+  const PW = 340, PH = 560;
+  await run(browser, [
+    "--headless=new", "--disable-gpu", "--hide-scrollbars", "--lang=en-US",
+    `--force-device-scale-factor=${SCALE}`, `--window-size=${PW},${PH}`,
+    "--virtual-time-budget=4000", `--screenshot=${raw}`,
+    `${base}/ext/popup.html?${query}`,
+  ], { timeout: 60000 });
+  const w = PW * SCALE, h = PH * SCALE, r = 16 * SCALE;
+  const shot = await sharp(raw).resize(w, h, { fit: "cover", position: "top" }).toBuffer();
+  const mask = Buffer.from(`<svg width="${w}" height="${h}"><rect width="${w}" height="${h}" rx="${r}"/></svg>`);
+  const frame = Buffer.from(`<svg width="${w}" height="${h}"><rect x="1" y="1" width="${w - 2}" height="${h - 2}" rx="${r}" fill="none" stroke="#e3e0d4" stroke-width="2"/></svg>`);
+  await sharp(shot).composite([{ input: mask, blend: "dest-in" }, { input: frame }]).webp({ quality: 88 }).toFile(path.join(out, `${name}.webp`));
   console.log(`docs/shots/${name}.webp`);
 }
 

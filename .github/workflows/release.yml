@@ -37,10 +37,12 @@ jobs:
 
       - run: npm run build
 
+      - run: npm run build:extension
+
       - name: Attach installer to the release
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          $files = Get-ChildItem dist/Lectern-Setup*.exe, dist/Lectern-*-update.gz | ForEach-Object FullName
+          $files = Get-ChildItem dist/Lectern-Setup*.exe, dist/Lectern-*-update.gz, dist/Lectern-Extension*.zip | ForEach-Object FullName
           gh release upload "${{ inputs.tag }}" $files --clobber
