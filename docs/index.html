@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lectern — a quiet study timer with a weekly report</title>
+  <meta name="description" content="Lectern is a small Windows study timer. Press start, take honest breaks, and read an automatic report of your week every Saturday.">
+  <meta name="theme-color" content="#faf9f5">
+  <link rel="icon" href="brand/lectern-app-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #faf9f5;
+      --surface: #f0eee6;
+      --line: #e3e0d4;
+      --ink: #141413;
+      --ink-soft: #3d3d3a;
+      --muted: #73726c;
+      --accent: #2f6b55;
+      --accent-soft: #dde8e1;
+      --serif: "Source Serif 4", "Tiempos Text", Georgia, serif;
+      --sans: "Instrument Sans", "Styrene B", -apple-system, "Segoe UI", sans-serif;
+      --col: 680px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--serif);
+      font-size: 18px;
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+    img { display: block; max-width: 100%; height: auto; }
+    a { color: inherit; text-decoration-color: color-mix(in srgb, currentColor 35%, transparent); text-underline-offset: 3px; }
+    a:hover { text-decoration-color: currentColor; }
+
+    /* a single, narrow column in the middle of the page */
+    .wrap { width: 100%; max-width: var(--col); margin: 0 auto; padding: 0 24px; }
+
+    /* top bar */
+    .bar { display: flex; align-items: center; justify-content: space-between; padding: 22px 0; font-family: var(--sans); font-size: 14px; }
+    .brand { display: inline-flex; align-items: center; gap: 9px; font-weight: 600; text-decoration: none; letter-spacing: -0.01em; }
+    .brand img { width: 22px; height: 22px; }
+    .bar nav { display: flex; gap: 20px; color: var(--muted); }
+    .bar nav a { text-decoration: none; }
+    .bar nav a:hover { color: var(--ink); }
+
+    /* hero */
+    .hero { padding: 72px 0 40px; text-align: center; }
+    .hero .logo { width: 132px; margin: 0 auto 28px; }
+    h1 {
+      font-family: var(--serif);
+      font-weight: 500;
+      font-size: clamp(40px, 7vw, 56px);
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+    }
+    .lede { max-width: 520px; margin: 18px auto 0; font-size: 20px; color: var(--ink-soft); }
+    .actions { margin-top: 32px; display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; font-family: var(--sans); }
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      height: 44px; padding: 0 20px;
+      border-radius: 999px;
+      font-size: 15px; font-weight: 500;
+      text-decoration: none;
+      transition: transform .2s cubic-bezier(.3, 1.5, .5, 1), background .2s, box-shadow .2s;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn-primary { background: var(--ink); color: var(--bg); }
+    .btn-primary:hover { background: #2a2a28; }
+    .btn-ghost { box-shadow: inset 0 0 0 1px var(--line); color: var(--ink); }
+    .btn-ghost:hover { box-shadow: inset 0 0 0 1px #c9c6b9; }
+    .meta { margin-top: 14px; font-family: var(--sans); font-size: 13px; color: var(--muted); }
+
+    /* figures */
+    figure { margin: 40px 0; }
+    .shot { margin: 0 auto; filter: drop-shadow(0 24px 40px rgba(20, 20, 19, .10)) drop-shadow(0 2px 6px rgba(20, 20, 19, .05)); }
+    .shot.narrow { max-width: 400px; }
+    .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
+    figcaption { margin-top: 16px; text-align: center; font-family: var(--sans); font-size: 13px; color: var(--muted); }
+
+    /* text */
+    section { padding: 56px 0 8px; }
+    section + section { border-top: 1px solid var(--line); }
+    .kicker { font-family: var(--sans); font-size: 13px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--accent); }
+    h2 { margin-top: 10px; font-weight: 500; font-size: 34px; line-height: 1.15; letter-spacing: -0.015em; }
+    h3 { margin-top: 32px; font-family: var(--sans); font-size: 16px; font-weight: 600; letter-spacing: -0.005em; }
+    p { margin-top: 16px; color: var(--ink-soft); }
+    ul.points { list-style: none; margin-top: 20px; }
+    ul.points li { position: relative; padding-left: 22px; margin-top: 12px; color: var(--ink-soft); }
+    ul.points li::before { content: ""; position: absolute; left: 2px; top: .7em; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
+    ul.points b { color: var(--ink); font-weight: 600; }
+
+    table { width: 100%; margin-top: 20px; border-collapse: collapse; font-family: var(--sans); font-size: 15px; }
+    td { padding: 12px 0; border-bottom: 1px solid var(--line); vertical-align: top; color: var(--ink-soft); }
+    td:first-child { width: 34%; padding-right: 16px; color: var(--ink); font-weight: 600; }
+    kbd {
+      display: inline-block; min-width: 26px; padding: 1px 7px;
+      border-radius: 6px; background: var(--surface); box-shadow: inset 0 -1px 0 var(--line);
+      font-family: var(--sans); font-size: 13px; text-align: center; color: var(--ink);
+    }
+
+    .langs { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 8px; font-family: var(--sans); font-size: 14px; }
+    .langs span { padding: 5px 12px; border-radius: 999px; background: var(--surface); color: var(--ink-soft); }
+
+    details { border-bottom: 1px solid var(--line); }
+    details:first-of-type { margin-top: 20px; border-top: 1px solid var(--line); }
+    summary {
+      list-style: none; cursor: pointer;
+      display: flex; justify-content: space-between; align-items: center; gap: 16px;
+      padding: 16px 0;
+      font-family: var(--sans); font-size: 16px; font-weight: 500;
+    }
+    summary::-webkit-details-marker { display: none; }
+    summary::after { content: "+"; font-size: 20px; font-weight: 400; color: var(--muted); transition: transform .25s; }
+    details[open] summary::after { transform: rotate(45deg); }
+    details p { margin: 0 0 18px; font-size: 17px; }
+
+    pre {
+      margin-top: 20px; padding: 18px 20px; overflow-x: auto;
+      border-radius: 14px; background: var(--surface);
+      font: 14px/1.7 ui-monospace, "Cascadia Code", Consolas, monospace; color: var(--ink);
+    }
+    code { font-family: ui-monospace, "Cascadia Code", Consolas, monospace; font-size: .86em; }
+    p code { padding: 1px 6px; border-radius: 6px; background: var(--surface); }
+
+    /* closing */
+    .end { padding: 72px 0 40px; text-align: center; border-top: 1px solid var(--line); }
+    .end h2 { margin-top: 0; }
+    .end p { margin-left: auto; margin-right: auto; max-width: 440px; }
+    footer { padding: 32px 0 56px; text-align: center; font-family: var(--sans); font-size: 14px; color: var(--muted); }
+    .gh {
+      display: inline-flex; align-items: center; gap: 10px;
+      margin-top: 4px; padding: 10px 18px 10px 12px;
+      border-radius: 999px; background: var(--surface);
+      color: var(--ink); font-weight: 500; text-decoration: none;
+      transition: box-shadow .2s, transform .2s cubic-bezier(.3, 1.5, .5, 1);
+    }
+    .gh:hover { box-shadow: inset 0 0 0 1px var(--line); transform: translateY(-1px); }
+    .gh svg { width: 22px; height: 22px; }
+    .small { margin-top: 18px; font-size: 12.5px; }
+
+    /* gentle entrance */
+    .reveal { opacity: 0; transform: translateY(14px); transition: opacity .7s ease, transform .7s cubic-bezier(.22, 1, .36, 1); }
+    .reveal.in { opacity: 1; transform: none; }
+    @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; transition: none; } html { scroll-behavior: auto; } }
+
+    @media (max-width: 560px) {
+      body { font-size: 17px; }
+      .bar nav { display: none; }
+      .hero { padding-top: 40px; }
+      .pair { grid-template-columns: 1fr; }
+      h2 { font-size: 28px; }
+      td:first-child { width: 40%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="bar">
+      <a class="brand" href="#top"><img src="brand/lectern-mark-ink.svg" alt="">Lectern</a>
+      <nav>
+        <a href="#pomodoro">Pomodoro</a>
+        <a href="#report">Report</a>
+        <a href="#questions">Questions</a>
+        <a href="https://github.com/mthsluna/lectern">GitHub</a>
+      </nav>
+    </header>
+
+    <main id="top">
+      <div class="hero">
+        <img class="logo" src="lectern-light.webp" alt="The Lectern mark: a shield with a star" width="132" height="132">
+        <h1>Press start.<br>Read your week on Saturday.</h1>
+        <p class="lede">Lectern is a small study timer for Windows. It keeps the time, notices the breaks, and writes you an honest report of the week, all on its own.</p>
+        <div class="actions">
+          <a class="btn btn-primary" href="https://github.com/mthsluna/lectern/releases/latest">
+            <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path d="M8 2.5v8m0 0L4.8 7.3M8 10.5l3.2-3.2M3 13.5h10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Download for Windows
+          </a>
+          <a class="btn btn-ghost" href="https://github.com/mthsluna/lectern">View the source</a>
+        </div>
+        <p class="meta">Free and open source · About 5 MB · No account</p>
+      </div>
+
+      <figure class="reveal">
+        <img class="shot narrow" src="shots/today.webp" alt="Lectern's Today view: a running timer, the subject, and the week so far" width="1040" height="1400">
+      </figure>
+
+      <section>
+        <p class="kicker">Why it exists</p>
+        <h2>Most study apps ask for a plan. Lectern asks for one click.</h2>
+        <p>No projects to set up, no tags, no logging at the end of the day. You sit down and press start. When you stand up, you press pause. Lectern does the arithmetic, and every Saturday it tells you, in plain words, how the week really went.</p>
+        <ul class="points">
+          <li><b>Honest about breaks.</b> Paused time is tracked but never counted as study, so the report shows how much of your sitting time was real focus.</li>
+          <li><b>It never loses a minute.</b> Time is stored as timestamps, not a counter. Close the window or restart your PC and the clock is still right.</li>
+          <li><b>Out of the way.</b> Closing the window sends Lectern to the system tray, where it uses about 27 MB.</li>
+          <li><b>Yours.</b> No account and no tracking. Your history is one file on your own computer.</li>
+        </ul>
+      </section>
+
+      <section>
+        <p class="kicker">Every day</p>
+        <h2>Three buttons, and a week that fills in.</h2>
+        <table>
+          <tr><td>Start</td><td>You are studying. The clock runs.</td></tr>
+          <tr><td>Pause</td><td>You are on a break. It is tracked, never counted as study.</td></tr>
+          <tr><td>Stop</td><td>You are done for the day. It asks twice, so it never happens by accident.</td></tr>
+        </table>
+        <p>Type what you are studying before you start, or leave it blank. Lectern remembers your subjects and suggests them next time, with the hours you have already put in.</p>
+        <ul class="points">
+          <li><b>Weekly goal.</b> Set your hours once. A thin line fills as you go and turns green when you get there.</li>
+          <li><b>Streak.</b> After two days in a row, Lectern starts counting. It is safe until the day ends.</li>
+          <li><b>Past midnight.</b> Studying from 22:00 to 03:00 counts 2 hours on the first day and 3 on the next.</li>
+        </ul>
+      </section>
+
+      <section id="pomodoro">
+        <p class="kicker">Pomodoro, if you like it</p>
+        <h2>The classic rhythm, tuned to yours.</h2>
+        <p>Switch the timer from Free to Pomodoro and it counts down instead: 25 minutes of focus, 5 of rest, and 15 after every fourth round. Click Pomodoro again to change any of it.</p>
+        <figure class="pair reveal">
+          <img class="shot" src="shots/pomodoro.webp" alt="A Pomodoro focus block counting down, round 2 of 4" width="1040" height="840">
+          <img class="shot" src="shots/pomodoro-settings.webp" alt="Pomodoro settings: lengths, chimes and volume" width="1040" height="1440">
+        </figure>
+        <p>A soft chime tells you when to rest, and another when to get back to it. Pick each from eight clean sounds, or none, and set the volume to the exact percent. Focus counts as study and rest as break time, so the report reads the same either way.</p>
+      </section>
+
+      <section id="report">
+        <p class="kicker">Every Saturday</p>
+        <h2>A report that writes itself.</h2>
+        <p>The first time you open Lectern on a Saturday, the report opens by itself. Miss Saturday and it waits for you. Click the dates to open a calendar and jump to any week.</p>
+        <figure class="pair reveal">
+          <img class="shot" src="shots/report.webp" alt="The weekly report: total hours, a written summary and a day-by-day chart" width="1040" height="1520">
+          <img class="shot" src="shots/calendar.webp" alt="The calendar: studied days in green, today ringed, the open week outlined" width="1040" height="1040">
+        </figure>
+        <ul class="points">
+          <li>Total hours, and how they compare with the week before</li>
+          <li>A day-by-day chart with your best day highlighted</li>
+          <li>Days studied, daily average and focus ratio</li>
+          <li>Time per subject, and progress toward your goal</li>
+          <li>A short written summary that tells you when it is your best week yet</li>
+        </ul>
+        <p>Started the timer by mistake? Click that day in the chart and clear it. Undo is there for a few seconds.</p>
+      </section>
+
+      <section>
+        <p class="kicker">Light and dark</p>
+        <h2>Calm in either light.</h2>
+        <p>Ivory by day, warm charcoal by night. Lectern follows Windows, or you can switch it with the sun and moon in the corner.</p>
+        <figure class="pair reveal">
+          <img class="shot" src="shots/today.webp" alt="Lectern in the light theme" width="1040" height="1400">
+          <img class="shot" src="shots/today-dark.webp" alt="Lectern in the dark theme" width="1040" height="1400">
+        </figure>
+      </section>
+
+      <section>
+        <p class="kicker">Ten languages</p>
+        <h2>It asks which language you speak.</h2>
+        <p>The first time it opens, Lectern asks once, and you can change it later.</p>
+        <div class="langs">
+          <span>English</span><span>中文</span><span>हिन्दी</span><span>Español</span><span>Français</span>
+          <span>العربية</span><span>Português</span><span>Русский</span><span>日本語</span><span>Deutsch</span>
+        </div>
+        <figure class="reveal">
+          <img class="shot narrow" src="shots/languages.webp" alt="The first-run language picker" width="1040" height="1400">
+        </figure>
+      </section>
+
+      <section>
+        <p class="kicker">Keyboard</p>
+        <h2>Hands stay on the keys.</h2>
+        <table>
+          <tr><td><kbd>Space</kbd></td><td>Start, pause or resume, or skip a Pomodoro break</td></tr>
+          <tr><td><kbd>S</kbd></td><td>Stop (press twice)</td></tr>
+          <tr><td><kbd>←</kbd> <kbd>→</kbd></td><td>Previous or next week, in the report</td></tr>
+          <tr><td><kbd>Esc</kbd></td><td>Close the calendar or the Pomodoro settings</td></tr>
+        </table>
+      </section>
+
+      <section id="questions">
+        <p class="kicker">Questions</p>
+        <h2>Small answers.</h2>
+        <details>
+          <summary>What happens when I close the window?</summary>
+          <p>Lectern keeps running in the system tray, near the clock. Click the icon to bring it back, or right-click it and choose Quit. The timer keeps counting either way, and Pomodoro chimes still play.</p>
+        </details>
+        <details>
+          <summary>When does a week start?</summary>
+          <p>Sunday. The report on Saturday covers Sunday through Saturday.</p>
+        </details>
+        <details>
+          <summary>Where is my data?</summary>
+          <p>In one JSON file at <code>%APPDATA%\app.lectern.studytimer\lectern.json</code>. Copy it to back up your history or move it to another computer.</p>
+        </details>
+        <details>
+          <summary>How do updates work?</summary>
+          <p>When Lectern opens, it asks GitHub whether a newer release exists. If one does, a single line offers it. Update shows a small window that downloads the new version, checks it against the SHA-256 digest GitHub publishes, swaps it in and reopens Lectern. No installer to run.</p>
+        </details>
+        <details>
+          <summary>Does it need the internet?</summary>
+          <p>No. Checking for updates is the only time Lectern goes online, and it sends nothing about you or your studying.</p>
+        </details>
+        <details>
+          <summary>How do I uninstall it?</summary>
+          <p>From Windows Settings, under Apps. Lectern asks whether to keep your study history, so a reinstall picks up where you left off.</p>
+        </details>
+      </section>
+
+      <section>
+        <p class="kicker">Under the hood</p>
+        <h2>Small on purpose.</h2>
+        <p>Lectern is built with <a href="https://tauri.app">Tauri</a> and plain HTML, CSS and JavaScript, with no framework. The installer is its own small app in the same style, and it installs per user, so it never asks for administrator rights.</p>
+<pre>git clone https://github.com/mthsluna/lectern.git
+cd lectern
+npm install
+npm run dev      # run it
+npm run build    # dist/Lectern-Setup-&lt;version&gt;.exe</pre>
+      </section>
+    </main>
+
+    <div class="end">
+      <h2>Sit down. Press start.</h2>
+      <p>Lectern is free for Windows 10 and 11.</p>
+      <div class="actions">
+        <a class="btn btn-primary" href="https://github.com/mthsluna/lectern/releases/latest">Download Lectern</a>
+      </div>
+    </div>
+
+    <footer>
+      <p>Made by</p>
+      <a class="gh" href="https://github.com/mthsluna">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
+        github.com/mthsluna
+      </a>
+      <p class="small">MIT licensed. Pomodoro chimes by Qvantor on Freesound, released under CC0.</p>
+    </footer>
+  </div>
+
+  <script>
+    // fade sections in as they scroll into view
+    const io = "IntersectionObserver" in window && new IntersectionObserver((entries) => {
+      for (const e of entries) if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
+    }, { rootMargin: "0px 0px -8% 0px" });
+    document.querySelectorAll(".reveal").forEach((el) => (io ? io.observe(el) : el.classList.add("in")));
+  </script>
+</body>
+</html>

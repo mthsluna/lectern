@@ -335,14 +335,32 @@ function pomoTick() {
 }
 
 let audio = null;
+let playing = null;
 function playSound(name, volume = state.pomo.volume) {
   if (!name || name === "none" || !SOUNDS.includes(name)) return;
   try {
     if (audio) audio.pause();
     audio = new Audio(`sounds/${name}.mp3`);
     audio.volume = Math.max(0, Math.min(1, volume));
-    audio.play().catch(() => {});
+    playing = name;
+    markPlaying();
+    const done = () => { if (playing === name) { playing = null; markPlaying(); } };
+    audio.addEventListener("ended", done);
+    audio.addEventListener("pause", done);
+    audio.play().catch(done);
   } catch (e) { /* no sound is never an error */ }
+}
+function markPlaying() {
+  document.querySelectorAll(".pp-snd").forEach((b) => b.classList.toggle("is-playing", b.dataset.sound === playing));
+}
+function renderVolume() {
+  const v = Math.round(state.pomo.volume * 100);
+  const r = $("pomo-volume");
+  r.value = v;
+  r.style.setProperty("--v", `${v}%`);
+  $("pomo-volume-val").textContent = `${v}%`;
+  const icon = $("pomo-mute");
+  icon.dataset.level = v === 0 ? "0" : v < 50 ? "1" : "2";
 }
 
 function setMode(on) {
@@ -352,7 +370,7 @@ function setMode(on) {
     replay(m, "nudge");
     return;
   }
-  if (state.pomo.on === on) return;
+  if (state.pomo.on === on) return on ? togglePomoPanel() : undefined;
   state.pomo.on = on;
   if (!on) closePomoPanel();
   save();
@@ -367,10 +385,10 @@ function renderMode(animate = false) {
   m.classList.toggle("locked", Boolean(state.active));
   if (!state.active) m.title = "";
   m.querySelectorAll(".mode-opt").forEach((b) => b.setAttribute("aria-checked", String((b.dataset.mode === "pomo") === on)));
-  const gear = $("pomo-gear");
-  const wasHidden = gear.hidden;
-  gear.hidden = !on;
-  if (on && wasHidden && animate) replay(gear, "pop");
+  const pomoBtn = m.querySelector('[data-mode="pomo"]');
+  pomoBtn.title = on && !state.active ? t("pomoSettings") : "";
+  // the first time only: show what can be set
+  if (on && animate && !(state.seen && state.seen.pomoPanel)) setTimeout(togglePomoPanel, 260);
 }
 
 /* settings popover */
@@ -393,12 +411,14 @@ function renderPomoPanel() {
     </div>`).join("");
   $("pomo-sound-tabs").querySelectorAll("button").forEach((b) => b.classList.toggle("is-on", b.dataset.event === soundEvent));
   const chosen = state.pomo[soundEvent];
-  $("pomo-sounds").innerHTML = [...SOUNDS, "none"].map((n) => `<button class="pp-snd${n === chosen ? " is-on" : ""}" data-sound="${n}">`
+  $("pomo-sounds").innerHTML = [...SOUNDS, "none"].map((n) => `<button class="pp-snd${n === chosen ? " is-on" : ""}${n === playing ? " is-playing" : ""}" data-sound="${n}" role="radio" aria-checked="${n === chosen}">`
+    + `<span class="pp-ic">`
     + (n === "none"
-      ? `<svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M3 6.5v3h2.3l3 2.4V4.1l-3 2.4Z" fill="currentColor"/><path d="m10.6 6.2 3 3.6m0-3.6-3 3.6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>`
-      : `<svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M5.5 3.8v8.4L12 8Z" fill="currentColor"/></svg>`)
-    + `<span>${t("snd_" + n)}</span></button>`).join("");
-  $("pomo-volume").value = Math.round(state.pomo.volume * 100);
+      ? `<svg viewBox="0 0 16 16" width="11" height="11" aria-hidden="true"><path d="m4.5 4.5 7 7m0-7-7 7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>`
+      : `<svg class="play" viewBox="0 0 16 16" width="10" height="10" aria-hidden="true"><path d="M5 3.4v9.2L12.6 8Z" fill="currentColor"/></svg><span class="eq" aria-hidden="true"><i></i><i></i><i></i></span>`)
+    + `</span><span class="pp-name">${t("snd_" + n)}</span>`
+    + `<svg class="pp-check" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="m3.5 8.4 2.9 2.9 6.1-6.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`).join("");
+  renderVolume();
 }
 
 function togglePomoPanel() {
@@ -408,12 +428,14 @@ function togglePomoPanel() {
   p.classList.remove("closing");
   renderPomoPanel();
   p.hidden = false;
-  $("pomo-gear").setAttribute("aria-expanded", "true");
+  $("mode").classList.add("open");
+  if (!state.seen) state.seen = {};
+  if (!state.seen.pomoPanel) { state.seen.pomoPanel = true; save(); }
 }
 function closePomoPanel() {
   const p = $("pomo-panel");
   if (p.hidden || p.classList.contains("closing")) return;
-  $("pomo-gear").setAttribute("aria-expanded", "false");
+  $("mode").classList.remove("open");
   p.classList.add("closing");
   clearTimeout(closePomoPanel.timer);
   closePomoPanel.timer = setTimeout(() => { p.hidden = true; p.classList.remove("closing"); }, 170);
@@ -1280,6 +1302,9 @@ function openStartView() {
   else auto = autoReport();
   if (auto) show("report", auto);
   else show("today");
+  // demo only: open a popover for screenshots (?panel=pomo or ?panel=cal)
+  const panel = DEMO && params.get("panel");
+  if (panel) setTimeout(() => (panel === "cal" ? toggleCalendar() : togglePomoPanel()), 300);
 }
 
 function commitAndRender() {
@@ -1466,10 +1491,10 @@ function seedDemo() {
 
   /* Pomodoro */
   $("mode").addEventListener("click", (e) => {
+    e.stopPropagation();
     const b = e.target.closest(".mode-opt");
     if (b) setMode(b.dataset.mode === "pomo");
   });
-  $("pomo-gear").addEventListener("click", (e) => { e.stopPropagation(); togglePomoPanel(); });
   $("pomo-panel").addEventListener("click", (e) => {
     e.stopPropagation();
     const step = e.target.closest(".pp-step button");
@@ -1498,8 +1523,24 @@ function seedDemo() {
       renderTimer();
     }
   });
-  $("pomo-volume").addEventListener("input", (e) => { state.pomo.volume = Number(e.target.value) / 100; });
-  $("pomo-volume").addEventListener("change", () => { save(); playSound(state.pomo[soundEvent] === "none" ? "marimba" : state.pomo[soundEvent]); });
+  $("pomo-volume").addEventListener("input", (e) => {
+    state.pomo.volume = Number(e.target.value) / 100;
+    if (audio) audio.volume = state.pomo.volume;
+    renderVolume();
+  });
+  $("pomo-volume").addEventListener("change", () => {
+    save();
+    if (state.pomo.volume > 0) playSound(state.pomo[soundEvent] === "none" ? "marimba" : state.pomo[soundEvent]);
+  });
+  $("pomo-mute").addEventListener("click", (e) => {
+    e.stopPropagation();
+    const v = state.pomo.volume;
+    state.pomo.volume = v > 0 ? 0 : (renderVolume.last || 0.8);
+    if (v > 0) renderVolume.last = v;
+    if (audio) audio.volume = state.pomo.volume;
+    save();
+    renderVolume();
+  });
   document.addEventListener("click", closePomoPanel);
 
   /* report: pick a day to clear it */

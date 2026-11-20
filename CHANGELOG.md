@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.18.1
+
+- Pomodoro settings open from the switch itself, so it stays centred.
+- A calmer sound list: a play icon that turns into moving bars while a chime plays, and a check on the chosen one.
+- Volume moves in steps of 1 %, shows the percent, follows you while dragging, and mutes with a click on the speaker.
+- A project website at mthsluna.github.io/lectern.
+
 ## 1.18.0
 
 - Pomodoro mode: a Free / Pomodoro switch above the timer. Classic 25 / 5 / 15 by default, every length adjustable.
