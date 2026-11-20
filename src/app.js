@@ -426,7 +426,7 @@ function buildControls(animate) {
     const b = btn("", "btn-round", start);
     b.title = t("startAnother");
     b.setAttribute("aria-label", t("startAnother"));
-    b.innerHTML = `<svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M5 3.2v9.6a.6.6 0 0 0 .92.5l7.4-4.8a.6.6 0 0 0 0-1L5.92 2.7A.6.6 0 0 0 5 3.2Z" fill="currentColor"/></svg><span></span>`;
+    b.innerHTML = `<svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M8 5.6c0-1.3 1.4-2.1 2.5-1.4l9.1 5.9a1.7 1.7 0 0 1 0 2.8l-9.1 5.9C9.4 19.5 8 18.7 8 17.4Z" fill="currentColor"/></svg><span></span>`;
     b.lastChild.textContent = t("startAnother");
     b.lastChild.className = "round-label";
   }
@@ -480,13 +480,14 @@ function renderTimer() {
 function renderWeekStrip() {
   const today = todayKey();
   const days = weekData(weekStart(today));
-  const max = Math.max(3600000, ...days.map((d) => d.study));
+  const pace = state.goal ? (state.goal * 3600000) / 7 : 0;   // per day, to meet the goal
+  const max = Math.max(3600000, pace * 1.3, ...days.map((d) => d.study));
   const strip = $("strip");
   const fresh = strip.dataset.week !== days[0].key || strip.children.length !== 7;
   if (fresh) {
     // built at zero height, so the bars grow into place
     strip.dataset.week = days[0].key;
-    strip.innerHTML = days.map((d, i) => `<div class="day"><div class="bar-wrap"><div class="bar" style="height:0%;transition-delay:${i * 45}ms"></div></div><span class="d">${dayName(d.key, "narrow")}</span></div>`).join("");
+    strip.innerHTML = days.map((d, i) => `<div class="day"><span class="v"></span><div class="bar-wrap"><div class="bar" style="height:0%;transition-delay:${i * 45}ms"></div></div><span class="d">${dayName(d.key, "narrow")}</span></div>`).join("");
     void strip.offsetWidth;
     setTimeout(() => strip.querySelectorAll(".bar").forEach((b) => (b.style.transitionDelay = "")), 900);
   }
@@ -496,8 +497,16 @@ function renderWeekStrip() {
     const el = strip.children[i];
     el.className = "day" + (d.study > 0 ? " has" : "") + (d.key === today ? " is-today" : "");
     el.title = `${cap(dayName(d.key))} · ${hm(d.study)}`;
-    el.querySelector(".bar").style.height = `${Math.max(4, (d.study / max) * 100)}%`;
+    el.querySelector(".bar").style.height = d.study > 0 ? `${Math.max(6, (d.study / max) * 100)}%` : "0%";
+    el.querySelector(".v").textContent = shortHours(d.study);
+    el.classList.toggle("met", pace > 0 && d.study >= pace);
   });
+  const paceEl = $("pace");
+  paceEl.hidden = !pace;
+  if (pace) {
+    paceEl.style.setProperty("--pace", String(pace / max));
+    $("pace-label").textContent = hm(pace);
+  }
   $("week-total").textContent = hm(total);
 
   /* weekly goal: a hairline of progress, nothing more */
@@ -719,19 +728,19 @@ function goToWeek(start) {
    instead of being redrawn. */
 
 const chips = new Map();          // week key -> element
-const FLOW = {
-  x: [0, 116, 168, 214],          // distance from the centre, by position
-  depth: [0, 120, 170, 210],
-  turn: 64,                       // degrees for every side chip
-  dim: [0, .5, .72, 1],
-};
+/* The chips sit on the outside of a drum: each step around it is an angle,
+   and position, depth and turn all follow from that angle. */
+const DRUM = { radius: 210, step: [0, 40, 78, 112], dim: [0, .4, .7, 1] };
 
 function placeChip(el, offset) {
   const d = Math.min(Math.abs(offset), 3);
   const side = Math.sign(offset);
-  el.style.transform =
-    `translateX(calc(-50% + ${side * FLOW.x[d]}px)) translateZ(${-FLOW.depth[d]}px) rotateY(${-side * (d ? FLOW.turn : 0)}deg)`;
-  el.style.setProperty("--dim", FLOW.dim[d]);
+  const angle = side * DRUM.step[d];
+  const rad = (angle * Math.PI) / 180;
+  const x = DRUM.radius * Math.sin(rad);
+  const z = DRUM.radius * (Math.cos(rad) - 1);
+  el.style.transform = `translateX(calc(-50% + ${x.toFixed(1)}px)) translateZ(${z.toFixed(1)}px) rotateY(${angle}deg)`;
+  el.style.setProperty("--dim", DRUM.dim[d]);
   el.style.opacity = d >= 3 ? 0 : 1;
   el.style.zIndex = String(10 - d);
   el.classList.toggle("is-center", offset === 0);

@@ -146,7 +146,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .tab.is-active { color: var(--ink); background: var(--surface); }
 
 main { flex: 1; overflow-y: auto; }
-.view { padding: 40px 28px 36px; animation: rise .35s ease both; }
+.view { width: 100%; max-width: 600px; margin: 0 auto; padding: 40px 28px 36px; animation: rise .35s ease both; }
 @keyframes rise { from { opacity: 0; transform: translateY(6px); } }
 
 .eyebrow {
@@ -207,20 +207,24 @@ body[data-state="closed"] .dot { background: var(--ink); }
 .btn-link:hover { color: var(--ink); }
 .btn.btn-round {
   position: relative;
-  width: 46px;
+  width: 64px;
+  height: 64px;
   padding: 0;
   display: grid;
   place-items: center;
   border-radius: 50%;
-  border: 1px solid var(--line);
-  color: var(--accent);
-  transition: border-color .15s, background .15s, transform .1s;
+  border: 0;
+  background: var(--ink);
+  color: var(--bg);
+  box-shadow: 0 8px 22px -10px rgba(0, 0, 0, .45);
+  transition: transform .2s cubic-bezier(.3, 1.5, .5, 1), box-shadow .2s, background .2s;
 }
-.btn-round svg { margin-left: 2px; }
-.btn-round:hover { border-color: var(--faint); background: var(--surface); }
+.btn-round svg { margin-left: 3px; }
+.btn-round:hover { transform: scale(1.06); box-shadow: 0 12px 28px -10px rgba(0, 0, 0, .5); }
+.btn-round:active { transform: scale(.96); }
 .round-label {
   position: absolute;
-  top: calc(100% + 8px);
+  top: calc(100% + 10px);
   left: 50%;
   transform: translateX(-50%) translateY(-3px);
   font-size: 12px;
@@ -254,28 +258,71 @@ body[data-state="closed"] .dot { background: var(--ink); }
 .label { font-size: 13px; color: var(--muted); }
 .week-total { font-family: var(--display); font-size: 20px; font-weight: 600; letter-spacing: -0.02em; }
 
+.strip-area { position: relative; margin-top: 16px; }
 .strip {
-  margin-top: 18px;
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 8px;
   align-items: end;
 }
-.day { display: flex; flex-direction: column; align-items: center; gap: 8px; }
-.day .bar-wrap { height: 64px; width: 100%; display: flex; align-items: flex-end; justify-content: center; }
+.day { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.day .v {
+  height: 14px;
+  font-size: 10.5px;
+  font-weight: 500;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  opacity: 0;
+  transition: opacity .3s;
+}
+.day.has .v { opacity: 1; }
+.day.is-today .v { color: var(--accent); }
+.day .bar-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 30px;
+  height: 72px;
+  display: flex;
+  align-items: flex-end;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--line) 55%, transparent);
+  overflow: hidden;
+}
 .day .bar {
   width: 100%;
-  max-width: 26px;
-  min-height: 3px;
-  border-radius: 4px;
-  background: var(--faint);
-  opacity: .55;
-  transition: height .7s cubic-bezier(.22, 1, .36, 1), background .3s, opacity .3s;
+  min-height: 0;
+  border-radius: 8px;
+  background: var(--ink);
+  transition: height .7s cubic-bezier(.22, 1, .36, 1), background .3s;
 }
-.day.has .bar { background: var(--ink); opacity: 1; }
-.day.is-today .bar { background: var(--accent); opacity: 1; }
-.day .d { font-size: 11px; color: var(--muted); }
+.day.is-today .bar { background: var(--accent); }
+.day.is-today .bar-wrap { box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--accent) 45%, transparent); }
+.day .d { height: 16px; line-height: 16px; font-size: 11px; color: var(--muted); }
 .day.is-today .d { color: var(--ink); font-weight: 600; }
+
+/* the goal's daily pace: a dashed line across the bars */
+.pace {
+  --pace: 0;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(22px + var(--pace) * 72px);
+  border-top: 1.5px dashed color-mix(in srgb, var(--accent) 60%, transparent);
+  pointer-events: none;
+  transition: bottom .6s cubic-bezier(.22, 1, .36, 1);
+}
+.pace span {
+  position: absolute;
+  right: 0;
+  bottom: 3px;
+  padding: 0 4px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--surface);
+  font-variant-numeric: tabular-nums;
+}
 .hint { margin-top: 14px; font-size: 12.5px; color: var(--muted); }
 
 /* Report */
@@ -296,12 +343,11 @@ body[data-state="closed"] .dot { background: var(--ink); }
 .weeks {
   position: relative;
   width: 330px;
-  height: 74px;
-  margin-bottom: -18px;
+  height: 56px;
   overflow: hidden;
   overflow: clip;
-  perspective: 560px;
-  perspective-origin: 50% 40%;
+  perspective: 420px;
+  perspective-origin: 50% 50%;
   -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 12%, #000 88%, transparent 100%);
           mask-image: linear-gradient(90deg, transparent 0, #000 12%, #000 88%, transparent 100%);
 }
@@ -320,7 +366,6 @@ body[data-state="closed"] .dot { background: var(--ink); }
   border-radius: 16px;
   background: var(--surface);
   white-space: nowrap;
-  -webkit-box-reflect: below 3px linear-gradient(transparent 62%, rgba(0, 0, 0, .14));
   transition: transform .62s cubic-bezier(.2, .8, .2, 1), opacity .5s ease, box-shadow .4s ease;
 }
 /* darken instead of fading, so nothing shows through */
@@ -467,11 +512,11 @@ body[data-state="closed"] .dot { background: var(--ink); }
 }
 .chart .col { display: flex; flex-direction: column; align-items: center; gap: 6px; }
 .chart .v { font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; min-height: 16px; }
-.chart .bar-wrap { height: 120px; width: 100%; display: flex; align-items: flex-end; justify-content: center; }
+.chart .bar-wrap { height: 120px; width: 100%; max-width: 36px; margin: 0 auto; display: flex; align-items: flex-end; justify-content: center; border-radius: 9px; background: color-mix(in srgb, var(--line) 55%, transparent); overflow: hidden; }
 .chart .bar { transition: height .75s cubic-bezier(.22, 1, .36, 1), background .3s; }
-.chart .bar { width: 100%; max-width: 32px; min-height: 2px; border-radius: 5px 5px 2px 2px; background: var(--ink); }
+.chart .bar { width: 100%; min-height: 0; border-radius: 9px; background: var(--ink); }
 .chart .col.best .bar { background: var(--accent); }
-.chart .col.empty .bar { background: var(--line); }
+.chart .col.empty .bar { background: transparent; }
 .chart-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-top: 8px; }
 .chart-days span { text-align: center; font-size: 11px; color: var(--muted); }
 
