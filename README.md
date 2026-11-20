@@ -57,6 +57,10 @@ what day it is.
 
 ### Every day
 
+<p align="center">
+  <img src="docs/clips/timer.webp" width="360" alt="Pressing start: the clock begins to run">
+</p>
+
 | | |
 | :-- | :-- |
 | **Start** | You are studying. The clock runs. |
@@ -67,6 +71,10 @@ You can type what you are studying before you start, or leave it blank. Lectern
 remembers your subjects and suggests them next time.
 
 ### Every Saturday
+
+<p align="center">
+  <img src="docs/clips/report.webp" width="360" alt="The weekly report: bars growing, moving between weeks and opening the calendar">
+</p>
 
 The first time you open Lectern on a Saturday, the report opens by itself. Miss
 Saturday and it is waiting for you next time. Click the dates to open a calendar
@@ -80,6 +88,10 @@ and jump to any week you have studied.
 - A short written summary, which tells you when it is your best week yet
 
 ### Pomodoro, if you like it
+
+<p align="center">
+  <img src="docs/clips/pomodoro.webp" width="360" alt="Switching to Pomodoro, choosing a chime and the volume, then the countdown">
+</p>
 
 Switch the timer from **Free** to **Pomodoro** and it counts down instead. The
 classic rhythm comes ready: 25 minutes of focus, 5 of rest, and 15 after every
