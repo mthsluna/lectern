@@ -79,9 +79,36 @@
 
     /* figures */
     figure { margin: 40px 0; }
-    .shot { margin: 0 auto; filter: drop-shadow(0 24px 40px rgba(20, 20, 19, .10)) drop-shadow(0 2px 6px rgba(20, 20, 19, .05)); }
-    .shot.narrow { max-width: 400px; }
-    .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
+    /* every screenshot sits in a card of one shape: the app window, 520 x 720 */
+    .card {
+      --rx: 0deg; --ry: 0deg; --gx: 50%; --gy: 0%; --lift: 0;
+      position: relative;
+      width: 100%;
+      aspect-ratio: 520 / 720;
+      margin: 0 auto;
+      border-radius: 4.23% / 3.06%;
+      transform: perspective(1000px) rotateX(var(--rx)) rotateY(var(--ry)) scale(calc(1 + var(--lift) * .035));
+      transition: transform .6s cubic-bezier(.22, 1, .36, 1), filter .6s ease;
+      filter: drop-shadow(0 24px 40px rgba(20, 20, 19, .10)) drop-shadow(0 2px 6px rgba(20, 20, 19, .05));
+      will-change: transform;
+    }
+    .card.narrow { max-width: 380px; }
+    .card img { width: 100%; height: 100%; object-fit: cover; object-position: top; border-radius: inherit; }
+    .card.tilting { transition: transform .12s ease-out, filter .3s ease; filter: drop-shadow(0 34px 50px rgba(20, 20, 19, .16)) drop-shadow(0 4px 10px rgba(20, 20, 19, .07)); }
+    /* a soft light that follows the pointer across the glass */
+    .glare {
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: radial-gradient(circle at var(--gx) var(--gy), rgba(255, 255, 255, .55), rgba(255, 255, 255, 0) 55%);
+      mix-blend-mode: soft-light;
+      opacity: 0;
+      transition: opacity .4s ease;
+      pointer-events: none;
+    }
+    .card.tilting .glare { opacity: 1; }
+    .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; perspective: 1400px; }
+    @media (prefers-reduced-motion: reduce) { .card { transition: none; } }
     figcaption { margin-top: 16px; text-align: center; font-family: var(--sans); font-size: 13px; color: var(--muted); }
 
     /* text */
@@ -183,7 +210,7 @@
       </div>
 
       <figure class="reveal">
-        <img class="shot narrow" src="clips/timer.webp" alt="Pressing start: the clock begins to run" width="640" height="788">
+        <div class="card narrow"><img src="clips/timer.webp" alt="Pressing start: the clock begins to run" width="640" height="886"><span class="glare" aria-hidden="true"></span></div>
       </figure>
 
       <section>
@@ -219,8 +246,8 @@
         <h2>The classic rhythm, tuned to yours.</h2>
         <p>Switch the timer from Free to Pomodoro and it counts down instead: 25 minutes of focus, 5 of rest, and 15 after every fourth round. Click Pomodoro again to change any of it.</p>
         <figure class="pair reveal">
-          <img class="shot" src="clips/pomodoro.webp" alt="Switching to Pomodoro, choosing a chime and the volume, then the countdown" width="640" height="886">
-          <img class="shot" src="shots/pomodoro-settings.webp" alt="Pomodoro settings: lengths, chimes and volume" width="1040" height="1440">
+          <div class="card"><img src="clips/pomodoro.webp" alt="Switching to Pomodoro, choosing a chime and the volume, then the countdown" width="640" height="886" loading="lazy"><span class="glare" aria-hidden="true"></span></div>
+          <div class="card"><img src="shots/pomodoro-settings.webp" alt="Pomodoro settings: lengths, chimes and volume" width="640" height="886" loading="lazy"><span class="glare" aria-hidden="true"></span></div>
         </figure>
         <p>A soft chime tells you when to rest, and another when to get back to it. Pick each from eight clean sounds, or none, and set the volume to the exact percent. Focus counts as study and rest as break time, so the report reads the same either way.</p>
       </section>
@@ -230,8 +257,8 @@
         <h2>A report that writes itself.</h2>
         <p>The first time you open Lectern on a Saturday, the report opens by itself. Miss Saturday and it waits for you. Click the dates to open a calendar and jump to any week.</p>
         <figure class="pair reveal">
-          <img class="shot" src="clips/report.webp" alt="The weekly report: bars growing, moving between weeks and opening the calendar" width="640" height="886">
-          <img class="shot" src="shots/calendar.webp" alt="The calendar: studied days in green, today ringed, the open week outlined" width="1040" height="1040">
+          <div class="card"><img src="clips/report.webp" alt="The weekly report: bars growing, moving between weeks and opening the calendar" width="640" height="886" loading="lazy"><span class="glare" aria-hidden="true"></span></div>
+          <div class="card"><img src="shots/calendar.webp" alt="The calendar: studied days in green, today ringed, the open week outlined" width="640" height="886" loading="lazy"><span class="glare" aria-hidden="true"></span></div>
         </figure>
         <ul class="points">
           <li>Total hours, and how they compare with the week before</li>
@@ -248,8 +275,8 @@
         <h2>Calm in either light.</h2>
         <p>Ivory by day, warm charcoal by night. Lectern follows Windows, or you can switch it with the sun and moon in the corner.</p>
         <figure class="pair reveal">
-          <img class="shot" src="shots/today.webp" alt="Lectern in the light theme" width="1040" height="1400">
-          <img class="shot" src="shots/today-dark.webp" alt="Lectern in the dark theme" width="1040" height="1400">
+          <div class="card"><img src="shots/today.webp" alt="Lectern in the light theme" width="640" height="886" loading="lazy"><span class="glare" aria-hidden="true"></span></div>
+          <div class="card"><img src="shots/today-dark.webp" alt="Lectern in the dark theme" width="640" height="886" loading="lazy"><span class="glare" aria-hidden="true"></span></div>
         </figure>
       </section>
 
@@ -262,7 +289,7 @@
           <span>العربية</span><span>Português</span><span>Русский</span><span>日本語</span><span>Deutsch</span>
         </div>
         <figure class="reveal">
-          <img class="shot narrow" src="shots/languages.webp" alt="The first-run language picker" width="1040" height="1400">
+          <div class="card narrow"><img src="shots/languages.webp" alt="The first-run language picker" width="640" height="886" loading="lazy"><span class="glare" aria-hidden="true"></span></div>
         </figure>
       </section>
 
@@ -331,6 +358,32 @@ npm run build    # dist/Lectern-Setup-&lt;version&gt;.exe</pre>
       for (const e of entries) if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
     }, { rootMargin: "0px 0px -8% 0px" });
     document.querySelectorAll(".reveal").forEach((el) => (io ? io.observe(el) : el.classList.add("in")));
+
+    // cards tilt toward the mouse, like a sheet of glass held in the hand
+    const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!still) document.querySelectorAll(".card").forEach((card) => {
+      let frame = 0;
+      card.addEventListener("pointermove", (e) => {
+        if (e.pointerType !== "mouse") return;
+        cancelAnimationFrame(frame);
+        frame = requestAnimationFrame(() => {
+          const r = card.getBoundingClientRect();
+          const x = (e.clientX - r.left) / r.width;
+          const y = (e.clientY - r.top) / r.height;
+          card.classList.add("tilting");
+          card.style.setProperty("--ry", `${((x - .5) * 16).toFixed(2)}deg`);
+          card.style.setProperty("--rx", `${((.5 - y) * 12).toFixed(2)}deg`);
+          card.style.setProperty("--gx", `${(x * 100).toFixed(1)}%`);
+          card.style.setProperty("--gy", `${(y * 100).toFixed(1)}%`);
+          card.style.setProperty("--lift", "1");
+        });
+      });
+      card.addEventListener("pointerleave", () => {
+        cancelAnimationFrame(frame);
+        card.classList.remove("tilting");
+        ["--rx", "--ry", "--lift"].forEach((p) => card.style.removeProperty(p));
+      });
+    });
   </script>
 </body>
 </html>

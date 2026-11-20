@@ -7,11 +7,6 @@
 
 **A quiet study timer for Windows that writes you a report of your week every Saturday.**
 
-[![Latest release](https://img.shields.io/github/v/release/mthsluna/lectern?style=flat-square&color=2f6b55&label=release)](https://github.com/mthsluna/lectern/releases/latest)
-[![Downloads](https://img.shields.io/github/downloads/mthsluna/lectern/total?style=flat-square&color=2f6b55)](https://github.com/mthsluna/lectern/releases)
-[![Platform](https://img.shields.io/badge/platform-Windows%2010%20%7C%2011-141413?style=flat-square)](#installation)
-[![License](https://img.shields.io/github/license/mthsluna/lectern?style=flat-square&color=141413)](LICENSE)
-
 [**Download**](https://github.com/mthsluna/lectern/releases/latest) &nbsp;·&nbsp;
 [Website](https://mthsluna.github.io/lectern/) &nbsp;·&nbsp;
 [Changelog](CHANGELOG.md) &nbsp;·&nbsp;

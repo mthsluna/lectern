@@ -118,7 +118,7 @@ async function record(name, query, height, scene) {
 const click = (sel) => js(`document.querySelector(${JSON.stringify(sel)}).click()`);
 
 /* 1. Start: the button, then the clock running */
-await record("timer", "", 640, async () => {
+await record("timer", "", 720, async () => {
   await sleep(1100);
   await click("#controls .btn-primary");
   await sleep(4600);
