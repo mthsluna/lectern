@@ -13,6 +13,8 @@
 <p align="center">
   <a href="https://github.com/mthsluna/lectern/releases/latest"><b>Download for Windows</b></a>
   &nbsp;&middot;&nbsp;
+  <a href="https://mthsluna.github.io/lectern/">Website</a>
+  &nbsp;&middot;&nbsp;
   <a href="#what-you-get">What you get</a>
   &nbsp;&middot;&nbsp;
   <a href="#questions">Questions</a>
@@ -81,7 +83,7 @@ and jump to any week you have studied.
 
 Switch the timer from **Free** to **Pomodoro** and it counts down instead. The
 classic rhythm comes ready: 25 minutes of focus, 5 of rest, and 15 after every
-fourth round. Change any of it in the settings next to the switch.
+fourth round. Click Pomodoro again to change any of it.
 
 A soft chime tells you when to rest and another when to get back to it. Pick each
 from eight clean sounds, or none, and set the volume. Focus counts as study and
