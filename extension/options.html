@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lectern</title>
+  <link rel="icon" href="icons/icon-32.png">
+  <link rel="stylesheet" href="popup.css">
+  <link rel="stylesheet" href="options.css">
+</head>
+<body class="options">
+  <main class="opt">
+    <div class="brand"><img src="icons/mark.svg" alt="" width="20" height="20"><span>Lectern</span></div>
+
+    <section class="opt-card" id="card">
+      <div class="opt-head">
+        <div>
+          <h1 id="title"></h1>
+          <p class="opt-desc" id="desc"></p>
+        </div>
+        <button class="switch" id="on" role="switch" aria-checked="false"><span></span></button>
+      </div>
+
+      <p class="opt-managed" id="managed" hidden></p>
+
+      <div id="editor">
+        <form class="site-add" id="add" autocomplete="off">
+          <input id="site" type="text" spellcheck="false" maxlength="80" placeholder="instagram.com">
+          <button type="submit" id="add-btn"></button>
+        </form>
+        <p class="site-error" id="error" hidden></p>
+        <ul class="sites" id="sites"></ul>
+      </div>
+
+      <div class="opt-allow" id="allow-row" hidden>
+        <span id="allow-note"></span>
+        <button class="btn btn-soft" id="allow"></button>
+      </div>
+    </section>
+  </main>
+  <script src="i18n.js"></script>
+  <script type="module" src="options.js"></script>
+</body>
+</html>

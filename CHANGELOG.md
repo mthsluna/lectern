@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.20.0
+
+- Site blocker: choose sites in the new Settings tab and the browser extension keeps them closed while the timer runs. A break or Stop opens them again.
+- A calm "back to studying" page in place of a blocked site, which offers the site again once you take a break.
+- The extension also blocks on its own, with its own list in its options.
+
 ## 1.19.1
 
 - The subject field says just "Subject", in every language, and is a little narrower.

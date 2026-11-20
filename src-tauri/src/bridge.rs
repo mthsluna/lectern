@@ -157,7 +157,24 @@ fn forward(cmd: &str, subject: Option<&str>) -> io::Result<()> {
     spawn(CREATE_BREAKAWAY_FROM_JOB).or_else(|_| spawn(0)).map(|_| ())
 }
 
+/// The app shows whether the extension is connected from this file's age.
+fn mark_seen() {
+    if let Some(dir) = data_dir() {
+        let _ = fs::create_dir_all(&dir);
+        let _ = fs::write(dir.join("bridge-seen"), now_ms().to_string());
+    }
+}
+
+/// Milliseconds since the epoch when the extension last talked to the app (0: never).
+pub fn last_seen() -> u64 {
+    data_dir()
+        .and_then(|d| fs::read_to_string(d.join("bridge-seen")).ok())
+        .and_then(|s| s.trim().parse().ok())
+        .unwrap_or(0)
+}
+
 pub fn run_host() {
+    mark_seen();
     let out = Arc::new(Mutex::new(io::stdout()));
 
     // Push the state whenever the app saves, for as long as the extension listens.
@@ -165,8 +182,13 @@ pub fn run_host() {
         let out = Arc::clone(&out);
         thread::spawn(move || {
             let mut last = modified();
+            let mut beats = 0u32;
             loop {
                 thread::sleep(Duration::from_millis(400));
+                beats += 1;
+                if beats % 150 == 0 {
+                    mark_seen();   // about once a minute while the extension listens
+                }
                 let now = modified();
                 if now != last {
                     last = now;

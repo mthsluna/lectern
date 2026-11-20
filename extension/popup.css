@@ -156,3 +156,19 @@ body[data-phase="break"] .pomo-fill { background: var(--accent); }
 .btn-soft:hover { box-shadow: inset 0 0 0 1px var(--line); }
 
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+
+/* blocker */
+.block-row {
+  display: flex; align-items: center; gap: 8px;
+  margin: 14px auto 0; max-width: 300px;
+  height: 34px; padding: 0 6px 0 12px;
+  border-radius: 999px;
+  background: var(--surface);
+  font-size: 12px; color: var(--muted);
+  cursor: default;
+}
+.block-row span { flex: 1; text-align: start; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.block-row.live { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+.block-row.link { cursor: pointer; }
+.block-row.link:hover { color: var(--ink); }
+.block-allow { flex: none; height: 24px; padding: 0 10px; border-radius: 999px; background: var(--ink); color: var(--bg); font-size: 11.5px; font-weight: 500; }

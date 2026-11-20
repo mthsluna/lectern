@@ -28,6 +28,7 @@ Press start when you sit down. Read your week on Saturday.
 - **Pomodoro.** Classic 25 / 5 / 15, fully adjustable, with soft chimes.
 - **Goal, streak and subjects.** Set once, then just study.
 - **Private.** No account, works offline, one local file.
+- **Site blocker.** Instagram, X, TikTok and any site you add stay closed while the timer runs.
 - **Browser extension.** For Chrome, Edge and Brave; links to the app by itself.
 - **Light and dark, in ten languages.**
 

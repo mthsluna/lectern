@@ -8,6 +8,15 @@ Windows is installed on the same computer, the extension links to it by itself:
 it shows the app's clock and week, and its buttons run in the app, even while
 the app sits in the tray. The app keeps the data.
 
+## Site blocker
+
+While the timer runs, the sites on your list are blocked; a break or Stop opens them
+again. Linked to the app, the list lives in the app's **Settings**; on its own, in the
+extension's options. Blocking uses the browser's `declarativeNetRequest` rules, which
+never read your pages. If you allow access to sites (optional), a calm Lectern page
+replaces the blocked one and tabs already open on a blocked site switch to it;
+otherwise the browser shows its own "blocked" page.
+
 ## Install
 
 1. Download [**Lectern-Extension.zip**](https://github.com/mthsluna/lectern/releases/latest/download/Lectern-Extension.zip) and unzip it into a folder you will keep.
