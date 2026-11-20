@@ -14,6 +14,8 @@
   --faint: #b0aea5;
   --accent: #2f6b55;
   --accent-soft: #dde8e1;
+  --today: #c0730a;
+  --on-accent: #ffffff;
   --cjk: "Microsoft YaHei UI", "Microsoft YaHei", "PingFang SC";
   --world: "Nirmala UI", "Segoe UI", "Noto Sans";
   /* SF Pro on Apple devices; Inter (bundled) everywhere else. */
@@ -34,6 +36,8 @@
     --faint: #5e5c56;
     --accent: #5aa588;
     --accent-soft: #1d332b;
+  --today: #eab04a;
+  --on-accent: #0f2219;
     color-scheme: dark;
   }
 }
@@ -47,6 +51,8 @@
   --faint: #5e5c56;
   --accent: #5aa588;
   --accent-soft: #1d332b;
+  --today: #eab04a;
+  --on-accent: #0f2219;
   color-scheme: dark;
 }
 
@@ -414,9 +420,10 @@ body[data-state="closed"] .dot { background: var(--ink); }
 .cal-weekdays span { text-align: center; font-size: 11px; font-weight: 500; color: var(--faint); padding-bottom: 6px; }
 .cal-row { position: relative; border-radius: 12px; transition: background .15s, box-shadow .15s; }
 .cal-row:not(.is-future):not(.is-selected):hover { background: var(--surface); }
+/* the open week: a neutral band, so the green stays for studied days */
 .cal-row.is-selected {
-  background: var(--accent-soft);
-  box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--accent) 55%, transparent);
+  background: color-mix(in srgb, var(--ink) 7%, transparent);
+  box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--ink) 30%, transparent);
 }
 .cal-day {
   --heat: 0;
@@ -440,13 +447,14 @@ body[data-state="closed"] .dot { background: var(--ink); }
 .cal-day:disabled { color: var(--faint); opacity: .4; cursor: default; }
 /* studied: a green disc, deeper the longer you studied (3 h = full) */
 .cal-day.has-study .n {
-  background: color-mix(in srgb, var(--accent) calc(28% + var(--heat) * 62%), transparent);
-  color: var(--ink);
+  background: color-mix(in srgb, var(--accent) calc(60% + var(--heat) * 40%), var(--bg));
+  color: var(--on-accent);
   font-weight: 600;
 }
-.cal-day.has-study.is-out .n { background: color-mix(in srgb, var(--accent) 22%, transparent); }
-/* today: a ring */
-.cal-day.is-today .n { box-shadow: 0 0 0 2px var(--ink); font-weight: 700; }
+.cal-day.has-study.is-out .n { background: color-mix(in srgb, var(--accent) 30%, transparent); color: var(--ink); }
+/* today: a warm ring, with or without study */
+.cal-day.is-today .n { box-shadow: 0 0 0 2px var(--today); color: var(--today); font-weight: 700; }
+.cal-day.is-today.has-study .n { color: var(--on-accent); }
 
 .cal-legend {
   display: flex;
@@ -461,9 +469,9 @@ body[data-state="closed"] .dot { background: var(--ink); }
 }
 .lg { display: inline-flex; align-items: center; gap: 6px; }
 .lg i { display: block; width: 12px; height: 12px; border-radius: 50%; }
-.lg-study { background: color-mix(in srgb, var(--accent) 70%, transparent); }
-.lg-today { box-shadow: inset 0 0 0 2px var(--ink); }
-.lg-week { width: 18px !important; border-radius: 4px !important; background: var(--accent-soft); box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--accent) 55%, transparent); }
+.lg-study { background: var(--accent); }
+.lg-today { box-shadow: inset 0 0 0 2px var(--today); }
+.lg-week { width: 18px !important; border-radius: 4px !important; background: color-mix(in srgb, var(--ink) 7%, transparent); box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--ink) 30%, transparent); }
 .cal-today {
   display: block;
   margin: 8px auto 0;
@@ -527,7 +535,44 @@ body[data-state="closed"] .dot { background: var(--ink); }
 .chart .col.best .bar { background: var(--accent); }
 .chart .col.empty .bar { background: transparent; }
 .chart-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-top: 8px; }
-.chart-days span { text-align: center; font-size: 11px; color: var(--muted); }
+.chart-days span { text-align: center; font-size: 11px; color: var(--muted); transition: color .15s; }
+.chart-days span.picked { color: var(--ink); font-weight: 600; }
+.chart .col.can-pick { cursor: pointer; }
+.chart .col.can-pick .bar-wrap { transition: box-shadow .15s; }
+.chart .col.can-pick:hover .bar-wrap { box-shadow: inset 0 0 0 1.5px var(--faint); }
+.chart .col.picked .bar-wrap { box-shadow: inset 0 0 0 2px var(--ink); }
+.day-panel {
+  min-height: 40px;
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+.day-panel:empty { min-height: 0; margin-top: 0; }
+.dp-hint { font-size: 11.5px; color: var(--faint); }
+.dp-text { display: inline-flex; align-items: baseline; gap: 8px; color: var(--ink-soft); }
+.dp-text b { font-weight: 600; color: var(--ink); }
+.dp-time { color: var(--muted); font-variant-numeric: tabular-nums; }
+.dp-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: var(--surface);
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--ink);
+  transition: background .15s, color .15s, box-shadow .15s;
+}
+.dp-btn:hover { box-shadow: inset 0 0 0 1px var(--line); }
+.dp-clear svg { color: #c2412d; }
+.dp-clear.armed { background: #c2412d; color: #fff; }
+.dp-clear.armed svg { color: #fff; }
 
 .stats {
   margin-top: 28px;
@@ -582,6 +627,45 @@ main::-webkit-scrollbar-thumb { background: var(--line); border-radius: 4px; }
   box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 14%, transparent);
 }
 .subject:focus-within .subject-icon { color: var(--accent); }
+.subject { z-index: 5; }
+.suggest {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  z-index: 30;
+  list-style: none;
+  margin: 0;
+  padding: 6px;
+  border-radius: 18px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, .14), 0 2px 6px rgba(0, 0, 0, .06);
+  text-align: start;
+  transform-origin: top center;
+  animation: sg-in .2s cubic-bezier(.22, 1, .36, 1);
+}
+.suggest.closing { animation: sg-out .13s ease-in forwards; pointer-events: none; }
+@keyframes sg-in { from { opacity: 0; transform: translateY(-6px) scale(.98); } }
+@keyframes sg-out { to { opacity: 0; transform: translateY(-4px) scale(.98); } }
+.suggest li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 38px;
+  padding: 0 12px;
+  border-radius: 12px;
+  font-size: 13.5px;
+  color: var(--ink);
+  cursor: pointer;
+  transition: background .12s;
+}
+.suggest li svg { flex: none; color: var(--faint); transition: color .12s; }
+.suggest li:hover, .suggest li.on { background: var(--surface); }
+.suggest li.on svg, .suggest li:hover svg { color: var(--accent); }
+.sg-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sg-name mark { background: none; color: var(--accent); font-weight: 600; }
+.sg-time { flex: none; font-size: 11.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
 [dir="rtl"] .subject-icon { left: auto; right: 16px; }
 [dir="rtl"] .subject-input { padding: 0 42px 0 18px; }
 .subject + .controls { margin-top: 22px; }
@@ -631,13 +715,27 @@ main::-webkit-scrollbar-thumb { background: var(--line); border-radius: 4px; }
 }
 @media (prefers-reduced-motion: reduce) { .goal-btn.hit .arrow, .goal-btn.hit .rings { animation: none; } }
 .goal-btn:hover { color: var(--ink); box-shadow: inset 0 0 0 1px var(--line); }
-.goal-edit { flex: none; display: flex; align-items: center; gap: 4px; font-size: 12.5px; color: var(--muted); }
-.goal-edit input {
-  width: 46px; padding: 3px 6px;
-  border: 1px solid var(--faint); border-radius: 6px;
-  background: var(--bg); color: var(--ink); font: inherit; text-align: center; outline: none;
+.week-foot { min-height: 32px; }
+.goal-edit {
+  flex: none;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 12px 0 13px;
+  border-radius: 999px;
+  background: var(--bg);
+  box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--accent) 60%, transparent), 0 0 0 4px color-mix(in srgb, var(--accent) 12%, transparent);
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--ink-soft);
 }
-.goal-edit input:focus { border-color: var(--ink); }
+.goal-edit input {
+  width: 30px; height: 22px; padding: 0;
+  border: 0; border-radius: 6px;
+  background: color-mix(in srgb, var(--ink) 6%, transparent);
+  color: var(--ink); font: inherit; font-weight: 600; text-align: center; outline: none;
+}
 .goal-edit input::-webkit-inner-spin-button { -webkit-appearance: none; }
 
 /* By subject */
