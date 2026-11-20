@@ -1314,20 +1314,38 @@ function renderSettings(animate = false) {
   renderExtStatus();
 }
 
+const EXT_ZIP = "https://github.com/mthsluna/lectern/releases/latest/download/Lectern-Extension.zip";
+const EXT_GUIDE = "https://github.com/mthsluna/lectern/blob/main/extension/README.md#install";
+let extDownloaded = false;
+
+function openExternal(url) {
+  if (window.__TAURI__ && window.__TAURI__.opener) window.__TAURI__.opener.openUrl(url).catch(() => {});
+  else window.open(url, "_blank");
+}
+
 async function renderExtStatus() {
   let seen = 0;
   try { if (tauri) seen = await tauri.invoke("bridge_seen"); } catch { /* older shell */ }
   const linked = seen && Date.now() - seen < 150000;
   const el = $("ext-status");
   el.classList.toggle("ok", Boolean(linked));
-  el.innerHTML = linked
-    ? `<i></i><span>${t("extConnected")}</span>`
-    : `<i></i><span>${t("extMissing")}</span><button class="ext-get" id="ext-get">${t("extGetIt")}</button>`;
-  if (!linked) $("ext-get").addEventListener("click", () => {
-    const url = "https://github.com/mthsluna/lectern/blob/main/extension/README.md#install";
-    if (window.__TAURI__ && window.__TAURI__.opener) window.__TAURI__.opener.openUrl(url).catch(() => {});
-    else window.open(url, "_blank");
-  });
+  el.classList.toggle("steps", !linked && extDownloaded);
+  if (linked) {
+    el.innerHTML = `<i></i><span>${t("extConnected")}</span>`;
+  } else if (extDownloaded) {
+    // the zip is on its way: what to do with it
+    el.innerHTML = `<div class="ext-steps"><p class="ext-steps-title"><i></i>${t("extDownloading")}</p><ol>`
+      + [t("extStep1"), t("extStep2"), t("extStep3")].map((s) => `<li>${s}</li>`).join("")
+      + `</ol><button class="ext-guide" id="ext-guide">${t("extGuide")}</button></div>`;
+    $("ext-guide").addEventListener("click", () => openExternal(EXT_GUIDE));
+  } else {
+    el.innerHTML = `<i></i><span>${t("extMissing")}</span><button class="ext-get" id="ext-get"><svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M8 2.5v8m0 0L4.8 7.3M8 10.5l3.2-3.2M3 13.5h10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>${t("extGetIt")}</button>`;
+    $("ext-get").addEventListener("click", () => {
+      openExternal(EXT_ZIP);           // the browser downloads it straight away
+      extDownloaded = true;
+      renderExtStatus().then(() => replay($("ext-status"), "swap"));
+    });
+  }
 }
 
 function addSite(raw) {

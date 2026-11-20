@@ -179,8 +179,10 @@ function renderFoot() {
     foot.querySelector("span").textContent = t("extGetNote");
     $("get-app").textContent = t("extDownload");
     $("get-app").addEventListener("click", () => {
-      if (hasChrome) chrome.tabs.create({ url: C.SITE });
-      else window.open(C.SITE, "_blank");
+      // straight to the installer: the browser downloads it at once
+      if (hasChrome) chrome.tabs.create({ url: C.DOWNLOAD, active: false });
+      else window.open(C.DOWNLOAD, "_blank");
+      $("get-app").textContent = t("extDownloading");
     });
   }
 }

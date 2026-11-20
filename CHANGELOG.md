@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.20.1
+
+- Get the extension in Settings now downloads it at once, then shows the three steps to install it.
+- In the extension, Get it downloads the app installer at once.
+
 ## 1.20.0
 
 - Site blocker: choose sites in the new Settings tab and the browser extension keeps them closed while the timer runs. A break or Stop opens them again.
