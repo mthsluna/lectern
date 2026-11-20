@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.19.1
+
+- The subject field says just "Subject", in every language, and is a little narrower.
+
 ## 1.19.0
 
 - A browser extension for Chrome, Edge and Brave: the timer in the toolbar, today's hours on its icon. It works on its own, or linked to the app.
