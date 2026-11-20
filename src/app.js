@@ -54,6 +54,7 @@ function applyLanguage() {
   document.documentElement.dir = info.rtl ? "rtl" : "ltr";
   document.querySelectorAll("[data-i18n]").forEach((el) => { el.textContent = t(el.dataset.i18n); });
   document.querySelectorAll("[data-i18n-title]").forEach((el) => { el.title = t(el.dataset.i18nTitle); });
+  document.querySelectorAll("[data-i18n-label]").forEach((el) => { el.setAttribute("aria-label", t(el.dataset.i18nLabel)); });
   document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => { el.placeholder = t(el.dataset.i18nPlaceholder); });
   $("lang-btn").textContent = info.code.toUpperCase();
   applyTheme();
@@ -426,7 +427,7 @@ function buildControls(animate) {
     const b = btn("", "btn-round", start);
     b.title = t("startAnother");
     b.setAttribute("aria-label", t("startAnother"));
-    b.innerHTML = `<svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M8 5.6c0-1.3 1.4-2.1 2.5-1.4l9.1 5.9a1.7 1.7 0 0 1 0 2.8l-9.1 5.9C9.4 19.5 8 18.7 8 17.4Z" fill="currentColor"/></svg><span></span>`;
+    b.innerHTML = `<svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path transform="translate(-1.6 0)" d="M8 5.6c0-1.3 1.4-2.1 2.5-1.4l9.1 5.9a1.7 1.7 0 0 1 0 2.8l-9.1 5.9C9.4 19.5 8 18.7 8 17.4Z" fill="currentColor"/></svg><span></span>`;
     b.lastChild.textContent = t("startAnother");
     b.lastChild.className = "round-label";
   }
