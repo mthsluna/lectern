@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lectern</title>
+  <link rel="icon" href="icons/icon-32.png">
+  <link rel="stylesheet" href="popup.css">
+  <link rel="stylesheet" href="blocked.css">
+</head>
+<body class="blocked" data-on="1">
+  <main class="wall">
+    <img class="wall-mark" src="icons/mark.svg" alt="" width="44" height="44">
+    <h1 id="title"></h1>
+    <p class="wall-text" id="text"></p>
+    <p class="wall-hint" id="hint"></p>
+    <div class="wall-actions">
+      <button class="btn btn-primary" id="close"></button>
+      <a class="btn btn-ghost" id="open" hidden></a>
+    </div>
+  </main>
+  <script src="i18n.js"></script>
+  <script type="module" src="blocked.js"></script>
+</body>
+</html>

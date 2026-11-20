@@ -187,7 +187,14 @@ function rangeLabel(start) {
 /* Classic Pomodoro: 25 minutes of focus, 5 of rest, 15 after every fourth. */
 const POMO_DEFAULTS = { on: false, focus: 25, short: 5, long: 15, every: 4, rest: "celesta", back: "shine", volume: 0.8 };
 const SOUNDS = ["reminder","shine","bell","celesta","marimba","kalimba","musicbox","ding"];
-let state = { version: 1, lang: null, theme: "system", goal: null, days: {}, active: null, seen: {}, pomo: { ...POMO_DEFAULTS } };
+/* The site blocker is enforced by the browser extension; the app holds the list. */
+const BLOCK_DEFAULTS = { on: false, sites: ["instagram.com", "x.com", "twitter.com", "tiktok.com", "facebook.com", "web.whatsapp.com", "reddit.com"] };
+const SITE_NAMES = {
+  "instagram.com": "Instagram", "x.com": "X", "twitter.com": "Twitter", "tiktok.com": "TikTok", "facebook.com": "Facebook",
+  "web.whatsapp.com": "WhatsApp", "reddit.com": "Reddit", "youtube.com": "YouTube", "netflix.com": "Netflix",
+  "twitch.tv": "Twitch", "discord.com": "Discord", "pinterest.com": "Pinterest", "threads.net": "Threads",
+};
+let state = { version: 1, lang: null, theme: "system", goal: null, days: {}, active: null, seen: {}, pomo: { ...POMO_DEFAULTS }, block: { ...BLOCK_DEFAULTS, sites: [...BLOCK_DEFAULTS.sites] } };
 let draftSubject = "";
 
 async function load() {
@@ -1259,15 +1266,86 @@ function show(v, opts = {}) {
   document.querySelectorAll(".tab[data-view]").forEach((el) => el.classList.toggle("is-active", el.dataset.view === v));
   $("view-today").hidden = v !== "today";
   $("view-report").hidden = v !== "report";
+  $("view-settings").hidden = v !== "settings";
   const notice = $("report-notice");
   notice.hidden = !opts.notice;
   if (opts.notice) notice.textContent = opts.notice;
   if (v === "report") {
     reportWeek = opts.week || reportWeek || defaultReportWeek();
     renderReport();
+  } else if (v === "settings") {
+    renderSettings(true);
   } else {
     renderToday();
   }
+}
+
+/* ---------- settings: the site blocker ---------- */
+
+/** "https://www.Instagram.com/foo" -> "instagram.com"; null if it is not a site. */
+function normalizeSite(input) {
+  let s = String(input || "").trim().toLowerCase();
+  s = s.replace(/^[a-z][a-z0-9+.-]*:\/\//, "").replace(/[/?#].*$/, "").replace(/:\d+$/, "").replace(/^www\./, "").replace(/\.$/, "");
+  return /^[a-z0-9-]+(\.[a-z0-9-]+)+$/.test(s) && s.length <= 80 ? s : null;
+}
+
+function blockingNow() {
+  return Boolean(state.block.on && state.block.sites.length && currentState() === "running");
+}
+
+function renderSettings(animate = false) {
+  const b = state.block;
+  $("block-on").setAttribute("aria-checked", String(b.on));
+  $("block-card").classList.toggle("is-on", b.on);
+  const live = $("block-live");
+  live.hidden = !blockingNow();
+  live.textContent = t("blockActive");
+
+  const list = $("sites");
+  list.innerHTML = b.sites.map((s) => `<li data-site="${s}"><span class="site-badge">${(SITE_NAMES[s] || s)[0].toUpperCase()}</span>`
+    + `<span class="site-name">${SITE_NAMES[s] ? `${SITE_NAMES[s]} <small>${s}</small>` : s}</span>`
+    + `<button class="site-x" data-remove="${s}" aria-label="${t("remove")} ${s}"><svg viewBox="0 0 12 12" width="10" height="10" aria-hidden="true"><path d="m3 3 6 6m0-6-6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button></li>`).join("")
+    || `<li class="sites-empty">${t("noSites")}</li>`;
+  if (animate) stagger(list.children, 25);
+
+  const rest = Object.keys(SITE_NAMES).filter((s) => !b.sites.includes(s));
+  $("presets-wrap").hidden = rest.length === 0;
+  $("presets").innerHTML = rest.map((s) => `<button class="preset" data-add="${s}"><svg viewBox="0 0 12 12" width="10" height="10" aria-hidden="true"><path d="M6 2.5v7M2.5 6h7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>${SITE_NAMES[s]}</button>`).join("");
+  renderExtStatus();
+}
+
+async function renderExtStatus() {
+  let seen = 0;
+  try { if (tauri) seen = await tauri.invoke("bridge_seen"); } catch { /* older shell */ }
+  const linked = seen && Date.now() - seen < 150000;
+  const el = $("ext-status");
+  el.classList.toggle("ok", Boolean(linked));
+  el.innerHTML = linked
+    ? `<i></i><span>${t("extConnected")}</span>`
+    : `<i></i><span>${t("extMissing")}</span><button class="ext-get" id="ext-get">${t("extGetIt")}</button>`;
+  if (!linked) $("ext-get").addEventListener("click", () => {
+    const url = "https://github.com/mthsluna/lectern/blob/main/extension/README.md#install";
+    if (window.__TAURI__ && window.__TAURI__.opener) window.__TAURI__.opener.openUrl(url).catch(() => {});
+    else window.open(url, "_blank");
+  });
+}
+
+function addSite(raw) {
+  const site = normalizeSite(raw);
+  const err = $("site-error");
+  if (!site) {
+    err.hidden = false;
+    err.textContent = t("invalidSite");
+    replay($("site-add"), "nudge");
+    return false;
+  }
+  err.hidden = true;
+  if (!state.block.sites.includes(site)) state.block.sites.unshift(site);
+  save();
+  renderSettings();
+  const li = $("sites").querySelector(`[data-site="${site}"]`);
+  if (li) replay(li, "pop");
+  return true;
 }
 
 /* On Saturday, the current week. Otherwise, the last finished week. */
@@ -1301,7 +1379,7 @@ function openStartView() {
   if (DEMO) auto = params.get("view") === "report" ? { week: addDays(weekStart(todayKey()), -7 * (Number(params.get("back")) || 0)), notice: params.get("notice") ? t("saturday") : null } : null;
   else auto = autoReport();
   if (auto) show("report", auto);
-  else show("today");
+  else show(DEMO && params.get("view") === "settings" ? "settings" : "today");
   // demo only: open a popover for screenshots (?panel=pomo or ?panel=cal)
   const panel = DEMO && params.get("panel");
   if (panel) setTimeout(() => (panel === "cal" ? toggleCalendar() : togglePomoPanel()), 300);
@@ -1347,6 +1425,7 @@ function commitAndRender() {
   pomoSchedule();
   renderMode();
   if (view === "today") renderToday(true);
+  else if (view === "settings") renderSettings();
   else renderReport();
 }
 
@@ -1473,6 +1552,7 @@ function seedDemo() {
 (async function boot() {
   await load();
   state.pomo = { ...POMO_DEFAULTS, ...(state.pomo || {}) };
+  if (!state.block || !Array.isArray(state.block.sites)) state.block = { ...BLOCK_DEFAULTS, sites: [...BLOCK_DEFAULTS.sites] };
   migrateActive(state.active);
   settleStaleSession();
 
@@ -1522,6 +1602,33 @@ function seedDemo() {
   $("suggest").addEventListener("click", (e) => {
     const li = e.target.closest("li");
     if (li) chooseSuggest(Number(li.dataset.i));
+  });
+
+  /* settings: the site blocker */
+  $("block-on").addEventListener("click", () => {
+    state.block.on = !state.block.on;
+    save();
+    renderSettings();
+  });
+  $("site-add").addEventListener("submit", (e) => {
+    e.preventDefault();
+    if (addSite($("site-input").value)) $("site-input").value = "";
+  });
+  $("site-input").addEventListener("input", () => { $("site-error").hidden = true; });
+  $("sites").addEventListener("click", (e) => {
+    const x = e.target.closest("[data-remove]");
+    if (!x) return;
+    const li = x.closest("li");
+    li.classList.add("leaving");
+    setTimeout(() => {
+      state.block.sites = state.block.sites.filter((s) => s !== x.dataset.remove);
+      save();
+      renderSettings();
+    }, 160);
+  });
+  $("presets").addEventListener("click", (e) => {
+    const p = e.target.closest("[data-add]");
+    if (p) addSite(p.dataset.add);
   });
 
   /* Pomodoro */
@@ -1641,12 +1748,12 @@ function seedDemo() {
       settleStaleSession();
       const a = autoReport();
       if (a) return show("report", a);
-      return view === "today" ? renderToday() : renderReport();
+      return view === "today" ? renderToday() : view === "settings" ? renderSettings() : renderReport();
     }
     if (view === "today") {
       renderTimer();
       if (state.active && state.active.status === "running") renderWeekStrip();
-    } else if (state.active) {
+    } else if (view === "report" && state.active) {
       renderReport();
     }
   }, 500);

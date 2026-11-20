@@ -21,6 +21,7 @@ let pending = null;             // a command sent to the app, not yet reflected
 let armed = false;
 let armTimer = 0;
 let controlsKey = "";
+let calm = true;                // may the blocker show its own page?
 
 const view = () => (linked && appState ? appState : local);
 
@@ -95,6 +96,7 @@ function mockConnect() {
   });
   const data = {
     lang: params.get("lang") || "en", theme: params.get("theme") || "system", goal: 15, days,
+    block: { on: true, sites: C.DEFAULT_SITES },
     active: { date: today, status: "running", since: Date.now() - 4 * m, subject: "Calculus",
       days: { [today]: { study: 1 * h + 20 * m, breaks: 6 * m, pauses: 1 } } },
   };
@@ -244,6 +246,18 @@ function render() {
 
   buildControls(s, onBreak);
 
+  // the blocker
+  const sites = C.blockList(v);
+  const on = Boolean(v.block && v.block.on && sites.length);
+  const row = $("block-row");
+  row.hidden = linked ? !on : false;
+  row.classList.toggle("live", C.isBlocking(v));
+  row.classList.toggle("link", !linked);
+  $("block-text").textContent = on ? (C.isBlocking(v) ? t("blockingN", sites.length) : t("blockReady", sites.length)) : t("blockSettings");
+  $("block-allow").hidden = !on || calm;
+  $("block-allow").textContent = t("allowBlock");
+  $("block-allow").title = t("allowNote");
+
   // the week
   const days = C.week(v);
   const total = days.reduce((x, d) => x + d.study, 0);
@@ -295,6 +309,16 @@ function render() {
     }
   });
   matchMedia("(prefers-color-scheme: dark)").addEventListener("change", applyLook);
+  if (hasChrome) calm = await chrome.permissions.contains({ origins: ["<all_urls>"] });
+  $("block-allow").addEventListener("click", async (e) => {
+    e.stopPropagation();
+    if (!hasChrome) return;
+    calm = await chrome.permissions.request({ origins: ["<all_urls>"] });
+    render();
+  });
+  $("block-row").addEventListener("click", () => {
+    if (!linked && hasChrome) chrome.runtime.openOptionsPage();
+  });
   if (hasChrome) chrome.storage.onChanged.addListener(async () => { local = await loadLocal(); if (!linked) render(); });
 
   setInterval(render, 500);

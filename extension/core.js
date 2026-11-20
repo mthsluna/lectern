@@ -150,3 +150,31 @@ export function stop(state) {
   first.closed = true;
   state.active = null;
 }
+
+/* ---------- the site blocker ---------- */
+
+export const DEFAULT_SITES = ["instagram.com", "x.com", "twitter.com", "tiktok.com", "facebook.com", "web.whatsapp.com", "reddit.com"];
+
+/** "https://www.Instagram.com/foo" -> "instagram.com"; null if it is not a site. */
+export function normalizeSite(input) {
+  let s = String(input || "").trim().toLowerCase();
+  s = s.replace(/^[a-z][a-z0-9+.-]*:\/\//, "").replace(/[/?#].*$/, "").replace(/:\d+$/, "").replace(/^www\./, "").replace(/\.$/, "");
+  return /^[a-z0-9-]+(\.[a-z0-9-]+)+$/.test(s) && s.length <= 80 ? s : null;
+}
+
+export function blockList(data) {
+  const b = data && data.block;
+  if (!b || !Array.isArray(b.sites)) return [];
+  return [...new Set(b.sites.map(normalizeSite).filter(Boolean))];
+}
+
+/** Sites are blocked only while the timer runs: a break or Stop opens them. */
+export function isBlocking(data) {
+  return Boolean(data && data.block && data.block.on && blockList(data).length && currentState(data) === "running");
+}
+
+/** True when a hostname is one of the blocked sites or under one. */
+export function matchesSite(host, sites) {
+  const h = String(host || "").toLowerCase().replace(/^www\./, "");
+  return sites.some((s) => h === s || h.endsWith(`.${s}`));
+}

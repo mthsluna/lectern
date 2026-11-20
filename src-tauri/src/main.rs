@@ -109,6 +109,11 @@ fn handle_remote(app: &AppHandle, cmd: String, json: String) {
 }
 
 #[tauri::command]
+fn bridge_seen() -> u64 {
+    bridge::last_seen()
+}
+
+#[tauri::command]
 fn take_remote(remote: tauri::State<Remote>) -> Option<String> {
     remote.0.lock().unwrap().take()
 }
@@ -206,6 +211,7 @@ fn main() {
             save_data,
             start_update,
             take_remote,
+            bridge_seen,
             set_keep_alive,
             release_window
         ])
