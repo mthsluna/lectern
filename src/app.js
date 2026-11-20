@@ -100,7 +100,6 @@ function showPicker() {
   lang = shown;
   applyLanguage();
   $("picker-title").textContent = t("pickTitle");
-  $("picker-sub").textContent = t("pickSub");
   lang = prev;
 
   const list = $("langs");
@@ -1653,6 +1652,7 @@ function seedDemo() {
       days: { [today]: { study: 1 * h + 24 * m + 7000, breaks: 6 * m, pauses: 1 } },
     };
   }
+  if (params.get("view") === "settings") state.block.on = true;   // screenshots of the blocker
   if (params.has("pomo")) {
     state.pomo.on = true;
     const ph = params.get("pomo");

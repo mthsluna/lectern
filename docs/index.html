@@ -194,6 +194,7 @@
       <nav>
         <a href="#pomodoro">Pomodoro</a>
         <a href="#report">Report</a>
+        <a href="#blocker">Blocker</a>
         <a href="#extension">Extension</a>
         <a href="#questions">Questions</a>
         <a href="https://github.com/mthsluna/lectern">GitHub</a>
@@ -276,6 +277,21 @@
         <p>Started the timer by mistake? Click that day in the chart and clear it. Undo is there for a few seconds.</p>
       </section>
 
+      <section id="blocker">
+        <p class="kicker">Site blocker</p>
+        <h2>The feed can wait.</h2>
+        <p>Choose the sites that pull you away, and Lectern keeps them closed while the timer runs. Take a break or stop, and they open again. It is your list, switched on and off by you, and nothing is ever blocked for good.</p>
+        <figure class="reveal">
+          <div class="card narrow"><img src="shots/settings.webp" alt="Settings: the site blocker, with Instagram, X, TikTok, Facebook, WhatsApp and Reddit blocked" width="640" height="886" loading="lazy"><span class="glare" aria-hidden="true"></span></div>
+        </figure>
+        <ul class="points">
+          <li><b>One tap to add.</b> Instagram, X, TikTok, YouTube, WhatsApp, Reddit, Netflix and more are a tap away, and any other site can be typed or pasted, even as a full link.</li>
+          <li><b>Only while you study.</b> Blocking follows the timer: running blocks, a break or Stop unblocks. In Pomodoro, the short breaks open them too.</li>
+          <li><b>A calm wall.</b> A blocked site shows a quiet Lectern page, which offers the site again the moment you take a break.</li>
+          <li><b>In your browser.</b> The blocking is done by the Lectern extension for Chrome, Edge and Brave, using the browser's own rules. It never reads your pages.</li>
+        </ul>
+      </section>
+
       <section id="extension">
         <p class="kicker">In your browser</p>
         <h2>One click from any tab.</h2>
@@ -285,8 +301,8 @@
           <div class="card popup"><img src="shots/extension.webp" alt="The extension on its own, ready to start" width="680" height="1120" loading="lazy"><span class="glare" aria-hidden="true"></span></div>
         </figure>
         <ul class="points">
+          <li><b>Set up from the app.</b> In Settings, click <i>Add to Chrome</i> (or Edge, or Brave). Lectern prepares the extension, opens your browser and walks you through the three clicks browsers keep for you. When the app updates, the extension follows.</li>
           <li><b>Linked.</b> Start, pause and stop in the browser and the app follows at once, even from the tray. The app keeps the data.</li>
-          <li><b>Site blocker.</b> Pick the sites in the app's Settings, and they stay closed while the timer runs. A break or Stop opens them again; nothing is ever blocked for good.</li>
           <li><b>On its own.</b> Without the app, the extension keeps time in your browser.</li>
           <li><b>Private.</b> The two talk only on your computer, through the browser's native messaging. Only the Lectern extension can reach the app.</li>
         </ul>
@@ -325,6 +341,14 @@
         <details>
           <summary>What happens when I close the window?</summary>
           <p>Lectern keeps running in the system tray, near the clock. Click the icon to bring it back, or right-click it and choose Quit. The timer keeps counting either way, and Pomodoro chimes still play.</p>
+        </details>
+        <details>
+          <summary>Why does adding the extension take a few clicks?</summary>
+          <p>Browsers do not let any program add an extension on its own unless it comes from their store, to protect you from malware. Lectern does everything else: it prepares the extension, opens the browser and copies what you need to paste. You turn on Developer mode, click Load unpacked and paste the folder.</p>
+        </details>
+        <details>
+          <summary>Can I open a blocked site anyway?</summary>
+          <p>Yes. Take a break or stop the timer and it opens at once. To stop blocking altogether, turn the blocker off in Settings.</p>
         </details>
         <details>
           <summary>When does a week start?</summary>

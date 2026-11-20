@@ -28,8 +28,9 @@ Press start when you sit down. Read your week on Saturday.
 - **Pomodoro.** Classic 25 / 5 / 15, fully adjustable, with soft chimes.
 - **Goal, streak and subjects.** Set once, then just study.
 - **Private.** No account, works offline, one local file.
-- **Site blocker.** Instagram, X, TikTok and any site you add stay closed while the timer runs.
-- **Browser extension.** For Chrome, Edge and Brave; links to the app by itself.
+- **Site blocker.** Instagram, X, TikTok and any site you add stay closed while the timer runs, and open on a break.
+- **Browser extension.** For Chrome, Edge and Brave; set up from the app, linked to it by itself.
+- **Corrections.** Started by mistake? Clear the day from the report.
 - **Light and dark, in ten languages.**
 
 <p align="center">
@@ -43,8 +44,10 @@ and run it. No administrator rights, no account. Requires Windows 10 or 11.
 
 Lectern updates itself in place when a new version is out.
 
-For the browser, download [**Lectern-Extension.zip**](https://github.com/mthsluna/lectern/releases/latest/download/Lectern-Extension.zip)
-and follow the [three steps](extension/README.md#install). With the app installed, the two link automatically.
+For the browser, open **Settings** in Lectern and click **Add to Chrome** (or Edge, or Brave).
+Lectern prepares the extension and guides the three clicks browsers keep for you. You can also
+download [**Lectern-Extension.zip**](https://github.com/mthsluna/lectern/releases/latest/download/Lectern-Extension.zip)
+and [install it by hand](extension/README.md#install).
 
 ## Build
 

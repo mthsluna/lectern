@@ -41,6 +41,7 @@ const SHOTS = [
   ["report", `view=report&${DAY}&state=closed`, "light", 720],
   ["calendar", `view=report&${DAY}&state=closed&panel=cal`, "light", 720],
   ["languages", "pick", "light", 720],
+  ["settings", "view=settings&state=running", "light", 720],
 ];
 // the browser extension's popup, linked (a stand-in app) and on its own
 const POPUPS = [
