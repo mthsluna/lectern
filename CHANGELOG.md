@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.21.2
+
+- Settings redesigned as a quiet, Notion-like page: sections with a hairline, one row per option, small switch, flat tiles and inline add.
+- Fixed: the waiting spinner while adding the extension stretched into a long spinning line.
+
 ## 1.21.1
 
 - Adding the extension is a clear three-step guide, with a copy button for the browser's extensions address and one for the folder. Browsers refuse to open their own pages for another program, so Lectern no longer tries; it opens the browser and copies the address instead.

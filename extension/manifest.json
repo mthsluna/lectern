@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Lectern",
   "short_name": "Lectern",
-  "version": "1.21.1",
+  "version": "1.21.2",
   "description": "A quiet study timer that blocks distracting sites while you study. Works on its own, or linked to the Lectern app for Windows.",
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAqw4Yr9ZDrqDUeh9Kkkq7hS6sKeJ+4b4CMhS2gLRd1G4b3LdCMcLQ0pKTpo2oIfMGfYnHqeR3L6aWQm/BWRpGHd5mTyDECPLKWzxiU5Bm2igKyC8UERTKhL6yktKLokez4CJsvOMJCBSHcTfBg9A4SzCg+3sHJr7sIDGfe2/II0QkuuCBgH7MP4cVV53Yig3MZvTPeTl7DUJxuk+M65M/RMRwPgwhgZu47lqzczh1o5yT7tGYQRYd9+T6d2VDYPiiCSxbOAED/YVP/gVqx3F/fFvMzSEt7tmWXqwUofGFasBBsfcLrLDEjxQ7V2tOUb5eT6wjXyojxEyg1P9bYRNojwIDAQAB",
   "icons": {

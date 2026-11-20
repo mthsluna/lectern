@@ -193,34 +193,38 @@
       <section class="view" id="view-settings" hidden>
         <h2 class="set-title" data-i18n="settings">Settings</h2>
 
-        <div class="set-card" id="block-card">
-          <div class="set-head">
-            <span class="set-icon" aria-hidden="true">
-              <svg viewBox="0 0 20 20" width="18" height="18"><path d="M10 2.6 4 4.9v4.6c0 3.8 2.6 6.6 6 7.9 3.4-1.3 6-4.1 6-7.9V4.9Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="m7.4 7.4 5.2 5.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-            </span>
-            <div class="set-text">
-              <p class="set-name"><span data-i18n="blockTitle">Site blocker</span><span class="set-live" id="block-live" hidden></span></p>
-              <p class="set-desc" data-i18n="blockDesc">While the timer runs, these sites are blocked in your browser. A break or Stop opens them again.</p>
+        <section class="np-section" id="block-card">
+          <h3 class="np-h"><span data-i18n="blockTitle">Site blocker</span><span class="set-live" id="block-live" hidden></span></h3>
+
+          <div class="np-row">
+            <div class="np-text">
+              <p class="np-label" data-i18n="blockToggle">Block sites while studying</p>
+              <p class="np-desc" data-i18n="blockDesc">While the timer runs, these sites are blocked in your browser. A break or Stop opens them again.</p>
             </div>
-            <button class="switch" id="block-on" role="switch" aria-checked="false" data-i18n-label="blockTitle" aria-label="Site blocker"><span></span></button>
+            <button class="switch" id="block-on" role="switch" aria-checked="false" data-i18n-label="blockToggle" aria-label="Block sites while studying"><span></span></button>
           </div>
 
-          <div class="block-body" id="block-body">
+          <div class="np-row np-stack block-body" id="block-body">
+            <p class="np-label" data-i18n="blockedList">Blocked sites</p>
+            <ul class="sites" id="sites"></ul>
             <form class="site-add" id="site-add" autocomplete="off">
-              <svg viewBox="0 0 20 20" width="15" height="15" aria-hidden="true"><circle cx="10" cy="10" r="7" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M3 10h14M10 3c2 2.2 2.8 4.5 2.8 7S12 14.8 10 17M10 3C8 5.2 7.2 7.5 7.2 10S8 14.8 10 17" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
-              <input id="site-input" type="text" spellcheck="false" maxlength="80" placeholder="instagram.com">
+              <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              <input id="site-input" type="text" spellcheck="false" maxlength="80" data-i18n-placeholder="sitePlaceholder" placeholder="Add a site, like instagram.com">
               <button type="submit" id="site-add-btn" data-i18n="addSite">Add</button>
             </form>
             <p class="site-error" id="site-error" hidden></p>
-            <ul class="sites" id="sites"></ul>
-            <div class="presets-wrap" id="presets-wrap">
-              <p class="label" data-i18n="suggested">Suggestions</p>
-              <div class="presets" id="presets"></div>
-            </div>
           </div>
 
+          <div class="np-row np-stack" id="presets-wrap">
+            <p class="np-label" data-i18n="suggested">Suggestions</p>
+            <div class="presets" id="presets"></div>
+          </div>
+        </section>
+
+        <section class="np-section">
+          <h3 class="np-h" data-i18n="extTitle">Browser extension</h3>
           <div class="ext-status" id="ext-status"></div>
-        </div>
+        </section>
       </section>
     </main>
   </div>
