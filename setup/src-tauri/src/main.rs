@@ -233,6 +233,12 @@ fn register(startup: bool) -> Res {
     // Leftover from the NSIS installer used up to 1.6.
     let _ = hk.delete_subkey_all(r"Software\lectern");
 
+    // Let the browser extension find Lectern before it is first opened.
+    let _ = Command::new(app_exe())
+        .arg("--register-bridge")
+        .creation_flags(NO_WINDOW)
+        .status();
+
     let (run, _) = hk.create_subkey(RUN_KEY).map_err(err)?;
     if startup {
         run.set_value("Lectern", &format!("\"{}\" --hidden", exe.display())).map_err(err)?;
@@ -269,6 +275,17 @@ fn uninstall(keep_data: bool) -> Res {
     if let Ok(run) = hk.open_subkey_with_flags(RUN_KEY, winreg::enums::KEY_SET_VALUE) {
         let _ = run.delete_value("Lectern");
     }
+
+    // The browser extension's bridge: its registry entries and manifest.
+    for key in [
+        r"Software\Google\Chrome\NativeMessagingHosts\app.lectern.bridge",
+        r"Software\Microsoft\Edge\NativeMessagingHosts\app.lectern.bridge",
+        r"Software\BraveSoftware\Brave-Browser\NativeMessagingHosts\app.lectern.bridge",
+        r"Software\Chromium\NativeMessagingHosts\app.lectern.bridge",
+    ] {
+        let _ = hk.delete_subkey_all(key);
+    }
+    let _ = fs::remove_file(data_dir().join("bridge.json"));
 
     let _ = fs::remove_dir_all(webview_dir());
     if !keep_data {

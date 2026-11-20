@@ -108,6 +108,10 @@
       pointer-events: none;
     }
     .card.tilting .glare { opacity: 1; }
+    .card.popup { aspect-ratio: 340 / 560; border-radius: 4.7% / 2.86%; }
+    .actions.left { justify-content: flex-start; margin-top: 28px; }
+    .btn-link { color: var(--muted); padding: 0 6px; }
+    .btn-link:hover { color: var(--ink); transform: none; }
     .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; perspective: 1400px; }
     @media (prefers-reduced-motion: reduce) { .card { transition: none; } }
     figcaption { margin-top: 16px; text-align: center; font-family: var(--sans); font-size: 13px; color: var(--muted); }
@@ -190,6 +194,7 @@
       <nav>
         <a href="#pomodoro">Pomodoro</a>
         <a href="#report">Report</a>
+        <a href="#extension">Extension</a>
         <a href="#questions">Questions</a>
         <a href="https://github.com/mthsluna/lectern">GitHub</a>
       </nav>
@@ -269,6 +274,25 @@
           <li>A short written summary that tells you when it is your best week yet</li>
         </ul>
         <p>Started the timer by mistake? Click that day in the chart and clear it. Undo is there for a few seconds.</p>
+      </section>
+
+      <section id="extension">
+        <p class="kicker">In your browser</p>
+        <h2>One click from any tab.</h2>
+        <p>The Lectern extension for Chrome, Edge and Brave puts the timer in your toolbar, with today's hours on the icon while you study. It works on its own, and when the Lectern app is installed on the same computer it links to it by itself: same clock, same week, same report.</p>
+        <figure class="pair reveal">
+          <div class="card popup"><img src="shots/extension-linked.webp" alt="The extension linked to the app: the same running session and week" width="680" height="1120" loading="lazy"><span class="glare" aria-hidden="true"></span></div>
+          <div class="card popup"><img src="shots/extension.webp" alt="The extension on its own, ready to start" width="680" height="1120" loading="lazy"><span class="glare" aria-hidden="true"></span></div>
+        </figure>
+        <ul class="points">
+          <li><b>Linked.</b> Start, pause and stop in the browser and the app follows at once, even from the tray. The app keeps the data.</li>
+          <li><b>On its own.</b> Without the app, the extension keeps time in your browser.</li>
+          <li><b>Private.</b> The two talk only on your computer, through the browser's native messaging. Only the Lectern extension can reach the app.</li>
+        </ul>
+        <div class="actions left">
+          <a class="btn btn-ghost" href="https://github.com/mthsluna/lectern/releases/latest/download/Lectern-Extension.zip" download>Download the extension</a>
+          <a class="btn btn-link" href="https://github.com/mthsluna/lectern/tree/main/extension#install">How to install it</a>
+        </div>
       </section>
 
       <section>

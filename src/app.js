@@ -1307,8 +1307,43 @@ function openStartView() {
   if (panel) setTimeout(() => (panel === "cal" ? toggleCalendar() : togglePomoPanel()), 300);
 }
 
+/* ---------- the browser extension ----------
+ * Buttons pressed in the extension arrive here, through lectern.exe
+ * --remote. The window may be hidden: the commands run all the same.
+ */
+
+async function takeRemote() {
+  if (!tauri) return;
+  let raw = null;
+  try { raw = await tauri.invoke("take_remote"); } catch { return; }
+  if (raw) {
+    let r = null;
+    try { r = JSON.parse(raw); } catch { /* ignore a malformed command */ }
+    if (r) runRemote(r.cmd, r.subject);
+  }
+  syncKeepAlive();
+  try { await tauri.invoke("release_window"); } catch { /* still open: fine */ }
+}
+
+function runRemote(cmd, subject) {
+  const s = currentState();
+  if (cmd === "toggle") cmd = s === "running" ? "pause" : s === "paused" ? "resume" : "start";
+  if (cmd === "start" && (s === "idle" || s === "closed")) {
+    if (typeof subject === "string") draftSubject = subject.slice(0, 40);
+    start();
+  } else if (cmd === "pause" && s === "running") pause();
+  else if (cmd === "resume" && s === "paused") resume();
+  else if (cmd === "stop" && (s === "running" || s === "paused")) stop();
+}
+
+/* A Pomodoro keeps the interface loaded when the window closes. */
+function syncKeepAlive() {
+  if (tauri) tauri.invoke("set_keep_alive", { on: Boolean(state.active && state.active.pomo) }).catch(() => {});
+}
+
 function commitAndRender() {
   save();
+  syncKeepAlive();
   pomoSchedule();
   renderMode();
   if (view === "today") renderToday(true);
@@ -1595,6 +1630,9 @@ function seedDemo() {
   /* tick: update the clock; re-render everything when the date changes */
   let lastDay = todayKey();
   pomoSchedule();
+  syncKeepAlive();
+  if (window.__TAURI__ && window.__TAURI__.event) window.__TAURI__.event.listen("remote", takeRemote);
+  takeRemote();
   setInterval(() => {
     pomoTick();
     if (!state.lang || !$("picker").hidden) return;

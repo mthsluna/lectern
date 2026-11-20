@@ -8,11 +8,20 @@
 //! again. The timer never depends on the window being open: it is stored as
 //! timestamps, so nothing is lost while the interface is unloaded.
 
-use std::{fs, path::PathBuf};
+mod bridge;
+
+use std::{
+    fs,
+    path::PathBuf,
+    sync::{
+        atomic::{AtomicBool, Ordering},
+        Mutex,
+    },
+};
 use tauri::{
     menu::{Menu, MenuItem},
     tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
-    AppHandle, Manager, RunEvent, WebviewWindowBuilder, Wry,
+    AppHandle, Emitter, Manager, RunEvent, WebviewWindowBuilder, WindowEvent, Wry,
 };
 
 const FILE: &str = "lectern.json";
@@ -21,6 +30,15 @@ struct TrayMenu {
     open: MenuItem<Wry>,
     quit: MenuItem<Wry>,
 }
+
+/// A command from the browser extension, waiting for the interface to take it.
+#[derive(Default)]
+struct Remote(Mutex<Option<String>>);
+
+/// While a Pomodoro runs, closing the window hides it instead of unloading
+/// it, so the phases still change and the chimes still play from the tray.
+#[derive(Default)]
+struct KeepAlive(AtomicBool);
 
 fn data_dir(app: &AppHandle) -> Result<PathBuf, String> {
     let dir = app.path().app_data_dir().map_err(|e| e.to_string())?;
@@ -62,6 +80,54 @@ fn open_window(app: &AppHandle) {
         if let Ok(w) = WebviewWindowBuilder::from_config(app, cfg).and_then(|b| b.build()) {
             let _ = w.show();
             let _ = w.set_focus();
+        }
+    }
+}
+
+/// Builds the window without showing it, so a command can run in the background.
+fn hidden_window(app: &AppHandle) {
+    if app.get_webview_window("main").is_some() {
+        return;
+    }
+    if let Some(cfg) = app.config().app.windows.first() {
+        let _ = WebviewWindowBuilder::from_config(app, cfg).and_then(|b| b.build());
+    }
+}
+
+/// A command from the extension: the interface runs it, visible or not.
+fn handle_remote(app: &AppHandle, cmd: String, json: String) {
+    if cmd == "open" {
+        return open_window(app);
+    }
+    *app.state::<Remote>().0.lock().unwrap() = Some(json);
+    match app.get_webview_window("main") {
+        Some(w) => {
+            let _ = w.emit("remote", ());
+        }
+        None => hidden_window(app),
+    }
+}
+
+#[tauri::command]
+fn take_remote(remote: tauri::State<Remote>) -> Option<String> {
+    remote.0.lock().unwrap().take()
+}
+
+#[tauri::command]
+fn set_keep_alive(keep: tauri::State<KeepAlive>, on: bool) {
+    keep.0.store(on, Ordering::Relaxed);
+}
+
+/// After a background command: unload the hidden window again, unless a
+/// Pomodoro needs it.
+#[tauri::command]
+fn release_window(app: AppHandle, keep: tauri::State<KeepAlive>) {
+    if keep.0.load(Ordering::Relaxed) {
+        return;
+    }
+    if let Some(w) = app.get_webview_window("main") {
+        if !w.is_visible().unwrap_or(true) {
+            let _ = w.destroy();
         }
     }
 }
@@ -111,12 +177,50 @@ fn save_data(app: AppHandle, data: String) -> Result<(), String> {
 }
 
 fn main() {
+    // Started by a browser for the extension: be the bridge, not the app.
+    if bridge::is_host_launch() {
+        return bridge::run_host();
+    }
+    if std::env::args().any(|a| a == "--register-bridge") {
+        let _ = bridge::register();
+        return;
+    }
+    if std::env::args().any(|a| a == "--unregister-bridge") {
+        return bridge::unregister();
+    }
+
     let app = tauri::Builder::default()
-        // Launching Lectern again while it sits in the tray reopens the window.
-        .plugin(tauri_plugin_single_instance::init(|app, _, _| open_window(app)))
+        // Launching Lectern again while it sits in the tray reopens the window;
+        // a command from the extension runs without bringing it forward.
+        .plugin(tauri_plugin_single_instance::init(|app, argv, _| {
+            match bridge::parse_remote(&argv) {
+                Some((cmd, json)) => handle_remote(app, cmd, json),
+                None => open_window(app),
+            }
+        }))
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![load_data, save_data, start_update])
+        .manage(Remote::default())
+        .manage(KeepAlive::default())
+        .invoke_handler(tauri::generate_handler![
+            load_data,
+            save_data,
+            start_update,
+            take_remote,
+            set_keep_alive,
+            release_window
+        ])
+        .on_window_event(|window, event| {
+            if let WindowEvent::CloseRequested { api, .. } = event {
+                if window.state::<KeepAlive>().0.load(Ordering::Relaxed) {
+                    api.prevent_close();
+                    let _ = window.hide();
+                }
+            }
+        })
         .setup(|app| {
+            // Let the browser extension find Lectern (rewritten only if it changed).
+            let _ = bridge::register();
+
             let saved = fs::read_to_string(data_dir(app.handle())?.join(FILE)).unwrap_or_default();
             let (open_label, quit_label) = tray_labels(&lang_of(&saved));
             let open = MenuItem::with_id(app, "open", open_label, true, None::<&str>)?;
@@ -149,11 +253,23 @@ fn main() {
 
             // The window starts hidden so that `--hidden` (used when Lectern opens
             // with Windows) can go straight to the tray without a flash.
+            let args: Vec<String> = std::env::args().collect();
+            let remote = bridge::parse_remote(&args);
             if let Some(w) = app.get_webview_window("main") {
-                if std::env::args().any(|a| a == "--hidden") {
-                    let _ = w.destroy();
-                } else {
-                    let _ = w.show();
+                match &remote {
+                    // Started by the extension: stay hidden and run the command.
+                    Some((cmd, _)) if cmd == "open" => {
+                        let _ = w.show();
+                    }
+                    Some((_, json)) => {
+                        *app.state::<Remote>().0.lock().unwrap() = Some(json.clone());
+                    }
+                    None if args.iter().any(|a| a == "--hidden") => {
+                        let _ = w.destroy();
+                    }
+                    None => {
+                        let _ = w.show();
+                    }
                 }
             }
             Ok(())

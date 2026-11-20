@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.19.0
+
+- A browser extension for Chrome, Edge and Brave: the timer in the toolbar, today's hours on its icon. It works on its own, or linked to the app.
+- Linked, the extension and the app share one clock: buttons pressed in the browser run in the app, even while it sits in the tray.
+- Fixed: with the window closed, a Pomodoro now still changes phase and plays its chimes. The window is kept loaded, hidden, while a Pomodoro runs.
+
 ## 1.18.1
 
 - Pomodoro settings open from the switch itself, so it stays centred.

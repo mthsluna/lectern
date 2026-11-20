@@ -28,6 +28,7 @@ Press start when you sit down. Read your week on Saturday.
 - **Pomodoro.** Classic 25 / 5 / 15, fully adjustable, with soft chimes.
 - **Goal, streak and subjects.** Set once, then just study.
 - **Private.** No account, works offline, one local file.
+- **Browser extension.** For Chrome, Edge and Brave; links to the app by itself.
 - **Light and dark, in ten languages.**
 
 <table>
@@ -44,6 +45,9 @@ Download [**Lectern-Setup.exe**](https://github.com/mthsluna/lectern/releases/la
 and run it. No administrator rights, no account. Requires Windows 10 or 11.
 
 Lectern updates itself in place when a new version is out.
+
+For the browser, download [**Lectern-Extension.zip**](https://github.com/mthsluna/lectern/releases/latest/download/Lectern-Extension.zip)
+and follow the [three steps](extension/README.md#install). With the app installed, the two link automatically.
 
 ## Build
 
