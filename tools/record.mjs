@@ -113,19 +113,55 @@ async function record(name, query, height, scene) {
     .webp({ quality: 82, effort: 6, loop: 0, delay: delays, minSize: true, mixed: true })
     .toFile(file);
   console.log(`docs/clips/${name}.webp  ${frames.length} frames, ${(fs.statSync(file).size / 1024).toFixed(0)} KB`);
+  return { framed, starts: frames.map((f) => f.t - frames[0].t), length: frames.at(-1).t - frames[0].t + 900 };
+}
+
+/* The three scenes side by side in one clip, on a transparent canvas, like
+   the still showcase. Each scene is sampled on a common clock and holds its
+   last frame until the longest one ends. */
+async function combine(name, clips, tileW = 520, gap = 40, step = 80) {
+  const tiles = await Promise.all(clips.map(async (c) => {
+    const resized = await Promise.all(c.framed.map((b) => sharp(b).resize({ width: tileW }).png().toBuffer()));
+    return { ...c, resized, h: (await sharp(resized[0]).metadata()).height };
+  }));
+  const H = Math.max(...tiles.map((t) => t.h));
+  const W2 = tiles.length * tileW + (tiles.length - 1) * gap;
+  const total = Math.max(...tiles.map((t) => t.length));
+  const frames = [];
+  let last = "";
+  for (let t = 0; t < total; t += step) {
+    const pick = tiles.map((c) => {
+      let i = 0;
+      while (i + 1 < c.starts.length && c.starts[i + 1] <= t) i++;
+      return i;
+    });
+    const sig = pick.join(",");
+    if (sig === last) { frames.at(-1).delay += step; continue; }
+    last = sig;
+    const buf = await sharp({ create: { width: W2, height: H, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } } })
+      .composite(tiles.map((c, k) => ({ input: c.resized[pick[k]], left: k * (tileW + gap), top: 0 })))
+      .png().toBuffer();
+    frames.push({ buf, delay: step });
+  }
+  frames.at(-1).delay += 1200;   // a beat before it starts again
+  const out2 = path.join(out, `${name}.webp`);
+  await sharp(frames.map((f) => f.buf), { join: { animated: true } })
+    .webp({ quality: 80, effort: 6, loop: 0, delay: frames.map((f) => f.delay), minSize: true, mixed: true })
+    .toFile(out2);
+  console.log(`docs/clips/${name}.webp  ${frames.length} frames, ${(fs.statSync(out2).size / 1024).toFixed(0)} KB`);
 }
 
 const click = (sel) => js(`document.querySelector(${JSON.stringify(sel)}).click()`);
 
 /* 1. Start: the button, then the clock running */
-await record("timer", "", 720, async () => {
+const timer = await record("timer", "", 720, async () => {
   await sleep(1100);
   await click("#controls .btn-primary");
-  await sleep(4600);
+  await sleep(7600);
 });
 
 /* 2. Pomodoro: switch, settings, a chime, the volume, then the countdown */
-await record("pomodoro", "", 720, async () => {
+const pomodoro = await record("pomodoro", "", 720, async () => {
   await sleep(700);
   await click('.mode-opt[data-mode="pomo"]');
   await sleep(1300);
@@ -143,7 +179,7 @@ await record("pomodoro", "", 720, async () => {
 });
 
 /* 3. Report: bars grow, a week back, the calendar */
-await record("report", "view=report&today=2026-11-21&state=closed", 720, async () => {
+const report = await record("report", "view=report&today=2026-11-21&state=closed", 720, async () => {
   await sleep(1600);
   await click("#prev-week");
   await sleep(1600);
@@ -154,6 +190,8 @@ await record("report", "view=report&today=2026-11-21&state=closed", 720, async (
   await js("document.body.click()");
   await sleep(700);
 });
+
+await combine("showcase", [timer, pomodoro, report]);
 
 ws.close();
 proc.kill();

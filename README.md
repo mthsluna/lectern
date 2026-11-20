@@ -31,13 +31,9 @@ Press start when you sit down. Read your week on Saturday.
 - **Browser extension.** For Chrome, Edge and Brave; links to the app by itself.
 - **Light and dark, in ten languages.**
 
-<table>
-  <tr>
-    <td align="center" width="33%"><img src="docs/clips/timer.webp" alt="Pressing start: the clock begins to run"></td>
-    <td align="center" width="33%"><img src="docs/clips/pomodoro.webp" alt="Switching to Pomodoro, choosing a chime and the volume, then the countdown"></td>
-    <td align="center" width="33%"><img src="docs/clips/report.webp" alt="The weekly report: bars growing, moving between weeks and opening the calendar"></td>
-  </tr>
-</table>
+<p align="center">
+  <img src="docs/clips/showcase.webp" alt="Lectern in motion: starting the clock, setting up a Pomodoro, and browsing the weekly report">
+</p>
 
 ## Install
 
