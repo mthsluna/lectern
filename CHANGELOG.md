@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.14.1
+
+- More space between the weeks in the carousel.
+- The dashed pace line is gone from the week chart.
+
 ## 1.14.0
 
 - The week carousel curves like a drum.

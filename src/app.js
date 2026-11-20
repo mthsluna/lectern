@@ -480,8 +480,7 @@ function renderTimer() {
 function renderWeekStrip() {
   const today = todayKey();
   const days = weekData(weekStart(today));
-  const pace = state.goal ? (state.goal * 3600000) / 7 : 0;   // per day, to meet the goal
-  const max = Math.max(3600000, pace * 1.3, ...days.map((d) => d.study));
+  const max = Math.max(3600000, ...days.map((d) => d.study));
   const strip = $("strip");
   const fresh = strip.dataset.week !== days[0].key || strip.children.length !== 7;
   if (fresh) {
@@ -499,14 +498,7 @@ function renderWeekStrip() {
     el.title = `${cap(dayName(d.key))} · ${hm(d.study)}`;
     el.querySelector(".bar").style.height = d.study > 0 ? `${Math.max(6, (d.study / max) * 100)}%` : "0%";
     el.querySelector(".v").textContent = shortHours(d.study);
-    el.classList.toggle("met", pace > 0 && d.study >= pace);
   });
-  const paceEl = $("pace");
-  paceEl.hidden = !pace;
-  if (pace) {
-    paceEl.style.setProperty("--pace", String(pace / max));
-    $("pace-label").textContent = hm(pace);
-  }
   $("week-total").textContent = hm(total);
 
   /* weekly goal: a hairline of progress, nothing more */
@@ -730,7 +722,7 @@ function goToWeek(start) {
 const chips = new Map();          // week key -> element
 /* The chips sit on the outside of a drum: each step around it is an angle,
    and position, depth and turn all follow from that angle. */
-const DRUM = { radius: 210, step: [0, 40, 78, 112], dim: [0, .4, .7, 1] };
+const DRUM = { radius: 300, step: [0, 38, 70, 100], scale: [1, .84, .72, .6], dim: [0, .38, .68, 1] };
 
 function placeChip(el, offset) {
   const d = Math.min(Math.abs(offset), 3);
@@ -739,7 +731,7 @@ function placeChip(el, offset) {
   const rad = (angle * Math.PI) / 180;
   const x = DRUM.radius * Math.sin(rad);
   const z = DRUM.radius * (Math.cos(rad) - 1);
-  el.style.transform = `translateX(calc(-50% + ${x.toFixed(1)}px)) translateZ(${z.toFixed(1)}px) rotateY(${angle}deg)`;
+  el.style.transform = `translateX(calc(-50% + ${x.toFixed(1)}px)) translateZ(${z.toFixed(1)}px) rotateY(${angle}deg) scale(${DRUM.scale[d]})`;
   el.style.setProperty("--dim", DRUM.dim[d]);
   el.style.opacity = d >= 3 ? 0 : 1;
   el.style.zIndex = String(10 - d);
