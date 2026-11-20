@@ -79,7 +79,20 @@
           <div class="strip" id="strip"></div>
           <div class="week-foot">
             <p class="hint" id="week-hint"></p>
-            <button class="goal-btn" id="goal-btn"><svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true"><circle cx="8" cy="8" r="6.2" fill="none" stroke="currentColor" stroke-width="1.4"/><circle cx="8" cy="8" r="3.4" fill="none" stroke="currentColor" stroke-width="1.4"/><circle cx="8" cy="8" r="1.1" fill="currentColor"/></svg><span id="goal-label"></span></button>
+            <button class="goal-btn" id="goal-btn"><svg class="target" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+              <g class="rings">
+                <circle cx="12" cy="12" r="9.3" fill="none" stroke="currentColor" stroke-width="2.4"/>
+                <circle cx="12" cy="12" r="5.1" fill="none" stroke="currentColor" stroke-width="2.4"/>
+                <circle cx="12" cy="12" r="1.8" fill="currentColor"/>
+              </g>
+              <g transform="translate(12 12) rotate(-45)">
+                <g class="arrow">
+                  <path d="M1.2 0H11" stroke="var(--bg)" stroke-width="4" stroke-linecap="round"/>
+                  <path d="M1.2 0H11" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/>
+                  <path d="M9.6 0 12.8-3.2h3L13 0l2.8 3.2h-3Z" fill="currentColor" stroke="var(--bg)" stroke-width="1" paint-order="stroke"/>
+                </g>
+              </g>
+            </svg><span id="goal-label"></span></button>
             <label class="goal-edit" id="goal-edit" hidden>
               <input id="goal-input" type="number" min="1" max="100" step="1" inputmode="numeric">
               <span>h</span>
@@ -92,18 +105,7 @@
       <section class="view" id="view-report" hidden>
         <div class="report-nav">
           <button class="arrow" id="prev-week" aria-label="Previous week"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M10 3.5 5.5 8l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-          <button class="range" id="range-btn" aria-haspopup="dialog" aria-expanded="false">
-            <svg class="range-icon" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
-              <rect x="2" y="3" width="12" height="11" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.4"/>
-              <path d="M2 6.6h12" stroke="currentColor" stroke-width="1.4"/>
-              <path d="M5.2 1.6v2.6M10.8 1.6v2.6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
-              <rect x="4.6" y="8.6" width="2.4" height="2.2" rx=".6" fill="currentColor"/>
-            </svg>
-            <span class="range-text" id="range-text">
-              <span class="range-year" id="report-year"></span>
-              <span class="range-main" id="report-range"></span>
-            </span>
-          </button>
+          <div class="weeks" id="weeks"></div>
           <button class="arrow" id="next-week" aria-label="Next week"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M6 3.5 10.5 8 6 12.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
 
           <!-- Calendar: pick any week -->
