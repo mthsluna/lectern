@@ -1780,13 +1780,14 @@ dependencies = [
 
 [[package]]
 name = "lectern-setup"
-version = "1.12.0"
+version = "1.13.0"
 dependencies = [
  "dirs 6.0.0",
  "flate2",
  "mslnk",
  "serde",
  "serde_json",
+ "sha2 0.10.9",
  "tauri",
  "tauri-build",
  "winreg 0.55.0",
