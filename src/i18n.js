@@ -53,6 +53,8 @@ const STRINGS = {
     updateOpened: "The installer is downloading in your browser. Open it to finish updating.", close: "Close", updateFailed: "The update could not be installed.", tryAgain: "Try again",
     studiedLegend: "Studied", weekLegend: "Selected week",
     clearDay: "Clear day", confirmClear: "Clear it?", dayCleared: "Day cleared", undo: "Undo", pickHint: "Click a day to clear it",
+    modeFree: "Free", modePomo: "Pomodoro", pomoSettings: "Pomodoro settings", focusLen: "Focus", shortLen: "Short break", longLen: "Long break", longEvery: "Long break after", roundsUnit: "rounds", minUnit: "min", soundRest: "Time to rest", soundBack: "Time to study", volume: "Volume", reset: "Reset", phaseFocus: "Focus", skipBreak: "Skip break", round: (n, m) => `round ${n} of ${m}`, backAt: (x) => `back at ${x}`, pomoLocked: "Stop the session to switch modes", todayShort: "Today",
+    snd_reminder: "Reminder", snd_shine: "Shine", snd_bell: "Bell", snd_celesta: "Celesta", snd_marimba: "Marimba", snd_kalimba: "Kalimba", snd_musicbox: "Music box", snd_ding: "Ding", snd_none: "Silent",
     sep: ". ", space: " ",
   },
   pt: {
@@ -86,6 +88,8 @@ const STRINGS = {
     updateOpened: "O instalador está baixando no navegador. Abra-o para concluir a atualização.", close: "Fechar", updateFailed: "Não foi possível instalar a atualização.", tryAgain: "Tentar de novo",
     studiedLegend: "Estudou", weekLegend: "Semana aberta",
     clearDay: "Apagar dia", confirmClear: "Apagar mesmo?", dayCleared: "Dia apagado", undo: "Desfazer", pickHint: "Clique num dia para apagá-lo",
+    modeFree: "Livre", modePomo: "Pomodoro", pomoSettings: "Ajustes do Pomodoro", focusLen: "Foco", shortLen: "Pausa curta", longLen: "Pausa longa", longEvery: "Pausa longa após", roundsUnit: "ciclos", minUnit: "min", soundRest: "Hora da pausa", soundBack: "Hora de estudar", volume: "Volume", reset: "Restaurar", phaseFocus: "Foco", skipBreak: "Pular pausa", round: (n, m) => `ciclo ${n} de ${m}`, backAt: (x) => `volta às ${x}`, pomoLocked: "Encerre a sessão para trocar de modo", todayShort: "Hoje",
+    snd_reminder: "Lembrete", snd_shine: "Brilho", snd_bell: "Sino", snd_celesta: "Celesta", snd_marimba: "Marimba", snd_kalimba: "Kalimba", snd_musicbox: "Caixinha", snd_ding: "Ding", snd_none: "Sem som",
     sep: ". ", space: " ",
   },
   es: {
@@ -119,6 +123,8 @@ const STRINGS = {
     updateOpened: "El instalador se está descargando en tu navegador. Ábrelo para terminar la actualización.", close: "Cerrar", updateFailed: "No se pudo instalar la actualización.", tryAgain: "Reintentar",
     studiedLegend: "Estudiaste", weekLegend: "Semana abierta",
     clearDay: "Borrar día", confirmClear: "¿Borrar?", dayCleared: "Día borrado", undo: "Deshacer", pickHint: "Haz clic en un día para borrarlo",
+    modeFree: "Libre", modePomo: "Pomodoro", pomoSettings: "Ajustes de Pomodoro", focusLen: "Enfoque", shortLen: "Descanso corto", longLen: "Descanso largo", longEvery: "Descanso largo tras", roundsUnit: "ciclos", minUnit: "min", soundRest: "Hora de descansar", soundBack: "Hora de estudiar", volume: "Volumen", reset: "Restablecer", phaseFocus: "Enfoque", skipBreak: "Saltar descanso", round: (n, m) => `ciclo ${n} de ${m}`, backAt: (x) => `vuelve a las ${x}`, pomoLocked: "Termina la sesión para cambiar de modo", todayShort: "Hoy",
+    snd_reminder: "Recordatorio", snd_shine: "Brillo", snd_bell: "Campana", snd_celesta: "Celesta", snd_marimba: "Marimba", snd_kalimba: "Kalimba", snd_musicbox: "Caja de música", snd_ding: "Ding", snd_none: "Silencio",
     sep: ". ", space: " ",
   },
   fr: {
@@ -152,6 +158,8 @@ const STRINGS = {
     updateOpened: "Le programme d'installation se télécharge dans votre navigateur. Ouvrez-le pour terminer la mise à jour.", close: "Fermer", updateFailed: "La mise à jour n'a pas pu être installée.", tryAgain: "Réessayer",
     studiedLegend: "Étudié", weekLegend: "Semaine ouverte",
     clearDay: "Effacer le jour", confirmClear: "Effacer ?", dayCleared: "Jour effacé", undo: "Annuler", pickHint: "Cliquez sur un jour pour l’effacer",
+    modeFree: "Libre", modePomo: "Pomodoro", pomoSettings: "Réglages Pomodoro", focusLen: "Concentration", shortLen: "Pause courte", longLen: "Pause longue", longEvery: "Pause longue après", roundsUnit: "cycles", minUnit: "min", soundRest: "Heure de la pause", soundBack: "Heure d’étudier", volume: "Volume", reset: "Réinitialiser", phaseFocus: "Concentration", skipBreak: "Passer la pause", round: (n, m) => `cycle ${n} sur ${m}`, backAt: (x) => `reprise à ${x}`, pomoLocked: "Terminez la session pour changer de mode", todayShort: "Aujourd’hui",
+    snd_reminder: "Rappel", snd_shine: "Éclat", snd_bell: "Cloche", snd_celesta: "Célesta", snd_marimba: "Marimba", snd_kalimba: "Kalimba", snd_musicbox: "Boîte à musique", snd_ding: "Ding", snd_none: "Silence",
     sep: ". ", space: " ",
   },
   de: {
@@ -185,6 +193,8 @@ const STRINGS = {
     updateOpened: "Das Installationsprogramm wird im Browser heruntergeladen. Öffne es, um das Update abzuschließen.", close: "Schließen", updateFailed: "Das Update konnte nicht installiert werden.", tryAgain: "Erneut versuchen",
     studiedLegend: "Gelernt", weekLegend: "Gewählte Woche",
     clearDay: "Tag löschen", confirmClear: "Wirklich löschen?", dayCleared: "Tag gelöscht", undo: "Rückgängig", pickHint: "Klicke auf einen Tag, um ihn zu löschen",
+    modeFree: "Frei", modePomo: "Pomodoro", pomoSettings: "Pomodoro-Einstellungen", focusLen: "Fokus", shortLen: "Kurze Pause", longLen: "Lange Pause", longEvery: "Lange Pause nach", roundsUnit: "Runden", minUnit: "Min.", soundRest: "Zeit für eine Pause", soundBack: "Zeit zum Lernen", volume: "Lautstärke", reset: "Zurücksetzen", phaseFocus: "Fokus", skipBreak: "Pause überspringen", round: (n, m) => `Runde ${n} von ${m}`, backAt: (x) => `weiter um ${x}`, pomoLocked: "Beende die Sitzung, um den Modus zu wechseln", todayShort: "Heute",
+    snd_reminder: "Erinnerung", snd_shine: "Glanz", snd_bell: "Glocke", snd_celesta: "Celesta", snd_marimba: "Marimba", snd_kalimba: "Kalimba", snd_musicbox: "Spieluhr", snd_ding: "Ding", snd_none: "Stumm",
     sep: ". ", space: " ",
   },
   ru: {
@@ -218,6 +228,8 @@ const STRINGS = {
     updateOpened: "Установщик загружается в браузере. Откройте его, чтобы завершить обновление.", close: "Закрыть", updateFailed: "Не удалось установить обновление.", tryAgain: "Повторить",
     studiedLegend: "Занятия", weekLegend: "Выбранная неделя",
     clearDay: "Очистить день", confirmClear: "Точно очистить?", dayCleared: "День очищен", undo: "Отменить", pickHint: "Нажмите на день, чтобы очистить его",
+    modeFree: "Свободно", modePomo: "Помодоро", pomoSettings: "Настройки помодоро", focusLen: "Фокус", shortLen: "Короткий перерыв", longLen: "Длинный перерыв", longEvery: "Длинный перерыв после", roundsUnit: "циклов", minUnit: "мин", soundRest: "Время отдохнуть", soundBack: "Время учиться", volume: "Громкость", reset: "Сбросить", phaseFocus: "Фокус", skipBreak: "Пропустить перерыв", round: (n, m) => `цикл ${n} из ${m}`, backAt: (x) => `продолжим в ${x}`, pomoLocked: "Завершите сессию, чтобы сменить режим", todayShort: "Сегодня",
+    snd_reminder: "Напоминание", snd_shine: "Сияние", snd_bell: "Колокольчик", snd_celesta: "Челеста", snd_marimba: "Маримба", snd_kalimba: "Калимба", snd_musicbox: "Шкатулка", snd_ding: "Динь", snd_none: "Без звука",
     sep: ". ", space: " ",
   },
   zh: {
@@ -251,6 +263,8 @@ const STRINGS = {
     updateOpened: "安装程序正在浏览器中下载。打开它即可完成更新。", close: "关闭", updateFailed: "无法安装更新。", tryAgain: "重试",
     studiedLegend: "已学习", weekLegend: "所选周",
     clearDay: "清除这天", confirmClear: "确定清除？", dayCleared: "已清除", undo: "撤销", pickHint: "点击某一天即可清除",
+    modeFree: "自由", modePomo: "番茄钟", pomoSettings: "番茄钟设置", focusLen: "专注", shortLen: "短休息", longLen: "长休息", longEvery: "长休息间隔", roundsUnit: "轮", minUnit: "分钟", soundRest: "休息提示音", soundBack: "学习提示音", volume: "音量", reset: "恢复默认", phaseFocus: "专注", skipBreak: "跳过休息", round: (n, m) => `第 ${n}/${m} 轮`, backAt: (x) => `${x} 继续`, pomoLocked: "结束本次学习后才能切换模式", todayShort: "今天",
+    snd_reminder: "提醒", snd_shine: "闪光", snd_bell: "铃声", snd_celesta: "钢片琴", snd_marimba: "马林巴", snd_kalimba: "卡林巴", snd_musicbox: "八音盒", snd_ding: "叮", snd_none: "静音",
     sep: "。", space: "",
   },
   ja: {
@@ -284,6 +298,8 @@ const STRINGS = {
     updateOpened: "インストーラーをブラウザーでダウンロードしています。開いてアップデートを完了してください。", close: "閉じる", updateFailed: "アップデートをインストールできませんでした。", tryAgain: "再試行",
     studiedLegend: "学習した日", weekLegend: "選択中の週",
     clearDay: "この日を消去", confirmClear: "消去しますか？", dayCleared: "消去しました", undo: "元に戻す", pickHint: "日をクリックすると消去できます",
+    modeFree: "フリー", modePomo: "ポモドーロ", pomoSettings: "ポモドーロ設定", focusLen: "集中", shortLen: "短い休憩", longLen: "長い休憩", longEvery: "長い休憩までの回数", roundsUnit: "回", minUnit: "分", soundRest: "休憩の合図", soundBack: "勉強の合図", volume: "音量", reset: "リセット", phaseFocus: "集中", skipBreak: "休憩をスキップ", round: (n, m) => `${n}/${m} 回目`, backAt: (x) => `${x} に再開`, pomoLocked: "モードを切り替えるにはセッションを終了してください", todayShort: "今日",
+    snd_reminder: "リマインダー", snd_shine: "シャイン", snd_bell: "ベル", snd_celesta: "チェレスタ", snd_marimba: "マリンバ", snd_kalimba: "カリンバ", snd_musicbox: "オルゴール", snd_ding: "ディン", snd_none: "無音",
     sep: "。", space: "",
   },
   hi: {
@@ -317,6 +333,8 @@ const STRINGS = {
     updateOpened: "इंस्टॉलर आपके ब्राउज़र में डाउनलोड हो रहा है। अपडेट पूरा करने के लिए उसे खोलें।", close: "बंद करें", updateFailed: "अपडेट इंस्टॉल नहीं हो सका।", tryAgain: "फिर कोशिश करें",
     studiedLegend: "पढ़ाई की", weekLegend: "चुना हुआ सप्ताह",
     clearDay: "दिन हटाएँ", confirmClear: "पक्का हटाएँ?", dayCleared: "दिन हटा दिया", undo: "पूर्ववत करें", pickHint: "किसी दिन को हटाने के लिए उस पर क्लिक करें",
+    modeFree: "फ़्री", modePomo: "पोमोडोरो", pomoSettings: "पोमोडोरो सेटिंग्स", focusLen: "फ़ोकस", shortLen: "छोटा ब्रेक", longLen: "लंबा ब्रेक", longEvery: "लंबा ब्रेक इतने के बाद", roundsUnit: "राउंड", minUnit: "मिनट", soundRest: "आराम का समय", soundBack: "पढ़ाई का समय", volume: "आवाज़", reset: "रीसेट", phaseFocus: "फ़ोकस", skipBreak: "ब्रेक छोड़ें", round: (n, m) => `राउंड ${n} / ${m}`, backAt: (x) => `${x} पर वापसी`, pomoLocked: "मोड बदलने के लिए सत्र समाप्त करें", todayShort: "आज",
+    snd_reminder: "रिमाइंडर", snd_shine: "चमक", snd_bell: "घंटी", snd_celesta: "चेलेस्टा", snd_marimba: "मरिम्बा", snd_kalimba: "कलिम्बा", snd_musicbox: "म्यूज़िक बॉक्स", snd_ding: "डिंग", snd_none: "मौन",
     sep: "। ", space: " ",
   },
   ar: {
@@ -350,6 +368,8 @@ const STRINGS = {
     updateOpened: "يجري تنزيل المثبّت في متصفحك. افتحه لإكمال التحديث.", close: "إغلاق", updateFailed: "تعذر تثبيت التحديث.", tryAgain: "إعادة المحاولة",
     studiedLegend: "درست", weekLegend: "الأسبوع المحدد",
     clearDay: "مسح اليوم", confirmClear: "هل تريد المسح؟", dayCleared: "تم مسح اليوم", undo: "تراجع", pickHint: "انقر على يوم لمسحه",
+    modeFree: "حر", modePomo: "بومودورو", pomoSettings: "إعدادات بومودورو", focusLen: "تركيز", shortLen: "استراحة قصيرة", longLen: "استراحة طويلة", longEvery: "استراحة طويلة بعد", roundsUnit: "جولات", minUnit: "دقيقة", soundRest: "وقت الاستراحة", soundBack: "وقت الدراسة", volume: "مستوى الصوت", reset: "إعادة الضبط", phaseFocus: "تركيز", skipBreak: "تخطي الاستراحة", round: (n, m) => `الجولة ${n} من ${m}`, backAt: (x) => `العودة في ${x}`, pomoLocked: "أنهِ الجلسة لتغيير الوضع", todayShort: "اليوم",
+    snd_reminder: "تذكير", snd_shine: "لمعان", snd_bell: "جرس", snd_celesta: "سيليستا", snd_marimba: "ماريمبا", snd_kalimba: "كاليمبا", snd_musicbox: "صندوق موسيقى", snd_ding: "دينغ", snd_none: "صامت",
     sep: ". ", space: " ",
   },
 };

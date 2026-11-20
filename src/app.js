@@ -184,7 +184,10 @@ function rangeLabel(start) {
 
 /* ---------- storage ---------- */
 
-let state = { version: 1, lang: null, theme: "system", goal: null, days: {}, active: null, seen: {} };
+/* Classic Pomodoro: 25 minutes of focus, 5 of rest, 15 after every fourth. */
+const POMO_DEFAULTS = { on: false, focus: 25, short: 5, long: 15, every: 4, rest: "celesta", back: "shine", volume: 0.8 };
+const SOUNDS = ["reminder","shine","bell","celesta","marimba","kalimba","musicbox","ding"];
+let state = { version: 1, lang: null, theme: "system", goal: null, days: {}, active: null, seen: {}, pomo: { ...POMO_DEFAULTS } };
 let draftSubject = "";
 
 async function load() {
@@ -257,6 +260,10 @@ function start() {
   if (state.days[k]) state.days[k].closed = false;
   const subject = draftSubject.trim().slice(0, 40);
   state.active = { date: k, status: "running", since: now(), subject, days: {} };
+  if (state.pomo.on) {
+    const len = state.pomo.focus * 60000;
+    state.active.pomo = { phase: "focus", count: 0, len, left: len, ends: now() + len };
+  }
   commitAndRender();
 }
 function pause() {
@@ -264,13 +271,152 @@ function pause() {
   bank(a, "study");
   ledger(a, todayKey()).pauses += 1;
   a.status = "paused";
+  if (a.pomo && a.pomo.ends) { a.pomo.left = Math.max(0, a.pomo.ends - now()); a.pomo.ends = null; }
   commitAndRender();
 }
 function resume() {
   const a = state.active;
   bank(a, "breaks");
   a.status = "running";
+  if (a.pomo) {
+    if (a.pomo.phase !== "focus") {
+      // skipping the rest of a break starts the next focus block
+      a.pomo.phase = "focus";
+      a.pomo.len = a.pomo.left = state.pomo.focus * 60000;
+    }
+    a.pomo.ends = now() + a.pomo.left;
+  }
   commitAndRender();
+}
+
+/* ---------- Pomodoro ----------
+ * Focus blocks are study time and breaks are break time, so the report,
+ * the streak and the goal count a Pomodoro day like any other.
+ */
+
+let pomoTimer = null;
+
+function pomoLeft(a) {
+  const p = a && a.pomo;
+  if (!p) return state.pomo.focus * 60000;
+  return p.ends ? Math.max(0, p.ends - now()) : p.left;
+}
+
+function pomoSchedule() {
+  clearTimeout(pomoTimer);
+  const p = state.active && state.active.pomo;
+  if (p && p.ends) pomoTimer = setTimeout(pomoTick, Math.max(0, p.ends - now()) + 30);
+}
+
+function pomoTick() {
+  const a = state.active;
+  const p = a && a.pomo;
+  if (!p || !p.ends || now() < p.ends) return;
+  if (p.phase === "focus") {
+    p.count += 1;
+    const long = p.count % state.pomo.every === 0;
+    bank(a, "study");
+    ledger(a, todayKey()).pauses += 1;
+    a.status = "paused";
+    p.phase = long ? "long" : "short";
+    p.len = p.left = (long ? state.pomo.long : state.pomo.short) * 60000;
+    p.ends = now() + p.len;
+    playSound(state.pomo.rest);
+  } else {
+    bank(a, "breaks");
+    a.status = "running";
+    p.phase = "focus";
+    p.len = p.left = state.pomo.focus * 60000;
+    p.ends = now() + p.len;
+    playSound(state.pomo.back);
+  }
+  if (view === "today") replay($("timer"), "kick");
+  commitAndRender();
+}
+
+let audio = null;
+function playSound(name, volume = state.pomo.volume) {
+  if (!name || name === "none" || !SOUNDS.includes(name)) return;
+  try {
+    if (audio) audio.pause();
+    audio = new Audio(`sounds/${name}.mp3`);
+    audio.volume = Math.max(0, Math.min(1, volume));
+    audio.play().catch(() => {});
+  } catch (e) { /* no sound is never an error */ }
+}
+
+function setMode(on) {
+  if (state.active) {                              // a session keeps the mode it began with
+    const m = $("mode");
+    m.title = t("pomoLocked");
+    replay(m, "nudge");
+    return;
+  }
+  if (state.pomo.on === on) return;
+  state.pomo.on = on;
+  if (!on) closePomoPanel();
+  save();
+  renderMode(true);
+  renderTimer();
+}
+
+function renderMode(animate = false) {
+  const on = state.pomo.on;
+  const m = $("mode");
+  m.dataset.mode = on ? "pomo" : "free";
+  m.classList.toggle("locked", Boolean(state.active));
+  if (!state.active) m.title = "";
+  m.querySelectorAll(".mode-opt").forEach((b) => b.setAttribute("aria-checked", String((b.dataset.mode === "pomo") === on)));
+  const gear = $("pomo-gear");
+  const wasHidden = gear.hidden;
+  gear.hidden = !on;
+  if (on && wasHidden && animate) replay(gear, "pop");
+}
+
+/* settings popover */
+let soundEvent = "rest";
+const STEPS = [
+  { key: "focus", label: "focusLen", unit: "minUnit", min: 5, max: 120, step: 5 },
+  { key: "short", label: "shortLen", unit: "minUnit", min: 1, max: 30, step: 1 },
+  { key: "long", label: "longLen", unit: "minUnit", min: 5, max: 60, step: 5 },
+  { key: "every", label: "longEvery", unit: "roundsUnit", min: 2, max: 8, step: 1 },
+];
+
+function renderPomoPanel() {
+  $("pomo-rows").innerHTML = STEPS.map((s) => `<div class="pp-row" data-key="${s.key}">
+      <span class="pp-label">${t(s.label)}</span>
+      <span class="pp-step">
+        <button data-d="-1" aria-label="−"${state.pomo[s.key] <= s.min ? " disabled" : ""}><svg viewBox="0 0 12 12" width="11" height="11" aria-hidden="true"><path d="M2.5 6h7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></button>
+        <span class="pp-val"><b>${state.pomo[s.key]}</b> ${t(s.unit)}</span>
+        <button data-d="1" aria-label="+"${state.pomo[s.key] >= s.max ? " disabled" : ""}><svg viewBox="0 0 12 12" width="11" height="11" aria-hidden="true"><path d="M2.5 6h7M6 2.5v7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></button>
+      </span>
+    </div>`).join("");
+  $("pomo-sound-tabs").querySelectorAll("button").forEach((b) => b.classList.toggle("is-on", b.dataset.event === soundEvent));
+  const chosen = state.pomo[soundEvent];
+  $("pomo-sounds").innerHTML = [...SOUNDS, "none"].map((n) => `<button class="pp-snd${n === chosen ? " is-on" : ""}" data-sound="${n}">`
+    + (n === "none"
+      ? `<svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M3 6.5v3h2.3l3 2.4V4.1l-3 2.4Z" fill="currentColor"/><path d="m10.6 6.2 3 3.6m0-3.6-3 3.6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>`
+      : `<svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M5.5 3.8v8.4L12 8Z" fill="currentColor"/></svg>`)
+    + `<span>${t("snd_" + n)}</span></button>`).join("");
+  $("pomo-volume").value = Math.round(state.pomo.volume * 100);
+}
+
+function togglePomoPanel() {
+  if (!$("pomo-panel").hidden && !$("pomo-panel").classList.contains("closing")) return closePomoPanel();
+  clearTimeout(closePomoPanel.timer);
+  const p = $("pomo-panel");
+  p.classList.remove("closing");
+  renderPomoPanel();
+  p.hidden = false;
+  $("pomo-gear").setAttribute("aria-expanded", "true");
+}
+function closePomoPanel() {
+  const p = $("pomo-panel");
+  if (p.hidden || p.classList.contains("closing")) return;
+  $("pomo-gear").setAttribute("aria-expanded", "false");
+  p.classList.add("closing");
+  clearTimeout(closePomoPanel.timer);
+  closePomoPanel.timer = setTimeout(() => { p.hidden = true; p.classList.remove("closing"); }, 170);
 }
 function stop() {
   const a = state.active;
@@ -301,7 +447,7 @@ function closeActive(a) {
    pause: the hours spent asleep are not a break. */
 function settleStaleSession() {
   const a = state.active;
-  if (a && a.status === "paused" && keyOf(new Date(a.since)) < todayKey()) {
+  if (a && a.status === "paused" && !(a.pomo && a.pomo.phase !== "focus") && keyOf(new Date(a.since)) < todayKey()) {
     closeActive(a);
     save();
   }
@@ -564,7 +710,10 @@ function buildControls(animate) {
   };
   if (s === "idle") btn(t("start"), "btn-primary", start).title = "Space";
   if (s === "running") btn(t("pause"), "btn-primary", pause).title = "Space";
-  if (s === "paused") btn(t("resume"), "btn-primary", resume).title = "Space";
+  if (s === "paused") {
+    const onBreak = state.active.pomo && state.active.pomo.phase !== "focus";
+    btn(t(onBreak ? "skipBreak" : "resume"), "btn-primary", resume).title = "Space";
+  }
   if (s === "running" || s === "paused") {
     const b = btn(t("stop"), "btn-ghost", armStop);
     b.id = "stop-btn";
@@ -612,6 +761,47 @@ function renderTimer() {
   renderTimer.last = s;
   document.body.dataset.state = s;
   const a = state.active;
+  const pomo = a ? a.pomo : state.pomo.on ? {} : null;
+  document.body.dataset.phase = pomo ? (a && a.pomo && a.pomo.phase !== "focus" ? "break" : "focus") : "";
+  const track = $("pomo-track");
+  const dots = $("pomo-dots");
+  track.hidden = !pomo;
+  dots.hidden = !(a && a.pomo);
+
+  if (pomo) {
+    const left = pomoLeft(a);
+    const sec = Math.ceil(left / 1000);
+    $("timer").textContent = `${String(Math.floor(sec / 60)).padStart(2, "0")}:${String(sec % 60).padStart(2, "0")}`;
+    const len = a && a.pomo ? a.pomo.len : state.pomo.focus * 60000;
+    $("pomo-fill").style.width = `${a && a.pomo ? (1 - left / len) * 100 : 0}%`;
+    const today = `${t("todayShort")} ${hm(liveFor(todayKey()).study)}`;
+    let text;
+    if (!a) {
+      text = `${t("modePomo")} · ${state.pomo.focus} / ${state.pomo.short} ${t("minUnit")}`;
+      if (s === "closed") text = `${t("done")} · ${today}`;
+    } else {
+      const p = a.pomo;
+      const round = (p.count % state.pomo.every) + (p.phase === "focus" ? 1 : 0) || state.pomo.every;
+      if (p.phase !== "focus") {
+        const at = new Intl.DateTimeFormat(locale(), { hour: "2-digit", minute: "2-digit" }).format(new Date(p.ends));
+        text = `${t(p.phase === "long" ? "longLen" : "shortLen")} · ${t("backAt", at)}`;
+      } else if (s === "paused") {
+        text = `${t("onBreak")} · ${clock(now() - a.since).replace(/^00:/, "")}`;
+      } else {
+        text = `${t("phaseFocus")} · ${t("round", round, state.pomo.every)}${a.subject ? ` · ${a.subject}` : ""}`;
+      }
+      const done = p.count % state.pomo.every;
+      const filled = p.phase === "focus" ? done : done || state.pomo.every;
+      if (dots.childElementCount !== state.pomo.every) dots.innerHTML = "<i></i>".repeat(state.pomo.every);
+      [...dots.children].forEach((d, i) => {
+        d.classList.toggle("on", i < filled);
+        d.classList.toggle("now", p.phase === "focus" && i === filled);
+      });
+    }
+    $("status-text").textContent = text;
+    return;
+  }
+
   // Today's total; a session that began yesterday only brings its part since midnight.
   $("timer").textContent = clock(liveFor(todayKey()).study);
 
@@ -703,6 +893,7 @@ function closeGoalEditor(saveIt) {
 }
 
 function renderToday(animate = false) {
+  renderMode();
   $("today-date").textContent = fmt(todayKey(), { weekday: "long", month: "long", day: "numeric" });
   renderTimer();
   renderControls(animate);
@@ -1093,6 +1284,8 @@ function openStartView() {
 
 function commitAndRender() {
   save();
+  pomoSchedule();
+  renderMode();
   if (view === "today") renderToday(true);
   else renderReport();
 }
@@ -1200,6 +1393,16 @@ function seedDemo() {
       days: { [today]: { study: 1 * h + 24 * m + 7000, breaks: 6 * m, pauses: 1 } },
     };
   }
+  if (params.has("pomo")) {
+    state.pomo.on = true;
+    const ph = params.get("pomo");
+    if (state.active && (ph === "focus" || ph === "break")) {
+      const brk = ph === "break";
+      if (brk) state.active.status = "paused";
+      state.active.pomo = { phase: brk ? "short" : "focus", count: brk ? 2 : 1, len: (brk ? 5 : 25) * 60000,
+        left: 0, ends: now() + (brk ? 3 * 60000 + 20000 : 17 * 60000 + 42000) };
+    }
+  }
   state.lang = params.has("pick") ? null : params.get("lang") || "en";
   state.theme = params.get("theme") || "system";
   state.seen = {};
@@ -1209,6 +1412,7 @@ function seedDemo() {
 
 (async function boot() {
   await load();
+  state.pomo = { ...POMO_DEFAULTS, ...(state.pomo || {}) };
   migrateActive(state.active);
   settleStaleSession();
 
@@ -1260,6 +1464,44 @@ function seedDemo() {
     if (li) chooseSuggest(Number(li.dataset.i));
   });
 
+  /* Pomodoro */
+  $("mode").addEventListener("click", (e) => {
+    const b = e.target.closest(".mode-opt");
+    if (b) setMode(b.dataset.mode === "pomo");
+  });
+  $("pomo-gear").addEventListener("click", (e) => { e.stopPropagation(); togglePomoPanel(); });
+  $("pomo-panel").addEventListener("click", (e) => {
+    e.stopPropagation();
+    const step = e.target.closest(".pp-step button");
+    if (step) {
+      const s = STEPS.find((x) => x.key === step.closest(".pp-row").dataset.key);
+      const v = state.pomo[s.key] + Number(step.dataset.d) * s.step;
+      state.pomo[s.key] = Math.max(s.min, Math.min(s.max, v));
+      save();
+      renderPomoPanel();
+      replay($("pomo-rows").querySelector(`[data-key="${s.key}"] .pp-val`), "swap");
+      return renderTimer();
+    }
+    const tab = e.target.closest(".pp-tabs button");
+    if (tab) { soundEvent = tab.dataset.event; renderPomoPanel(); return replay($("pomo-sounds"), "swap"); }
+    const snd = e.target.closest(".pp-snd");
+    if (snd) {
+      state.pomo[soundEvent] = snd.dataset.sound;
+      save();
+      renderPomoPanel();
+      return playSound(snd.dataset.sound);
+    }
+    if (e.target.closest("#pomo-reset")) {
+      state.pomo = { ...POMO_DEFAULTS, on: state.pomo.on };
+      save();
+      renderPomoPanel();
+      renderTimer();
+    }
+  });
+  $("pomo-volume").addEventListener("input", (e) => { state.pomo.volume = Number(e.target.value) / 100; });
+  $("pomo-volume").addEventListener("change", () => { save(); playSound(state.pomo[soundEvent] === "none" ? "marimba" : state.pomo[soundEvent]); });
+  document.addEventListener("click", closePomoPanel);
+
   /* report: pick a day to clear it */
   $("chart").addEventListener("click", (e) => {
     const col = e.target.closest(".col");
@@ -1279,6 +1521,7 @@ function seedDemo() {
   /* keyboard: Space start/pause/resume, S stop (twice), ←/→ change week */
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && !$("cal").hidden) return closeCalendar();
+    if (e.key === "Escape" && !$("pomo-panel").hidden) return closePomoPanel();
     const el = e.target instanceof Element ? e.target : null;
     if ((el && el.closest("input, textarea, button")) || e.ctrlKey || e.metaKey || e.altKey || e.repeat) return;
     if (!$("picker").hidden) return;
@@ -1310,7 +1553,9 @@ function seedDemo() {
 
   /* tick: update the clock; re-render everything when the date changes */
   let lastDay = todayKey();
+  pomoSchedule();
   setInterval(() => {
+    pomoTick();
     if (!state.lang || !$("picker").hidden) return;
     if (todayKey() !== lastDay) {
       lastDay = todayKey();

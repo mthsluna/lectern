@@ -77,6 +77,16 @@ and jump to any week you have studied.
 - Progress toward your weekly goal
 - A short written summary, which tells you when it is your best week yet
 
+### Pomodoro, if you like it
+
+Switch the timer from **Free** to **Pomodoro** and it counts down instead. The
+classic rhythm comes ready: 25 minutes of focus, 5 of rest, and 15 after every
+fourth round. Change any of it in the settings next to the switch.
+
+A soft chime tells you when to rest and another when to get back to it. Pick each
+from eight clean sounds, or none, and set the volume. Focus counts as study and
+rest as break time, so the report reads the same either way.
+
 ### Along the way
 
 - **Weekly goal.** Set your hours once. A thin line under the week's total fills
@@ -88,7 +98,7 @@ and jump to any week you have studied.
 
 | Key | Action |
 | :-- | :-- |
-| `Space` | Start, pause or resume |
+| `Space` | Start, pause or resume (or skip a Pomodoro break) |
 | `S` | Stop (press twice) |
 | `←` `→` | Previous or next week, in the report |
 
@@ -151,4 +161,6 @@ Built with [Tauri](https://tauri.app) and plain HTML, CSS and JavaScript.
 
 ## License
 
-[MIT](LICENSE)
+[MIT](LICENSE). The Pomodoro chimes are by
+[Qvantor](https://freesound.org/people/Qvantor/) on Freesound, released into the
+public domain under [CC0](https://creativecommons.org/publicdomain/zero/1.0/).

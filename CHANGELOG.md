@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.18.0
+
+- Pomodoro mode: a Free / Pomodoro switch above the timer. Classic 25 / 5 / 15 by default, every length adjustable.
+- Chimes for time to rest and time to study, chosen from eight clean public-domain sounds, with volume.
+- The countdown keeps running, and the chime still plays, while Lectern sits in the tray.
+
 ## 1.17.0
 
 - Clear a day you started by mistake: click it in the report, then Clear day. Undo is there for a few seconds.

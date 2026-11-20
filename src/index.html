@@ -63,8 +63,40 @@
       <!-- Today -->
       <section class="view" id="view-today">
         <p class="eyebrow" id="today-date"></p>
+        <div class="mode-wrap">
+          <div class="mode" id="mode" role="radiogroup">
+            <span class="mode-thumb" aria-hidden="true"></span>
+            <button class="mode-opt" data-mode="free" role="radio" data-i18n="modeFree">Free</button>
+            <button class="mode-opt" data-mode="pomo" role="radio">
+              <svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true"><circle cx="8" cy="9" r="5.6" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 3.4c0-1.2.8-2 2-2.1M8 9V6.4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              <span data-i18n="modePomo">Pomodoro</span>
+            </button>
+          </div>
+          <button class="mode-gear" id="pomo-gear" data-i18n-title="pomoSettings" data-i18n-label="pomoSettings" title="Pomodoro settings" aria-label="Pomodoro settings" aria-expanded="false" hidden>
+            <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><path d="M3.5 6h8M15 6h1.5M3.5 14h1.5M8.5 14h8" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="13.2" cy="6" r="1.9" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="6.8" cy="14" r="1.9" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+          </button>
+          <div class="pomo-panel" id="pomo-panel" hidden>
+            <div class="pp-head">
+              <span class="pp-title" data-i18n="pomoSettings">Pomodoro settings</span>
+              <button class="pp-reset" id="pomo-reset" data-i18n="reset">Reset</button>
+            </div>
+            <div class="pp-rows" id="pomo-rows"></div>
+            <div class="pp-sound">
+              <div class="pp-tabs" id="pomo-sound-tabs">
+                <button data-event="rest" class="is-on"><span data-i18n="soundRest">Time to rest</span></button>
+                <button data-event="back"><span data-i18n="soundBack">Time to study</span></button>
+              </div>
+              <div class="pp-sounds" id="pomo-sounds"></div>
+              <label class="pp-volume">
+                <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><path d="M3.5 8v4h3l4 3.2V4.8l-4 3.2Z" fill="currentColor"/><path d="M13.4 7.3a4 4 0 0 1 0 5.4M15.6 5.2a7 7 0 0 1 0 9.6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                <input type="range" id="pomo-volume" min="0" max="100" step="5" data-i18n-label="volume" aria-label="Volume">
+              </label>
+            </div>
+          </div>
+        </div>
         <h1 class="timer" id="timer">00:00:00</h1>
-        <p class="status" id="status"><span class="dot"></span><span id="status-text"></span></p>
+        <div class="pomo-track" id="pomo-track" hidden><div class="pomo-fill" id="pomo-fill"></div></div>
+        <p class="status" id="status"><span class="dot"></span><span id="status-text"></span><span class="pomo-dots" id="pomo-dots" hidden></span></p>
 
         <div class="subject" id="subject-wrap" hidden>
           <svg class="subject-icon" viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><path d="M3 4.6c0-.6.5-1 1-1h3.4c1.1 0 2 .5 2.6 1.3.6-.8 1.5-1.3 2.6-1.3H16c.5 0 1 .4 1 1v9.6c0 .5-.5 1-1 1h-3.4c-1 0-1.9.4-2.6 1.1-.7-.7-1.6-1.1-2.6-1.1H4c-.5 0-1-.5-1-1Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 4.9v11" stroke="currentColor" stroke-width="1.5"/></svg>
