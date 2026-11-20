@@ -300,33 +300,11 @@ body[data-state="closed"] .dot { background: var(--ink); }
 .day .d { height: 16px; line-height: 16px; font-size: 11px; color: var(--muted); }
 .day.is-today .d { color: var(--ink); font-weight: 600; }
 
-/* the goal's daily pace: a dashed line across the bars */
-.pace {
-  --pace: 0;
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: calc(22px + var(--pace) * 72px);
-  border-top: 1.5px dashed color-mix(in srgb, var(--accent) 60%, transparent);
-  pointer-events: none;
-  transition: bottom .6s cubic-bezier(.22, 1, .36, 1);
-}
-.pace span {
-  position: absolute;
-  right: 0;
-  bottom: 3px;
-  padding: 0 4px;
-  border-radius: 4px;
-  font-size: 10px;
-  font-weight: 600;
-  color: var(--accent);
-  background: var(--surface);
-  font-variant-numeric: tabular-nums;
-}
+
 .hint { margin-top: 14px; font-size: 12.5px; color: var(--muted); }
 
 /* Report */
-.report-nav { position: relative; display: flex; align-items: center; justify-content: center; gap: 2px; }
+.report-nav { position: relative; display: flex; align-items: center; justify-content: center; gap: 6px; }
 .arrow {
   flex: none;
   width: 32px; height: 32px;
@@ -342,14 +320,14 @@ body[data-state="closed"] .dot { background: var(--ink); }
 /* Week carousel: Cover Flow */
 .weeks {
   position: relative;
-  width: 330px;
+  width: min(470px, calc(100vw - 150px));
   height: 56px;
   overflow: hidden;
   overflow: clip;
-  perspective: 420px;
+  perspective: 520px;
   perspective-origin: 50% 50%;
-  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 12%, #000 88%, transparent 100%);
-          mask-image: linear-gradient(90deg, transparent 0, #000 12%, #000 88%, transparent 100%);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 9%, #000 91%, transparent 100%);
+          mask-image: linear-gradient(90deg, transparent 0, #000 9%, #000 91%, transparent 100%);
 }
 .week-chip {
   --dim: 0;
