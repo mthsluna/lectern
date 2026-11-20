@@ -66,6 +66,23 @@ fn open_window(app: &AppHandle) {
     }
 }
 
+/// Hands the update to the installed updater (uninstall.exe, which is Lectern
+/// Setup) and quits. The app itself never downloads anything.
+#[tauri::command]
+fn start_update(app: AppHandle) -> Result<(), String> {
+    let exe = std::env::current_exe().map_err(|e| e.to_string())?;
+    let updater = exe.parent().ok_or("no install folder")?.join("uninstall.exe");
+    if !updater.exists() {
+        return Err("not installed with Lectern Setup".into());
+    }
+    std::process::Command::new(&updater)
+        .arg("--update")
+        .spawn()
+        .map_err(|e| e.to_string())?;
+    app.exit(0);
+    Ok(())
+}
+
 /// Returns the saved JSON document, or an empty string on first launch.
 #[tauri::command]
 fn load_data(app: AppHandle) -> Result<String, String> {
@@ -98,7 +115,7 @@ fn main() {
         // Launching Lectern again while it sits in the tray reopens the window.
         .plugin(tauri_plugin_single_instance::init(|app, _, _| open_window(app)))
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![load_data, save_data])
+        .invoke_handler(tauri::generate_handler![load_data, save_data, start_update])
         .setup(|app| {
             let saved = fs::read_to_string(data_dir(app.handle())?.join(FILE)).unwrap_or_default();
             let (open_label, quit_label) = tray_labels(&lang_of(&saved));
