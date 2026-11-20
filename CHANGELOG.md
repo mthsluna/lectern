@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.11.0
+
+- The week switcher is a 3D carousel: neighbouring weeks turn away in perspective, and you can click them.
+- Setting a weekly goal sends an arrow into the target.
+- A quieter round button to start another session.
+
 ## 1.10.0
 
 - A calendar in the report: click the dates to see the month, with a dot on every day you studied, and jump to any week.
