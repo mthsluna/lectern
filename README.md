@@ -50,7 +50,7 @@ computer.
 
 ## Features
 
-| | |
+| Feature | Description |
 | :-- | :-- |
 | **One-click timer** | Start, pause and stop. Breaks are tracked but never counted as study, and stopping asks twice so it never happens by accident. |
 | **Weekly report** | Opens by itself on Saturday: total hours, change from last week, a day-by-day chart, focus ratio, time per subject and a short written summary. |
