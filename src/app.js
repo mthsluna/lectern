@@ -405,9 +405,12 @@ function renderControls() {
     b.title = "S";
   }
   if (s === "closed") {
-    const b = btn("", "btn-soft", start);
+    const b = btn("", "btn-round", start);
+    b.title = t("startAnother");
+    b.setAttribute("aria-label", t("startAnother"));
     b.innerHTML = `<svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M5 3.2v9.6a.6.6 0 0 0 .92.5l7.4-4.8a.6.6 0 0 0 0-1L5.92 2.7A.6.6 0 0 0 5 3.2Z" fill="currentColor"/></svg><span></span>`;
     b.lastChild.textContent = t("startAnother");
+    b.lastChild.className = "round-label";
   }
 
   /* the optional subject field only exists before a session starts */
@@ -473,6 +476,7 @@ function renderWeekStrip() {
     $("goal-fill").style.width = `${pct * 100}%`;
     $("goal-fill").classList.toggle("done", pct >= 1);
   }
+  $("goal-btn").classList.toggle("has-goal", Boolean(goal));
   if ($("goal-edit").hidden) $("goal-label").textContent = goal ? `${t("goal")} · ${goal}h` : t("setGoal");
 
   const left = 6 - parseKey(today).getDay();
@@ -492,6 +496,7 @@ function openGoalEditor() {
 }
 function closeGoalEditor(saveIt) {
   if ($("goal-edit").hidden) return;
+  const before = state.goal;
   if (saveIt) {
     const v = Math.round(Number($("goal-input").value));
     state.goal = v >= 1 && v <= 100 ? v : null;   // empty or 0 removes the goal
@@ -500,6 +505,13 @@ function closeGoalEditor(saveIt) {
   $("goal-edit").hidden = true;
   $("goal-btn").hidden = false;
   renderWeekStrip();
+  if (state.goal && state.goal !== before) {
+    const b = $("goal-btn");
+    b.classList.remove("hit");
+    void b.offsetWidth;
+    b.classList.add("hit");                       // the arrow flies in
+    setTimeout(() => b.classList.remove("hit"), 1200);
+  }
 }
 
 function renderToday() {
@@ -546,9 +558,7 @@ function renderReport() {
   const total = days.reduce((s, d) => s + d.study, 0);
   const prevTotal = weekData(addDays(start, -7)).reduce((s, d) => s + d.study, 0);
 
-  const range = rangeLabel(start);
-  $("report-range").textContent = range.main;
-  $("report-year").textContent = range.year;
+  renderCarousel();
   $("next-week").disabled = start >= current;
 
   const inProgress = start === current && !isSaturday(today);
@@ -637,10 +647,88 @@ function goToWeek(start) {
   reportWeek = start;
   $("report-notice").hidden = true;
   renderReport();
-  for (const el of [$("range-text"), $("report-body")]) {
+  for (const el of [$("report-body")]) {
     el.classList.remove("slide-next", "slide-prev");
     void el.offsetWidth;
     el.classList.add(`slide-${dir}`);
+  }
+}
+
+/* ---- 3D carousel ----
+   Five weeks around the one on display sit on a curved track: the centre
+   faces you, its neighbours turn away in perspective and fade. Each chip is
+   keyed by its week, so moving the track animates the chips into place. */
+
+const chips = new Map();          // week key -> element
+const TRACK = { x: 150, turn: 55, depth: 150 };
+
+function chipTransform(offset) {
+  const d = Math.abs(offset);
+  return `translateX(calc(-50% + ${offset * TRACK.x}px)) translateZ(${-d * TRACK.depth}px) rotateY(${-offset * TRACK.turn}deg)`;
+}
+
+function placeChip(el, offset) {
+  const d = Math.abs(offset);
+  el.style.transform = chipTransform(offset);
+  el.style.opacity = d === 0 ? 1 : d === 1 ? 0.42 : 0;
+  el.style.zIndex = String(10 - d);
+  el.style.pointerEvents = d <= 1 ? "auto" : "none";
+  el.classList.toggle("is-center", offset === 0);
+  el.tabIndex = d <= 1 ? 0 : -1;
+}
+
+function makeChip(week) {
+  const el = document.createElement("button");
+  el.className = "week-chip";
+  el.dataset.week = week;
+  el.innerHTML = `<svg class="range-icon" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><rect x="2" y="3" width="12" height="11" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M2 6.6h12" stroke="currentColor" stroke-width="1.4"/><path d="M5.2 1.6v2.6M10.8 1.6v2.6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><rect x="4.6" y="8.6" width="2.4" height="2.2" rx=".6" fill="currentColor"/></svg><span class="range-text"><span class="range-year"></span><span class="range-main"></span></span>`;
+  el.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (el.dataset.week === reportWeek) toggleCalendar();
+    else { closeCalendar(); goToWeek(el.dataset.week); }
+  });
+  return el;
+}
+
+function renderCarousel() {
+  const track = $("weeks");
+  const current = weekStart(todayKey());
+  const wanted = new Map();
+  for (let o = -2; o <= 2; o++) {
+    const w = addDays(reportWeek, 7 * o);
+    if (w <= current) wanted.set(w, o);
+  }
+  // chips leaving the track slide out past the edge, then go
+  for (const [w, el] of chips) {
+    if (wanted.has(w)) continue;
+    chips.delete(w);
+    placeChip(el, w < reportWeek ? -3 : 3);
+    setTimeout(() => el.remove(), 600);
+  }
+  for (const [w, o] of wanted) {
+    let el = chips.get(w);
+    if (!el) {
+      el = makeChip(w);
+      track.appendChild(el);
+      chips.set(w, el);
+      placeChip(el, o < 0 ? -3 : 3);   // enter from the side it belongs to
+      void el.offsetWidth;
+    }
+    const label = rangeLabel(w);
+    el.querySelector(".range-year").textContent = label.year;
+    el.querySelector(".range-main").textContent = label.main;
+    el.setAttribute("aria-label", `${label.main} ${label.year}`);
+    placeChip(el, o);
+  }
+  setExpanded(!$("cal").hidden);
+}
+
+function setExpanded(open) {
+  const centre = chips.get(reportWeek);
+  for (const el of chips.values()) el.removeAttribute("aria-expanded");
+  if (centre) {
+    centre.setAttribute("aria-haspopup", "dialog");
+    centre.setAttribute("aria-expanded", String(open));
   }
 }
 
@@ -652,13 +740,13 @@ function toggleCalendar() {
   calMonth = new Date(mid.getFullYear(), mid.getMonth(), 1);
   renderCalendar();
   $("cal").hidden = false;
-  $("range-btn").setAttribute("aria-expanded", "true");
+  setExpanded(true);
 }
 
 function closeCalendar() {
   if ($("cal").hidden) return;
   $("cal").hidden = true;
-  $("range-btn").setAttribute("aria-expanded", "false");
+  setExpanded(false);
 }
 
 function moveCalendar(step) {
@@ -749,7 +837,7 @@ function autoReport() {
 
 function openStartView() {
   let auto;
-  if (DEMO) auto = params.get("view") === "report" ? { week: weekStart(todayKey()), notice: params.get("notice") ? t("saturday") : null } : null;
+  if (DEMO) auto = params.get("view") === "report" ? { week: addDays(weekStart(todayKey()), -7 * (Number(params.get("back")) || 0)), notice: params.get("notice") ? t("saturday") : null } : null;
   else auto = autoReport();
   if (auto) show("report", auto);
   else show("today");
@@ -885,7 +973,6 @@ function seedDemo() {
   checkForUpdate();
   $("prev-week").addEventListener("click", () => goToWeek(addDays(reportWeek, -7)));
   $("next-week").addEventListener("click", () => goToWeek(addDays(reportWeek, 7)));
-  $("range-btn").addEventListener("click", (e) => { e.stopPropagation(); toggleCalendar(); });
   $("cal-prev").addEventListener("click", () => moveCalendar(-1));
   $("cal-next").addEventListener("click", () => moveCalendar(1));
   $("cal-today").addEventListener("click", () => { closeCalendar(); goToWeek(weekStart(todayKey())); });
