@@ -67,7 +67,8 @@ remembers your subjects and suggests them next time.
 ### Every Saturday
 
 The first time you open Lectern on a Saturday, the report opens by itself. Miss
-Saturday and it is waiting for you next time. Every past week stays one click away.
+Saturday and it is waiting for you next time. Click the dates to open a calendar
+and jump to any week you have studied.
 
 - Total hours, and how they compare with the week before
 - A day-by-day chart with your best day highlighted
