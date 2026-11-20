@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.16.0
+
+- Icons instead of words for the Today and Report tabs.
+- The play triangle sits in the true centre of its button.
+
 ## 1.15.0
 
 - A clearer calendar: studied days are green discs that deepen with time, today is a ring, the open week is outlined, and a legend explains them.
