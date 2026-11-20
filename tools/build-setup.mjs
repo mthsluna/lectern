@@ -19,6 +19,10 @@ const target = process.env.CARGO_TARGET_DIR || path.join(root, "src-tauri", "tar
 const tauri = path.join(root, "node_modules", ".bin", process.platform === "win32" ? "tauri.cmd" : "tauri");
 const sh = (cmd, cwd) => execSync(cmd, { cwd, stdio: "inherit", env: process.env });
 
+// the extension first: the app carries it, to set it up from Settings
+console.log("\n· Packing the browser extension");
+sh("node tools/build-extension.mjs", root);
+
 console.log(`\n· Building Lectern ${version}`);
 sh(`"${tauri}" build --no-bundle`, root);
 

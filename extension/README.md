@@ -19,6 +19,16 @@ otherwise the browser shows its own "blocked" page.
 
 ## Install
 
+**From the app (easiest).** In Lectern, open **Settings** and click **Add to Chrome** (or Edge, or Brave:
+your default browser comes first). Lectern puts the extension in a folder of its own, opens the
+browser on its extensions page and copies the folder. Then turn on **Developer mode**, click
+**Load unpacked**, paste with Ctrl+V and press Enter. Browsers keep these last clicks for you: no
+program may add an extension by itself unless it comes from the browser's store. When Lectern
+updates, it refreshes that folder too, and the browser picks it up on its next start.
+
+**By hand.**
+
+
 1. Download [**Lectern-Extension.zip**](https://github.com/mthsluna/lectern/releases/latest/download/Lectern-Extension.zip) and unzip it into a folder you will keep.
 2. Open `chrome://extensions` (or `edge://extensions`, `brave://extensions`) and turn on **Developer mode**.
 3. Click **Load unpacked** and choose that folder. Pin Lectern to the toolbar.
