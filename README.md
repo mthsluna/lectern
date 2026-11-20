@@ -82,7 +82,7 @@ computer.
 ## Installation
 
 1. Download **`Lectern-Setup-<version>.exe`** from the [latest release](https://github.com/mthsluna/lectern/releases/latest).
-2. Run it and choose whether Lectern should start with Windows.
+2. Run it, and choose whether you want a desktop shortcut and whether Lectern opens when Windows starts.
 3. That is all. No administrator prompt and no account.
 
 **Requirements:** Windows 10 or 11 (64-bit) with the Microsoft Edge WebView2 runtime,
@@ -232,7 +232,7 @@ lectern/
 
 </details>
 
-Releases are published from the **Release** workflow in GitHub Actions. Every
+Releases are published from the **Release build** workflow in GitHub Actions. Every
 change is recorded in the [changelog](CHANGELOG.md).
 
 ## Credits and license
