@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.14.2
+
+- Side weeks in the carousel fade out toward the edges.
+
 ## 1.14.1
 
 - More space between the weeks in the carousel.

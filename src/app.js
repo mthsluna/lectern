@@ -722,7 +722,7 @@ function goToWeek(start) {
 const chips = new Map();          // week key -> element
 /* The chips sit on the outside of a drum: each step around it is an angle,
    and position, depth and turn all follow from that angle. */
-const DRUM = { radius: 300, step: [0, 38, 70, 100], scale: [1, .84, .72, .6], dim: [0, .38, .68, 1] };
+const DRUM = { radius: 300, step: [0, 38, 70, 100], scale: [1, .84, .72, .6], dim: [0, .2, .35, 1], alpha: [1, .62, .3, 0] };
 
 function placeChip(el, offset) {
   const d = Math.min(Math.abs(offset), 3);
@@ -733,7 +733,9 @@ function placeChip(el, offset) {
   const z = DRUM.radius * (Math.cos(rad) - 1);
   el.style.transform = `translateX(calc(-50% + ${x.toFixed(1)}px)) translateZ(${z.toFixed(1)}px) rotateY(${angle}deg) scale(${DRUM.scale[d]})`;
   el.style.setProperty("--dim", DRUM.dim[d]);
-  el.style.opacity = d >= 3 ? 0 : 1;
+  el.style.opacity = DRUM.alpha[d];
+  el.classList.toggle("is-left", offset < 0);
+  el.classList.toggle("is-right", offset > 0);
   el.style.zIndex = String(10 - d);
   el.classList.toggle("is-center", offset === 0);
   const usable = d === 1 && !el.classList.contains("is-future");
