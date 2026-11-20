@@ -346,12 +346,159 @@ function streak() {
 }
 
 /* Every subject used before, most studied first (for suggestions). */
-function knownSubjects() {
+function subjectTotals() {
   const totals = {};
   for (const d of Object.values(state.days)) {
     for (const [s, ms] of Object.entries(d.subjects || {})) if (s) totals[s] = (totals[s] || 0) + ms;
   }
+  return totals;
+}
+function knownSubjects() {
+  const totals = subjectTotals();
   return Object.keys(totals).sort((a, b) => totals[b] - totals[a]);
+}
+
+/* ---------- subject suggestions ---------- */
+
+const escHtml = (s) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+let suggestItems = [];
+let suggestIndex = -1;
+
+function renderSuggest() {
+  const box = $("suggest");
+  const input = $("subject");
+  const q = input.value.trim().toLocaleLowerCase();
+  const totals = subjectTotals();
+  suggestItems = knownSubjects()
+    .filter((s) => s.toLocaleLowerCase() !== q && s.toLocaleLowerCase().includes(q))
+    .slice(0, 6);
+  if (document.activeElement !== input || !suggestItems.length) return hideSuggest();
+  suggestIndex = Math.min(suggestIndex, suggestItems.length - 1);
+  box.innerHTML = suggestItems.map((s, i) => {
+    const at = q ? s.toLocaleLowerCase().indexOf(q) : -1;
+    const name = at < 0 ? escHtml(s)
+      : escHtml(s.slice(0, at)) + `<mark>${escHtml(s.slice(at, at + q.length))}</mark>` + escHtml(s.slice(at + q.length));
+    return `<li role="option" id="sg-${i}" data-i="${i}" aria-selected="${i === suggestIndex}"${i === suggestIndex ? ' class="on"' : ""}>`
+      + `<svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true"><circle cx="8" cy="8" r="6.2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 4.8V8l2.2 1.4" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`
+      + `<span class="sg-name">${name}</span><span class="sg-time">${shortHours(totals[s])}</span></li>`;
+  }).join("");
+  input.setAttribute("aria-expanded", "true");
+  if (suggestIndex >= 0) input.setAttribute("aria-activedescendant", `sg-${suggestIndex}`);
+  else input.removeAttribute("aria-activedescendant");
+  if (box.hidden || box.classList.contains("closing")) {
+    clearTimeout(hideSuggest.timer);
+    box.classList.remove("closing");
+    box.hidden = false;
+  }
+}
+function hideSuggest() {
+  const box = $("suggest");
+  suggestIndex = -1;
+  $("subject").setAttribute("aria-expanded", "false");
+  $("subject").removeAttribute("aria-activedescendant");
+  if (box.hidden || box.classList.contains("closing")) return;
+  box.classList.add("closing");
+  clearTimeout(hideSuggest.timer);
+  hideSuggest.timer = setTimeout(() => { box.hidden = true; box.classList.remove("closing"); }, 130);
+}
+function chooseSuggest(i) {
+  const v = suggestItems[i];
+  if (v == null) return;
+  $("subject").value = v;
+  draftSubject = v;
+  hideSuggest();
+}
+
+/* ---------- clearing a day ----------
+ * A day started by mistake can be cleared from the report. Its record goes,
+ * and so does the running session's share of it; Undo puts both back.
+ */
+
+const TRASH = `<svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true"><path d="M2.8 4.2h10.4M6.3 4.2V2.9c0-.4.3-.7.7-.7h2c.4 0 .7.3.7.7v1.3M4.1 4.2l.6 8.6c0 .6.5 1 1.1 1h4.4c.6 0 1.1-.4 1.1-1l.6-8.6" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+let pickedDay = null;
+let undoInfo = null;
+let undoTimer = null;
+let clearArmTimer = null;
+
+const clone = (x) => (x == null ? null : JSON.parse(JSON.stringify(x)));
+const hasRecord = (k) => { const d = liveFor(k); return d.study > 0 || d.sessions > 0; };
+
+function pickDay(k) {
+  pickedDay = pickedDay === k ? null : k;
+  undoInfo = null;
+  clearTimeout(clearArmTimer);
+  buildDayPanel(true);
+  renderReport();
+}
+
+function buildDayPanel(animate) {
+  const p = $("day-panel");
+  const week = $("chart").dataset.week;
+  const any = week && [0, 1, 2, 3, 4, 5, 6].some((i) => hasRecord(addDays(week, i)));
+  let mode;
+  if (undoInfo) {
+    mode = "undo";
+    p.innerHTML = `<span class="dp-text">${t("dayCleared")}</span><button class="dp-btn" id="dp-undo">${t("undo")}</button>`;
+    $("dp-undo").addEventListener("click", undoClear);
+  } else if (pickedDay) {
+    mode = "day";
+    p.innerHTML = `<span class="dp-text"><b>${cap(fmt(pickedDay, { weekday: "long", day: "numeric", month: "short" }))}</b><span class="dp-time" id="dp-time">${hm(liveFor(pickedDay).study)}</span></span>`
+      + `<button class="dp-btn dp-clear" id="dp-clear">${TRASH}<span>${t("clearDay")}</span></button>`;
+    $("dp-clear").addEventListener("click", armClear);
+  } else if (any) {
+    mode = "hint";
+    p.innerHTML = `<span class="dp-hint">${t("pickHint")}</span>`;
+  } else {
+    mode = "";
+    p.innerHTML = "";
+  }
+  p.dataset.mode = mode;
+  if (animate && mode) replay(p.firstElementChild, "swap");
+}
+
+function armClear() {
+  const b = $("dp-clear");
+  if (b.dataset.armed) { clearTimeout(clearArmTimer); return clearDay(pickedDay); }
+  b.dataset.armed = "1";
+  b.classList.add("armed");
+  b.lastChild.textContent = t("confirmClear");
+  replay(b, "morph");
+  clearArmTimer = setTimeout(() => buildDayPanel(false), 3000);
+}
+
+function clearDay(k) {
+  undoInfo = { k, day: clone(state.days[k]), active: clone(state.active) };
+  delete state.days[k];
+  const a = state.active;
+  if (a) {
+    bank(a, a.status === "running" ? "study" : "breaks");
+    delete a.days[k];
+    const rest = Object.keys(a.days).filter((d) => {
+      const p = a.days[d];
+      return p.study > 0 || p.breaks > 0 || p.pauses > 0;
+    }).sort();
+    if (a.date === k) {
+      if (rest.length) a.date = rest[0];     // the session lives on, counted on its next day
+      else state.active = null;               // a session started by mistake today: gone
+    }
+  }
+  pickedDay = null;
+  clearTimeout(undoTimer);
+  undoTimer = setTimeout(() => { undoInfo = null; buildDayPanel(true); }, 6000);
+  buildDayPanel(true);
+  commitAndRender();
+}
+
+function undoClear() {
+  if (!undoInfo) return;
+  const { k, day, active } = undoInfo;
+  if (day) state.days[k] = day;
+  if (active) state.active = active;
+  undoInfo = null;
+  clearTimeout(undoTimer);
+  pickedDay = k;
+  buildDayPanel(true);
+  commitAndRender();
 }
 
 /* Totals of every earlier week that has data, to spot a personal best. */
@@ -441,8 +588,6 @@ function buildControls(animate) {
   if (idle && wasHidden && animate) replay($("subject-wrap"), "reveal");
   if (idle) {
     $("subject").value = draftSubject;
-    $("subject-list").innerHTML = knownSubjects().slice(0, 12)
-      .map((x) => `<option value="${x.replace(/"/g, "&quot;")}">`).join("");
   }
 }
 
@@ -634,7 +779,8 @@ function renderReport() {
   }
   days.forEach((d, i) => {
     const col = chart.children[i];
-    col.className = "col " + (d.study < 60000 ? "empty" : d.key === bestKey ? "best" : "");
+    col.className = "col " + (d.study < 60000 ? "empty" : d.key === bestKey ? "best" : "")
+      + (hasRecord(d.key) ? " can-pick" : "") + (d.key === pickedDay ? " picked" : "");
     col.querySelector(".v").textContent = shortHours(d.study);
     col.querySelector(".bar").style.height = `${Math.max(2, (d.study / max) * 100)}%`;
   });
@@ -644,7 +790,12 @@ function renderReport() {
     labels.className = "chart-days";
     chart.after(labels);
   }
-  labels.innerHTML = days.map((d) => `<span>${dayName(d.key, "short")}</span>`).join("");
+  labels.innerHTML = days.map((d) => `<span${d.key === pickedDay ? ' class="picked"' : ""}>${dayName(d.key, "short")}</span>`).join("");
+  if (pickedDay && !days.some((d) => d.key === pickedDay)) pickedDay = null;
+  const panel = $("day-panel");
+  const wantMode = undoInfo ? "undo" : pickedDay ? "day" : days.some((d) => hasRecord(d.key)) ? "hint" : "";
+  if (freshChart || panel.dataset.mode !== wantMode) buildDayPanel(freshChart);
+  else if (wantMode === "day" && $("dp-time")) $("dp-time").textContent = hm(liveFor(pickedDay).study);
 
   /* stats */
   const studied = days.filter((d) => d.study >= 60000);
@@ -1085,9 +1236,36 @@ function seedDemo() {
   document.addEventListener("click", closeCalendar);
 
   /* subject field */
-  $("subject").addEventListener("input", (e) => { draftSubject = e.target.value; });
+  $("subject").addEventListener("input", (e) => { draftSubject = e.target.value; suggestIndex = -1; renderSuggest(); });
+  $("subject").addEventListener("focus", () => { suggestIndex = -1; renderSuggest(); });
+  $("subject").addEventListener("blur", hideSuggest);
   $("subject").addEventListener("keydown", (e) => {
+    const open = !$("suggest").hidden && !$("suggest").classList.contains("closing");
+    if (open && (e.key === "ArrowDown" || e.key === "ArrowUp")) {
+      e.preventDefault();
+      const n = suggestItems.length;
+      suggestIndex = e.key === "ArrowDown" ? (suggestIndex + 1) % n : (suggestIndex <= 0 ? n - 1 : suggestIndex - 1);
+      return renderSuggest();
+    }
+    if (open && e.key === "Escape") { e.stopPropagation(); return hideSuggest(); }
+    if (open && (e.key === "Enter" || e.key === "Tab") && suggestIndex >= 0) {
+      e.preventDefault();
+      return chooseSuggest(suggestIndex);
+    }
     if (e.key === "Enter") { e.preventDefault(); e.target.blur(); start(); }
+  });
+  $("suggest").addEventListener("mousedown", (e) => e.preventDefault());   // keep the focus in the field
+  $("suggest").addEventListener("click", (e) => {
+    const li = e.target.closest("li");
+    if (li) chooseSuggest(Number(li.dataset.i));
+  });
+
+  /* report: pick a day to clear it */
+  $("chart").addEventListener("click", (e) => {
+    const col = e.target.closest(".col");
+    if (!col) return;
+    const k = addDays($("chart").dataset.week, [...$("chart").children].indexOf(col));
+    if (hasRecord(k) || pickedDay === k) pickDay(k);
   });
 
   /* weekly goal editor */

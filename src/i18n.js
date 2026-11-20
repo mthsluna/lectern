@@ -52,6 +52,7 @@ const STRINGS = {
     updateAvailable: (v) => `Lectern ${v} is available.`, updateNow: "Update", notNow: "Not now", skipVersion: "Skip this version",
     updateOpened: "The installer is downloading in your browser. Open it to finish updating.", close: "Close", updateFailed: "The update could not be installed.", tryAgain: "Try again",
     studiedLegend: "Studied", weekLegend: "Selected week",
+    clearDay: "Clear day", confirmClear: "Clear it?", dayCleared: "Day cleared", undo: "Undo", pickHint: "Click a day to clear it",
     sep: ". ", space: " ",
   },
   pt: {
@@ -84,6 +85,7 @@ const STRINGS = {
     updateAvailable: (v) => `O Lectern ${v} está disponível.`, updateNow: "Atualizar", notNow: "Agora não", skipVersion: "Pular esta versão",
     updateOpened: "O instalador está baixando no navegador. Abra-o para concluir a atualização.", close: "Fechar", updateFailed: "Não foi possível instalar a atualização.", tryAgain: "Tentar de novo",
     studiedLegend: "Estudou", weekLegend: "Semana aberta",
+    clearDay: "Apagar dia", confirmClear: "Apagar mesmo?", dayCleared: "Dia apagado", undo: "Desfazer", pickHint: "Clique num dia para apagá-lo",
     sep: ". ", space: " ",
   },
   es: {
@@ -116,6 +118,7 @@ const STRINGS = {
     updateAvailable: (v) => `Lectern ${v} está disponible.`, updateNow: "Actualizar", notNow: "Ahora no", skipVersion: "Omitir esta versión",
     updateOpened: "El instalador se está descargando en tu navegador. Ábrelo para terminar la actualización.", close: "Cerrar", updateFailed: "No se pudo instalar la actualización.", tryAgain: "Reintentar",
     studiedLegend: "Estudiaste", weekLegend: "Semana abierta",
+    clearDay: "Borrar día", confirmClear: "¿Borrar?", dayCleared: "Día borrado", undo: "Deshacer", pickHint: "Haz clic en un día para borrarlo",
     sep: ". ", space: " ",
   },
   fr: {
@@ -148,6 +151,7 @@ const STRINGS = {
     updateAvailable: (v) => `Lectern ${v} est disponible.`, updateNow: "Mettre à jour", notNow: "Plus tard", skipVersion: "Ignorer cette version",
     updateOpened: "Le programme d'installation se télécharge dans votre navigateur. Ouvrez-le pour terminer la mise à jour.", close: "Fermer", updateFailed: "La mise à jour n'a pas pu être installée.", tryAgain: "Réessayer",
     studiedLegend: "Étudié", weekLegend: "Semaine ouverte",
+    clearDay: "Effacer le jour", confirmClear: "Effacer ?", dayCleared: "Jour effacé", undo: "Annuler", pickHint: "Cliquez sur un jour pour l’effacer",
     sep: ". ", space: " ",
   },
   de: {
@@ -180,6 +184,7 @@ const STRINGS = {
     updateAvailable: (v) => `Lectern ${v} ist verfügbar.`, updateNow: "Aktualisieren", notNow: "Nicht jetzt", skipVersion: "Diese Version überspringen",
     updateOpened: "Das Installationsprogramm wird im Browser heruntergeladen. Öffne es, um das Update abzuschließen.", close: "Schließen", updateFailed: "Das Update konnte nicht installiert werden.", tryAgain: "Erneut versuchen",
     studiedLegend: "Gelernt", weekLegend: "Gewählte Woche",
+    clearDay: "Tag löschen", confirmClear: "Wirklich löschen?", dayCleared: "Tag gelöscht", undo: "Rückgängig", pickHint: "Klicke auf einen Tag, um ihn zu löschen",
     sep: ". ", space: " ",
   },
   ru: {
@@ -212,6 +217,7 @@ const STRINGS = {
     updateAvailable: (v) => `Доступна версия Lectern ${v}.`, updateNow: "Обновить", notNow: "Не сейчас", skipVersion: "Пропустить эту версию",
     updateOpened: "Установщик загружается в браузере. Откройте его, чтобы завершить обновление.", close: "Закрыть", updateFailed: "Не удалось установить обновление.", tryAgain: "Повторить",
     studiedLegend: "Занятия", weekLegend: "Выбранная неделя",
+    clearDay: "Очистить день", confirmClear: "Точно очистить?", dayCleared: "День очищен", undo: "Отменить", pickHint: "Нажмите на день, чтобы очистить его",
     sep: ". ", space: " ",
   },
   zh: {
@@ -244,6 +250,7 @@ const STRINGS = {
     updateAvailable: (v) => `Lectern ${v} 已发布。`, updateNow: "更新", notNow: "以后再说", skipVersion: "跳过此版本",
     updateOpened: "安装程序正在浏览器中下载。打开它即可完成更新。", close: "关闭", updateFailed: "无法安装更新。", tryAgain: "重试",
     studiedLegend: "已学习", weekLegend: "所选周",
+    clearDay: "清除这天", confirmClear: "确定清除？", dayCleared: "已清除", undo: "撤销", pickHint: "点击某一天即可清除",
     sep: "。", space: "",
   },
   ja: {
@@ -276,6 +283,7 @@ const STRINGS = {
     updateAvailable: (v) => `Lectern ${v} が利用できます。`, updateNow: "アップデート", notNow: "あとで", skipVersion: "このバージョンをスキップ",
     updateOpened: "インストーラーをブラウザーでダウンロードしています。開いてアップデートを完了してください。", close: "閉じる", updateFailed: "アップデートをインストールできませんでした。", tryAgain: "再試行",
     studiedLegend: "学習した日", weekLegend: "選択中の週",
+    clearDay: "この日を消去", confirmClear: "消去しますか？", dayCleared: "消去しました", undo: "元に戻す", pickHint: "日をクリックすると消去できます",
     sep: "。", space: "",
   },
   hi: {
@@ -308,6 +316,7 @@ const STRINGS = {
     updateAvailable: (v) => `Lectern ${v} उपलब्ध है।`, updateNow: "अपडेट करें", notNow: "अभी नहीं", skipVersion: "यह संस्करण छोड़ें",
     updateOpened: "इंस्टॉलर आपके ब्राउज़र में डाउनलोड हो रहा है। अपडेट पूरा करने के लिए उसे खोलें।", close: "बंद करें", updateFailed: "अपडेट इंस्टॉल नहीं हो सका।", tryAgain: "फिर कोशिश करें",
     studiedLegend: "पढ़ाई की", weekLegend: "चुना हुआ सप्ताह",
+    clearDay: "दिन हटाएँ", confirmClear: "पक्का हटाएँ?", dayCleared: "दिन हटा दिया", undo: "पूर्ववत करें", pickHint: "किसी दिन को हटाने के लिए उस पर क्लिक करें",
     sep: "। ", space: " ",
   },
   ar: {
@@ -340,6 +349,7 @@ const STRINGS = {
     updateAvailable: (v) => `يتوفر Lectern ${v}.`, updateNow: "تحديث", notNow: "ليس الآن", skipVersion: "تخطي هذا الإصدار",
     updateOpened: "يجري تنزيل المثبّت في متصفحك. افتحه لإكمال التحديث.", close: "إغلاق", updateFailed: "تعذر تثبيت التحديث.", tryAgain: "إعادة المحاولة",
     studiedLegend: "درست", weekLegend: "الأسبوع المحدد",
+    clearDay: "مسح اليوم", confirmClear: "هل تريد المسح؟", dayCleared: "تم مسح اليوم", undo: "تراجع", pickHint: "انقر على يوم لمسحه",
     sep: ". ", space: " ",
   },
 };

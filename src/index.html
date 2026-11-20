@@ -69,8 +69,8 @@
         <div class="subject" id="subject-wrap" hidden>
           <svg class="subject-icon" viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><path d="M3 4.6c0-.6.5-1 1-1h3.4c1.1 0 2 .5 2.6 1.3.6-.8 1.5-1.3 2.6-1.3H16c.5 0 1 .4 1 1v9.6c0 .5-.5 1-1 1h-3.4c-1 0-1.9.4-2.6 1.1-.7-.7-1.6-1.1-2.6-1.1H4c-.5 0-1-.5-1-1Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 4.9v11" stroke="currentColor" stroke-width="1.5"/></svg>
           <input class="subject-input" id="subject" type="text" maxlength="40" autocomplete="off"
-                 list="subject-list" data-i18n-placeholder="subject" spellcheck="false">
-          <datalist id="subject-list"></datalist>
+                 data-i18n-placeholder="subject" spellcheck="false" role="combobox" aria-autocomplete="list" aria-controls="suggest">
+          <ul class="suggest" id="suggest" role="listbox" hidden></ul>
         </div>
 
         <div class="controls" id="controls"></div>
@@ -99,6 +99,7 @@
               </g>
             </svg><span id="goal-label"></span></button>
             <label class="goal-edit" id="goal-edit" hidden>
+              <span data-i18n="goal">Goal</span>
               <input id="goal-input" type="number" min="1" max="100" step="1" inputmode="numeric">
               <span>h</span>
             </label>
@@ -141,6 +142,7 @@
         <p class="summary" id="report-summary"></p>
 
         <div class="chart" id="chart"></div>
+        <div class="day-panel" id="day-panel"></div>
 
         <dl class="stats" id="stats"></dl>
 
