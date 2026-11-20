@@ -28,7 +28,7 @@ const BROWSERS = [
 const browserPath = BROWSERS.find((b) => fs.existsSync(b));
 if (!browserPath) throw new Error("No Chromium browser found. Set BROWSER=/path/to/chrome.");
 
-const W = 520, SCALE = 2, OUT_W = 640, MIN_FRAME = 70;
+const W = 520, SCALE = 2, OUT_W = 1040, MIN_FRAME = 70;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 /* static server for src/ */

@@ -44,6 +44,8 @@ sh(`"${tauri}" build --no-bundle`, path.join(root, "setup"));
 const out = path.join(root, "dist", `Lectern-Setup-${version}.exe`);
 fs.mkdirSync(path.dirname(out), { recursive: true });
 fs.copyFileSync(path.join(target, "release", "lectern-setup.exe"), out);
+// the same installer under a fixed name, so releases/latest/download/Lectern-Setup.exe always works
+fs.copyFileSync(out, path.join(root, "dist", "Lectern-Setup.exe"));
 // the in-place update package: the compressed app, attached to the release
 const pkg = path.join(root, "dist", `Lectern-${version}-update.gz`);
 fs.copyFileSync(path.join(root, "setup", "payload", "lectern.exe.gz"), pkg);
