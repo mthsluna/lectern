@@ -34,13 +34,13 @@ const W = 520, SCALE = 2;
 const DAY = "today=2026-11-21";
 // name, query, theme, height
 const SHOTS = [
-  ["today", "state=running", "light", 700],
-  ["today-dark", "state=running", "dark", 700],
-  ["pomodoro", "state=running&pomo=focus", "light", 420],
+  ["today", "state=running", "light", 720],
+  ["today-dark", "state=running", "dark", 720],
+  ["pomodoro", "state=running&pomo=focus", "light", 720],
   ["pomodoro-settings", "pomo=1&panel=pomo", "light", 720],
-  ["report", `view=report&${DAY}&state=closed`, "light", 760],
-  ["calendar", `view=report&${DAY}&state=closed&panel=cal`, "light", 520],
-  ["languages", "pick", "light", 700],
+  ["report", `view=report&${DAY}&state=closed`, "light", 720],
+  ["calendar", `view=report&${DAY}&state=closed&panel=cal`, "light", 720],
+  ["languages", "pick", "light", 720],
 ];
 
 const TYPES = { ".html": "text/html", ".css": "text/css", ".js": "text/javascript", ".svg": "image/svg+xml", ".woff2": "font/woff2", ".mp3": "audio/mpeg" };
