@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.12.0
+
+- The week carousel now works like Cover Flow, with weeks on both sides.
+- Motion everywhere: buttons, the subject field, the status line, the goal and the charts animate in instead of appearing out of nowhere.
+
 ## 1.11.0
 
 - The week switcher is a 3D carousel: neighbouring weeks turn away in perspective, and you can click them.

@@ -384,7 +384,25 @@ function currentState() {
   return d && d.closed ? "closed" : "idle";
 }
 
-function renderControls() {
+/* With animate, the old buttons fade out before the new ones arrive. */
+function renderControls(animate = false) {
+  const c = $("controls");
+  const wrap = $("subject-wrap");
+  clearTimeout(renderControls.timer);
+  if (animate && c.children.length) {
+    c.classList.add("leaving");
+    if (!wrap.hidden && !["idle", "closed"].includes(currentState())) wrap.classList.add("leaving");
+    renderControls.timer = setTimeout(() => {
+      c.classList.remove("leaving");
+      wrap.classList.remove("leaving");
+      buildControls(true);
+    }, 170);
+  } else {
+    buildControls(false);
+  }
+}
+
+function buildControls(animate) {
   const s = currentState();
   const c = $("controls");
   c.innerHTML = "";
@@ -413,9 +431,13 @@ function renderControls() {
     b.lastChild.className = "round-label";
   }
 
+  if (animate) stagger(c.children, 60);
+
   /* the optional subject field only exists before a session starts */
   const idle = s === "idle" || s === "closed";
+  const wasHidden = $("subject-wrap").hidden;
   $("subject-wrap").hidden = !idle;
+  if (idle && wasHidden && animate) replay($("subject-wrap"), "reveal");
   if (idle) {
     $("subject").value = draftSubject;
     $("subject-list").innerHTML = knownSubjects().slice(0, 12)
@@ -431,11 +453,17 @@ function armStop() {
   b.dataset.armed = "1";
   b.textContent = t("confirmStop");
   b.className = "btn btn-warn";
+  replay(b, "morph");
   confirmTimer = setTimeout(renderControls, 3000);
 }
 
 function renderTimer() {
   const s = currentState();
+  if (renderTimer.last && renderTimer.last !== s) {
+    replay($("status"), "swap");
+    if (s === "running") replay($("timer"), "kick");
+  }
+  renderTimer.last = s;
   document.body.dataset.state = s;
   const a = state.active;
   // Today's total; a session that began yesterday only brings its part since midnight.
@@ -454,22 +482,28 @@ function renderWeekStrip() {
   const days = weekData(weekStart(today));
   const max = Math.max(3600000, ...days.map((d) => d.study));
   const strip = $("strip");
-  strip.innerHTML = "";
+  const fresh = strip.dataset.week !== days[0].key || strip.children.length !== 7;
+  if (fresh) {
+    // built at zero height, so the bars grow into place
+    strip.dataset.week = days[0].key;
+    strip.innerHTML = days.map((d, i) => `<div class="day"><div class="bar-wrap"><div class="bar" style="height:0%;transition-delay:${i * 45}ms"></div></div><span class="d">${dayName(d.key, "narrow")}</span></div>`).join("");
+    void strip.offsetWidth;
+    setTimeout(() => strip.querySelectorAll(".bar").forEach((b) => (b.style.transitionDelay = "")), 900);
+  }
   let total = 0;
-  for (const d of days) {
+  days.forEach((d, i) => {
     total += d.study;
-    const el = document.createElement("div");
+    const el = strip.children[i];
     el.className = "day" + (d.study > 0 ? " has" : "") + (d.key === today ? " is-today" : "");
     el.title = `${cap(dayName(d.key))} · ${hm(d.study)}`;
-    el.innerHTML = `<div class="bar-wrap"><div class="bar" style="height:${Math.max(4, (d.study / max) * 100)}%"></div></div>
-      <span class="d">${dayName(d.key, "narrow")}</span>`;
-    strip.appendChild(el);
-  }
+    el.querySelector(".bar").style.height = `${Math.max(4, (d.study / max) * 100)}%`;
+  });
   $("week-total").textContent = hm(total);
 
   /* weekly goal: a hairline of progress, nothing more */
   const goal = state.goal;
   $("week-goal").textContent = goal ? ` / ${goal}h` : "";
+  const trackWasHidden = $("goal-track").hidden;
   $("goal-track").hidden = !goal;
   if (goal) {
     const pct = Math.min(1, total / (goal * 3600000));
@@ -477,17 +511,23 @@ function renderWeekStrip() {
     $("goal-fill").classList.toggle("done", pct >= 1);
   }
   $("goal-btn").classList.toggle("has-goal", Boolean(goal));
+  if (goal && trackWasHidden) setTimeout(() => replay($("goal-track"), "reveal"), 0);
+  const label = goal ? `${t("goal")} · ${goal}h` : t("setGoal");
+  if ($("goal-edit").hidden && $("goal-label").textContent && $("goal-label").textContent !== label) replay($("goal-label"), "swap");
   if ($("goal-edit").hidden) $("goal-label").textContent = goal ? `${t("goal")} · ${goal}h` : t("setGoal");
 
   const left = 6 - parseKey(today).getDay();
   const n = streak();
   $("week-hint").textContent = left === 0 ? t("reportReady") : t("reportIn", left);
-  $("week-streak").textContent = n >= 2 ? ` · ${t("streak", n)}` : "";
+  const streakText = n >= 2 ? ` · ${t("streak", n)}` : "";
+  if (streakText && streakText !== $("week-streak").textContent) replay($("week-streak"), "swap");
+  $("week-streak").textContent = streakText;
 }
 
 function openGoalEditor() {
   $("goal-btn").hidden = true;
   $("goal-edit").hidden = false;
+  replay($("goal-edit"), "pop");
   const input = $("goal-input");
   input.value = state.goal || "";
   input.placeholder = "10";
@@ -504,6 +544,7 @@ function closeGoalEditor(saveIt) {
   }
   $("goal-edit").hidden = true;
   $("goal-btn").hidden = false;
+  replay($("goal-btn"), "pop");
   renderWeekStrip();
   if (state.goal && state.goal !== before) {
     const b = $("goal-btn");
@@ -514,10 +555,10 @@ function closeGoalEditor(saveIt) {
   }
 }
 
-function renderToday() {
+function renderToday(animate = false) {
   $("today-date").textContent = fmt(todayKey(), { weekday: "long", month: "long", day: "numeric" });
   renderTimer();
-  renderControls();
+  renderControls(animate);
   renderWeekStrip();
 }
 
@@ -582,13 +623,19 @@ function renderReport() {
   const max = Math.max(3600000, ...days.map((d) => d.study));
   const bestKey = total > 0 ? days.reduce((a, b) => (b.study > a.study ? b : a)).key : null;
   const chart = $("chart");
-  chart.innerHTML = days.map((d) => {
-    const cls = d.study < 60000 ? "empty" : d.key === bestKey ? "best" : "";
-    return `<div class="col ${cls}">
-      <span class="v">${shortHours(d.study)}</span>
-      <div class="bar-wrap"><div class="bar" style="height:${Math.max(2, (d.study / max) * 100)}%"></div></div>
-    </div>`;
-  }).join("");
+  const freshChart = chart.dataset.week !== start || chart.children.length !== 7;
+  if (freshChart) {
+    chart.dataset.week = start;
+    chart.innerHTML = days.map((d, i) => `<div class="col"><span class="v"></span><div class="bar-wrap"><div class="bar" style="height:0%;transition-delay:${80 + i * 50}ms"></div></div></div>`).join("");
+    void chart.offsetWidth;
+    setTimeout(() => chart.querySelectorAll(".bar").forEach((b) => (b.style.transitionDelay = "")), 1100);
+  }
+  days.forEach((d, i) => {
+    const col = chart.children[i];
+    col.className = "col " + (d.study < 60000 ? "empty" : d.key === bestKey ? "best" : "");
+    col.querySelector(".v").textContent = shortHours(d.study);
+    col.querySelector(".bar").style.height = `${Math.max(2, (d.study / max) * 100)}%`;
+  });
   let labels = chart.nextElementSibling;
   if (!labels || !labels.classList.contains("chart-days")) {
     labels = document.createElement("div");
@@ -616,7 +663,17 @@ function renderReport() {
           : `${Math.round((total / (state.goal * 3600000)) * 100)}%<small>${t("goalOf", state.goal)}</small>`]
       : [t("sessions"), `${sessions}`],
   ];
-  $("stats").innerHTML = rows.map(([k, v]) => `<div class="stat"><dt>${k}</dt><dd>${v}</dd></div>`).join("");
+  const stats = $("stats");
+  if (stats.dataset.week !== start || stats.children.length !== rows.length) {
+    stats.dataset.week = start;
+    stats.innerHTML = rows.map(() => `<div class="stat"><dt></dt><dd></dd></div>`).join("");
+    stagger(stats.children, 55);
+  }
+  rows.forEach(([k, v], i) => {
+    const el = stats.children[i];
+    el.querySelector("dt").innerHTML = k;
+    el.querySelector("dd").innerHTML = v;
+  });
 
   /* subjects: only when at least one session was labelled */
   const bySubject = {};
@@ -654,27 +711,33 @@ function goToWeek(start) {
   }
 }
 
-/* ---- 3D carousel ----
-   Five weeks around the one on display sit on a curved track: the centre
-   faces you, its neighbours turn away in perspective and fade. Each chip is
-   keyed by its week, so moving the track animates the chips into place. */
+/* ---- Coverflow ----
+   Like Apple's Cover Flow: the week on display faces you; its neighbours
+   turn sharply away and stack toward the edges, darker the further they go.
+   There are always weeks on both sides; the future ones are only there for
+   balance and cannot be opened. Chips are keyed by week, so the track glides
+   instead of being redrawn. */
 
 const chips = new Map();          // week key -> element
-const TRACK = { x: 150, turn: 55, depth: 150 };
-
-function chipTransform(offset) {
-  const d = Math.abs(offset);
-  return `translateX(calc(-50% + ${offset * TRACK.x}px)) translateZ(${-d * TRACK.depth}px) rotateY(${-offset * TRACK.turn}deg)`;
-}
+const FLOW = {
+  x: [0, 116, 168, 214],          // distance from the centre, by position
+  depth: [0, 120, 170, 210],
+  turn: 64,                       // degrees for every side chip
+  dim: [0, .5, .72, 1],
+};
 
 function placeChip(el, offset) {
-  const d = Math.abs(offset);
-  el.style.transform = chipTransform(offset);
-  el.style.opacity = d === 0 ? 1 : d === 1 ? 0.42 : 0;
+  const d = Math.min(Math.abs(offset), 3);
+  const side = Math.sign(offset);
+  el.style.transform =
+    `translateX(calc(-50% + ${side * FLOW.x[d]}px)) translateZ(${-FLOW.depth[d]}px) rotateY(${-side * (d ? FLOW.turn : 0)}deg)`;
+  el.style.setProperty("--dim", FLOW.dim[d]);
+  el.style.opacity = d >= 3 ? 0 : 1;
   el.style.zIndex = String(10 - d);
-  el.style.pointerEvents = d <= 1 ? "auto" : "none";
   el.classList.toggle("is-center", offset === 0);
-  el.tabIndex = d <= 1 ? 0 : -1;
+  const usable = d === 1 && !el.classList.contains("is-future");
+  el.style.pointerEvents = offset === 0 || usable ? "auto" : "none";
+  el.tabIndex = offset === 0 || usable ? 0 : -1;
 }
 
 function makeChip(week) {
@@ -684,6 +747,7 @@ function makeChip(week) {
   el.innerHTML = `<svg class="range-icon" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><rect x="2" y="3" width="12" height="11" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M2 6.6h12" stroke="currentColor" stroke-width="1.4"/><path d="M5.2 1.6v2.6M10.8 1.6v2.6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><rect x="4.6" y="8.6" width="2.4" height="2.2" rx=".6" fill="currentColor"/></svg><span class="range-text"><span class="range-year"></span><span class="range-main"></span></span>`;
   el.addEventListener("click", (e) => {
     e.stopPropagation();
+    if (el.classList.contains("is-future")) return;
     if (el.dataset.week === reportWeek) toggleCalendar();
     else { closeCalendar(); goToWeek(el.dataset.week); }
   });
@@ -694,16 +758,13 @@ function renderCarousel() {
   const track = $("weeks");
   const current = weekStart(todayKey());
   const wanted = new Map();
-  for (let o = -2; o <= 2; o++) {
-    const w = addDays(reportWeek, 7 * o);
-    if (w <= current) wanted.set(w, o);
-  }
-  // chips leaving the track slide out past the edge, then go
+  for (let o = -2; o <= 2; o++) wanted.set(addDays(reportWeek, 7 * o), o);
+
   for (const [w, el] of chips) {
     if (wanted.has(w)) continue;
     chips.delete(w);
-    placeChip(el, w < reportWeek ? -3 : 3);
-    setTimeout(() => el.remove(), 600);
+    placeChip(el, w < reportWeek ? -3 : 3);   // glide out past the edge
+    setTimeout(() => el.remove(), 700);
   }
   for (const [w, o] of wanted) {
     let el = chips.get(w);
@@ -711,13 +772,14 @@ function renderCarousel() {
       el = makeChip(w);
       track.appendChild(el);
       chips.set(w, el);
-      placeChip(el, o < 0 ? -3 : 3);   // enter from the side it belongs to
+      placeChip(el, o < 0 ? -3 : 3);          // enter from its own side
       void el.offsetWidth;
     }
     const label = rangeLabel(w);
     el.querySelector(".range-year").textContent = label.year;
     el.querySelector(".range-main").textContent = label.main;
     el.setAttribute("aria-label", `${label.main} ${label.year}`);
+    el.classList.toggle("is-future", w > current);
     placeChip(el, o);
   }
   setExpanded(!$("cal").hidden);
@@ -730,6 +792,24 @@ function setExpanded(open) {
     centre.setAttribute("aria-haspopup", "dialog");
     centre.setAttribute("aria-expanded", String(open));
   }
+}
+
+/* ---- small motion helpers ---- */
+
+/* Replays a one-shot CSS animation class on an element. */
+function replay(el, cls) {
+  if (!el) return;
+  el.classList.remove(cls);
+  void el.offsetWidth;
+  el.classList.add(cls);
+}
+
+/* Gives freshly built children a staggered entrance. */
+function stagger(children, step = 45) {
+  [...children].forEach((el, i) => {
+    el.style.animationDelay = `${i * step}ms`;
+    el.classList.add("pop");
+  });
 }
 
 let calMonth = null;   // first day of the month on display
@@ -795,6 +875,10 @@ function renderCalendar() {
 let view = "today";
 function show(v, opts = {}) {
   view = v;
+  // the bars and stats grow again whenever a view is opened
+  $("strip").dataset.week = "";
+  $("chart").dataset.week = "";
+  $("stats").dataset.week = "";
   document.querySelectorAll(".tab[data-view]").forEach((el) => el.classList.toggle("is-active", el.dataset.view === v));
   $("view-today").hidden = v !== "today";
   $("view-report").hidden = v !== "report";
@@ -845,7 +929,7 @@ function openStartView() {
 
 function commitAndRender() {
   save();
-  if (view === "today") renderToday();
+  if (view === "today") renderToday(true);
   else renderReport();
 }
 
