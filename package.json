@@ -1,6 +1,6 @@
 {
   "name": "lectern",
-  "version": "1.17.0",
+  "version": "1.18.0",
   "description": "A quiet study timer that writes you a weekly report every Saturday.",
   "private": true,
   "license": "MIT",
