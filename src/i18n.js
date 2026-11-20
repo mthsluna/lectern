@@ -51,6 +51,7 @@ const STRINGS = {
     theme_system: "Theme: system", theme_light: "Theme: light", theme_dark: "Theme: dark",
     updateAvailable: (v) => `Lectern ${v} is available.`, updateNow: "Update", notNow: "Not now", skipVersion: "Skip this version",
     updateOpened: "The installer is downloading in your browser. Open it to finish updating.", close: "Close", updateFailed: "The update could not be installed.", tryAgain: "Try again",
+    studiedLegend: "Studied", weekLegend: "Selected week",
     sep: ". ", space: " ",
   },
   pt: {
@@ -82,6 +83,7 @@ const STRINGS = {
     theme_system: "Tema: sistema", theme_light: "Tema: claro", theme_dark: "Tema: escuro",
     updateAvailable: (v) => `O Lectern ${v} está disponível.`, updateNow: "Atualizar", notNow: "Agora não", skipVersion: "Pular esta versão",
     updateOpened: "O instalador está baixando no navegador. Abra-o para concluir a atualização.", close: "Fechar", updateFailed: "Não foi possível instalar a atualização.", tryAgain: "Tentar de novo",
+    studiedLegend: "Estudou", weekLegend: "Semana aberta",
     sep: ". ", space: " ",
   },
   es: {
@@ -113,6 +115,7 @@ const STRINGS = {
     theme_system: "Tema: sistema", theme_light: "Tema: claro", theme_dark: "Tema: oscuro",
     updateAvailable: (v) => `Lectern ${v} está disponible.`, updateNow: "Actualizar", notNow: "Ahora no", skipVersion: "Omitir esta versión",
     updateOpened: "El instalador se está descargando en tu navegador. Ábrelo para terminar la actualización.", close: "Cerrar", updateFailed: "No se pudo instalar la actualización.", tryAgain: "Reintentar",
+    studiedLegend: "Estudiaste", weekLegend: "Semana abierta",
     sep: ". ", space: " ",
   },
   fr: {
@@ -144,6 +147,7 @@ const STRINGS = {
     theme_system: "Thème : système", theme_light: "Thème : clair", theme_dark: "Thème : sombre",
     updateAvailable: (v) => `Lectern ${v} est disponible.`, updateNow: "Mettre à jour", notNow: "Plus tard", skipVersion: "Ignorer cette version",
     updateOpened: "Le programme d'installation se télécharge dans votre navigateur. Ouvrez-le pour terminer la mise à jour.", close: "Fermer", updateFailed: "La mise à jour n'a pas pu être installée.", tryAgain: "Réessayer",
+    studiedLegend: "Étudié", weekLegend: "Semaine ouverte",
     sep: ". ", space: " ",
   },
   de: {
@@ -175,6 +179,7 @@ const STRINGS = {
     theme_system: "Design: System", theme_light: "Design: hell", theme_dark: "Design: dunkel",
     updateAvailable: (v) => `Lectern ${v} ist verfügbar.`, updateNow: "Aktualisieren", notNow: "Nicht jetzt", skipVersion: "Diese Version überspringen",
     updateOpened: "Das Installationsprogramm wird im Browser heruntergeladen. Öffne es, um das Update abzuschließen.", close: "Schließen", updateFailed: "Das Update konnte nicht installiert werden.", tryAgain: "Erneut versuchen",
+    studiedLegend: "Gelernt", weekLegend: "Gewählte Woche",
     sep: ". ", space: " ",
   },
   ru: {
@@ -206,6 +211,7 @@ const STRINGS = {
     theme_system: "Тема: системная", theme_light: "Тема: светлая", theme_dark: "Тема: тёмная",
     updateAvailable: (v) => `Доступна версия Lectern ${v}.`, updateNow: "Обновить", notNow: "Не сейчас", skipVersion: "Пропустить эту версию",
     updateOpened: "Установщик загружается в браузере. Откройте его, чтобы завершить обновление.", close: "Закрыть", updateFailed: "Не удалось установить обновление.", tryAgain: "Повторить",
+    studiedLegend: "Занятия", weekLegend: "Выбранная неделя",
     sep: ". ", space: " ",
   },
   zh: {
@@ -237,6 +243,7 @@ const STRINGS = {
     theme_system: "主题：跟随系统", theme_light: "主题：浅色", theme_dark: "主题：深色",
     updateAvailable: (v) => `Lectern ${v} 已发布。`, updateNow: "更新", notNow: "以后再说", skipVersion: "跳过此版本",
     updateOpened: "安装程序正在浏览器中下载。打开它即可完成更新。", close: "关闭", updateFailed: "无法安装更新。", tryAgain: "重试",
+    studiedLegend: "已学习", weekLegend: "所选周",
     sep: "。", space: "",
   },
   ja: {
@@ -268,6 +275,7 @@ const STRINGS = {
     theme_system: "テーマ：システム", theme_light: "テーマ：ライト", theme_dark: "テーマ：ダーク",
     updateAvailable: (v) => `Lectern ${v} が利用できます。`, updateNow: "アップデート", notNow: "あとで", skipVersion: "このバージョンをスキップ",
     updateOpened: "インストーラーをブラウザーでダウンロードしています。開いてアップデートを完了してください。", close: "閉じる", updateFailed: "アップデートをインストールできませんでした。", tryAgain: "再試行",
+    studiedLegend: "学習した日", weekLegend: "選択中の週",
     sep: "。", space: "",
   },
   hi: {
@@ -299,6 +307,7 @@ const STRINGS = {
     theme_system: "थीम: सिस्टम", theme_light: "थीम: हल्की", theme_dark: "थीम: गहरी",
     updateAvailable: (v) => `Lectern ${v} उपलब्ध है।`, updateNow: "अपडेट करें", notNow: "अभी नहीं", skipVersion: "यह संस्करण छोड़ें",
     updateOpened: "इंस्टॉलर आपके ब्राउज़र में डाउनलोड हो रहा है। अपडेट पूरा करने के लिए उसे खोलें।", close: "बंद करें", updateFailed: "अपडेट इंस्टॉल नहीं हो सका।", tryAgain: "फिर कोशिश करें",
+    studiedLegend: "पढ़ाई की", weekLegend: "चुना हुआ सप्ताह",
     sep: "। ", space: " ",
   },
   ar: {
@@ -330,6 +339,7 @@ const STRINGS = {
     theme_system: "المظهر: النظام", theme_light: "المظهر: فاتح", theme_dark: "المظهر: داكن",
     updateAvailable: (v) => `يتوفر Lectern ${v}.`, updateNow: "تحديث", notNow: "ليس الآن", skipVersion: "تخطي هذا الإصدار",
     updateOpened: "يجري تنزيل المثبّت في متصفحك. افتحه لإكمال التحديث.", close: "إغلاق", updateFailed: "تعذر تثبيت التحديث.", tryAgain: "إعادة المحاولة",
+    studiedLegend: "درست", weekLegend: "الأسبوع المحدد",
     sep: ". ", space: " ",
   },
 };

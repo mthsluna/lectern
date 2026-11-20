@@ -1,6 +1,6 @@
 [package]
 name = "lectern"
-version = "1.14.2"
+version = "1.15.0"
 description = "A quiet study timer with a weekly report."
 edition = "2021"
 

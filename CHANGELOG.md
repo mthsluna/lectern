@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.15.0
+
+- A clearer calendar: studied days are green discs that deepen with time, today is a ring, the open week is outlined, and a legend explains them.
+- The calendar fades out when you click away.
+- A nicer subject field with a book icon.
+- The play button and content stay centred even when the window scrolls.
+
 ## 1.14.2
 
 - Side weeks in the carousel fade out toward the edges.

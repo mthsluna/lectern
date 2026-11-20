@@ -818,7 +818,9 @@ function stagger(children, step = 45) {
 let calMonth = null;   // first day of the month on display
 
 function toggleCalendar() {
-  if (!$("cal").hidden) return closeCalendar();
+  if (!$("cal").hidden && !$("cal").classList.contains("closing")) return closeCalendar();
+  clearTimeout(closeCalendar.timer);
+  $("cal").classList.remove("closing");
   const mid = parseKey(addDays(reportWeek, 3));
   calMonth = new Date(mid.getFullYear(), mid.getMonth(), 1);
   renderCalendar();
@@ -827,9 +829,15 @@ function toggleCalendar() {
 }
 
 function closeCalendar() {
-  if ($("cal").hidden) return;
-  $("cal").hidden = true;
+  const cal = $("cal");
+  if (cal.hidden || cal.classList.contains("closing")) return;
   setExpanded(false);
+  cal.classList.add("closing");
+  clearTimeout(closeCalendar.timer);
+  closeCalendar.timer = setTimeout(() => {
+    cal.hidden = true;
+    cal.classList.remove("closing");
+  }, 170);
 }
 
 function moveCalendar(step) {
@@ -864,7 +872,8 @@ function renderCalendar() {
         + (k === today ? " is-today" : "")
         + (studied ? " has-study" : "");
       day.disabled = k > today;
-      day.textContent = d.getDate();
+      day.innerHTML = `<span class="n">${d.getDate()}</span>`;
+      if (studied) day.style.setProperty("--heat", String(Math.min(1, liveFor(k).study / (3 * 3600000))));
       day.title = `${cap(dayName(k))} · ${hm(liveFor(k).study)}`;
       day.addEventListener("click", () => { closeCalendar(); goToWeek(weekStart(k)); });
       week.appendChild(day);

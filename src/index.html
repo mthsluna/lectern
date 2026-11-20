@@ -63,6 +63,7 @@
         <p class="status" id="status"><span class="dot"></span><span id="status-text"></span></p>
 
         <div class="subject" id="subject-wrap" hidden>
+          <svg class="subject-icon" viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><path d="M3 4.6c0-.6.5-1 1-1h3.4c1.1 0 2 .5 2.6 1.3.6-.8 1.5-1.3 2.6-1.3H16c.5 0 1 .4 1 1v9.6c0 .5-.5 1-1 1h-3.4c-1 0-1.9.4-2.6 1.1-.7-.7-1.6-1.1-2.6-1.1H4c-.5 0-1-.5-1-1Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 4.9v11" stroke="currentColor" stroke-width="1.5"/></svg>
           <input class="subject-input" id="subject" type="text" maxlength="40" autocomplete="off"
                  list="subject-list" data-i18n-placeholder="subject" spellcheck="false">
           <datalist id="subject-list"></datalist>
@@ -117,6 +118,11 @@
             </div>
             <div class="cal-weekdays" id="cal-weekdays"></div>
             <div class="cal-grid" id="cal-grid"></div>
+            <div class="cal-legend">
+              <span class="lg"><i class="lg-study"></i><span data-i18n="studiedLegend">Studied</span></span>
+              <span class="lg"><i class="lg-today"></i><span data-i18n="today">Today</span></span>
+              <span class="lg"><i class="lg-week"></i><span data-i18n="weekLegend">Week</span></span>
+            </div>
             <button class="cal-today" id="cal-today" data-i18n="thisWeek">This week</button>
           </div>
         </div>
