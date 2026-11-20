@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.21.1
+
+- Adding the extension is a clear three-step guide, with a copy button for the browser's extensions address and one for the folder. Browsers refuse to open their own pages for another program, so Lectern no longer tries; it opens the browser and copies the address instead.
+- A link shows the extension's folder in File Explorer.
+
 ## 1.21.0
 
 - Add to Chrome, Edge or Brave from Settings: Lectern unpacks the extension, opens the browser on its extensions page and copies the folder, then guides the last three clicks. Your default browser comes first.

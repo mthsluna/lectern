@@ -121,12 +121,18 @@ fn ext_browsers() -> Vec<extension::Browser> {
     if extension::available() { extension::browsers() } else { Vec::new() }
 }
 
-/// Unpacks the extension and opens the browser's extensions page; returns the folder.
+/// Unpacks the extension and brings the browser forward; returns the folder
+/// and the browser's extensions address, for the person to paste.
 #[tauri::command]
-fn ext_install(browser: String) -> Result<String, String> {
+fn ext_install(browser: String) -> Result<(String, String), String> {
     extension::install(&browser)
-        .map(|p| p.display().to_string())
+        .map(|(p, page)| (p.display().to_string(), page.trim_end_matches('/').to_string()))
         .map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+fn ext_reveal() -> Result<(), String> {
+    extension::reveal().map_err(|e| e.to_string())
 }
 
 #[tauri::command]
@@ -230,6 +236,7 @@ fn main() {
             bridge_seen,
             ext_browsers,
             ext_install,
+            ext_reveal,
             set_keep_alive,
             release_window
         ])

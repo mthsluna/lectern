@@ -21,8 +21,8 @@ otherwise the browser shows its own "blocked" page.
 
 **From the app (easiest).** In Lectern, open **Settings** and click **Add to Chrome** (or Edge, or Brave:
 your default browser comes first). Lectern puts the extension in a folder of its own, opens the
-browser on its extensions page and copies the folder. Then turn on **Developer mode**, click
-**Load unpacked**, paste with Ctrl+V and press Enter. Browsers keep these last clicks for you: no
+browser and copies its extensions address. Paste it in the address bar, turn on **Developer mode**,
+click **Load unpacked** and paste the folder, which Lectern shows with a copy button. Browsers keep these last clicks for you: no
 program may add an extension by itself unless it comes from the browser's store. When Lectern
 updates, it refreshes that folder too, and the browser picks it up on its next start.
 

@@ -154,15 +154,23 @@ fn default_browser() -> Option<&'static str> {
     }
 }
 
-/// Unpacks the extension and opens the browser on its extensions page.
-pub fn install(browser: &str) -> io::Result<PathBuf> {
+/// Unpacks the extension and brings the browser forward. Browsers refuse to
+/// open their own pages (brave://, chrome://) for another program, so the
+/// interface hands the person that address to paste instead.
+pub fn install(browser: &str) -> io::Result<(PathBuf, &'static str)> {
     let dir = unpack()?;
     let b = browsers()
         .into_iter()
         .find(|b| b.id == browser)
         .ok_or_else(|| io::Error::other("browser not found"))?;
-    Command::new(&b.exe).arg(b.page).spawn()?;
-    Ok(dir)
+    Command::new(&b.exe).spawn()?;
+    Ok((dir, b.page))
+}
+
+/// Shows the extension's folder in File Explorer.
+pub fn reveal() -> io::Result<()> {
+    let dir = folder().ok_or_else(|| io::Error::other("no folder"))?;
+    Command::new("explorer").arg(&dir).spawn().map(|_| ())
 }
 
 #[cfg(test)]

@@ -1346,7 +1346,7 @@ const EXT_ZIP = "https://github.com/mthsluna/lectern/releases/latest/download/Le
 const EXT_GUIDE = "https://github.com/mthsluna/lectern/blob/main/extension/README.md#install";
 let extDownloaded = false;
 let extBrowsers = null;      // browsers on this computer that can take the extension
-let extSetup = null;         // { name, path, copied } once the app has opened the browser
+let extSetup = null;         // { id, name, path, page, copied } while the person adds the extension
 let extPoll = 0;
 
 function openExternal(url) {
@@ -1373,19 +1373,38 @@ async function renderExtStatus() {
   if (linked) {
     el.innerHTML = `<i></i><span>${t("extConnected")}</span>`;
   } else if (extSetup) {
-    // the browser is open on its extensions page: three clicks left
-    el.innerHTML = `<div class="ext-steps"><p class="ext-steps-title"><i></i>${t("extOpened", extSetup.name)}</p><ol>`
-      + `<li>${t("extStepDev")}</li><li>${t("extStepLoad")}</li><li>${t("extStepPaste")}</li></ol>`
-      + `<div class="ext-path"><code id="ext-path"></code><button id="ext-copy">${extSetup.copied ? t("extCopied") : t("extCopy")}</button></div>`
-      + `<button class="ext-guide" id="ext-again">${t("extAgain", extSetup.name)}</button></div>`;
+    // three steps, each with what to paste
+    const copyBtn = (key) => `<button class="copy${extSetup.copied === key ? " done" : ""}" data-copy="${key}">`
+      + `<svg class="i-copy" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><rect x="5.5" y="5.5" width="8" height="8" rx="2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M10.5 3.5v-.3a1.7 1.7 0 0 0-1.7-1.7H4.2a1.7 1.7 0 0 0-1.7 1.7v4.6a1.7 1.7 0 0 0 1.7 1.7h.3" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>`
+      + `<svg class="i-done" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="m3.5 8.4 2.9 2.9 6.1-6.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`
+      + `<span>${extSetup.copied === key ? t("extCopied") : t("extCopy")}</span></button>`;
+    el.innerHTML = `<div class="setup">`
+      + `<div class="setup-head"><span class="setup-title">${t("extSetupTitle", extSetup.name)}</span>`
+      + `<button class="setup-x" id="setup-x" aria-label="${t("extCancel")}"><svg viewBox="0 0 12 12" width="10" height="10" aria-hidden="true"><path d="m3 3 6 6m0-6-6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button></div>`
+      + `<ol class="stepper">`
+      + `<li><span class="num">1</span><div><p>${t("extS1", extSetup.name)}</p><div class="copy-row"><code id="ext-page"></code>${copyBtn("page")}</div></div></li>`
+      + `<li><span class="num">2</span><div><p>${t("extS2")}</p></div></li>`
+      + `<li><span class="num">3</span><div><p>${t("extS3")}</p><div class="copy-row"><code id="ext-path"></code>${copyBtn("path")}</div>`
+      + `<button class="setup-link" id="ext-reveal">${t("extReveal")}</button></div></li>`
+      + `</ol><p class="setup-wait"><span class="spin" aria-hidden="true"></span>${t("extWaiting")}</p></div>`;
+    $("ext-page").textContent = extSetup.page;
     $("ext-path").textContent = extSetup.path;
-    $("ext-copy").addEventListener("click", async () => {
-      await copyText(extSetup.path);
-      extSetup.copied = true;
-      $("ext-copy").textContent = t("extCopied");
-      replay($("ext-copy"), "pop");
+    el.querySelectorAll("[data-copy]").forEach((b) => b.addEventListener("click", async () => {
+      await copyText(b.dataset.copy === "page" ? extSetup.page : extSetup.path);
+      extSetup.copied = b.dataset.copy;
+      el.querySelectorAll("[data-copy]").forEach((x) => {
+        const on = x.dataset.copy === extSetup.copied;
+        x.classList.toggle("done", on);
+        x.querySelector("span").textContent = on ? t("extCopied") : t("extCopy");
+      });
+      replay(b, "pop");
+    }));
+    $("ext-reveal").addEventListener("click", () => tauri && tauri.invoke("ext_reveal").catch(() => {}));
+    $("setup-x").addEventListener("click", () => {
+      extSetup = null;
+      clearInterval(extPoll);
+      renderExtStatus().then(() => replay(el, "swap"));
     });
-    $("ext-again").addEventListener("click", () => setUpExtension(extSetup.id));
   } else if (extBrowsers.length) {
     const [first, ...others] = extBrowsers;
     el.innerHTML = `<i></i><span>${t("extMissing")}</span><div class="ext-add">`
@@ -1413,16 +1432,17 @@ async function copyText(text) {
   try { await navigator.clipboard.writeText(text); return true; } catch { return false; }
 }
 
-/* Unpacks the extension, opens the browser on its extensions page and puts
-   the folder on the clipboard. Browsers keep the last three clicks for the
-   person: no program may add an extension on its own. */
+/* Unpacks the extension, brings the browser forward and copies its
+   extensions address. No program may add an extension on its own, and
+   browsers will not open their own pages for one, so the person pastes the
+   address, turns on developer mode and picks the folder. */
 async function setUpExtension(id) {
   const b = (extBrowsers || []).find((x) => x.id === id);
   if (!b || !tauri) return;
-  let path;
-  try { path = await tauri.invoke("ext_install", { browser: id }); } catch { return; }
-  const copied = await copyText(path);
-  extSetup = { id, name: b.name, path, copied };
+  let path, page;
+  try { [path, page] = await tauri.invoke("ext_install", { browser: id }); } catch { return; }
+  const copied = (await copyText(page)) ? "page" : null;
+  extSetup = { id, name: b.name, path, page, copied };
   await renderExtStatus();
   replay($("ext-status"), "swap");
   clearInterval(extPoll);
